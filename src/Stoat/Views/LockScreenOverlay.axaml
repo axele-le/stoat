@@ -1,0 +1,328 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:heroIcons="clr-namespace:HeroIconsAvalonia.Controls;assembly=HeroIconsAvalonia"
+             xmlns:vm="using:Stoat.Core.ViewModels"
+             xmlns:l="using:Stoat.Localization"
+             x:Class="Stoat.Views.LockScreenOverlay"
+             x:DataType="vm:LockScreenViewModel"
+             IsVisible="False">
+
+    <Grid Background="{DynamicResource OverlayBrush}">
+        <!-- Centered Card -->
+        <Border Background="{DynamicResource CardBrush}"
+                CornerRadius="{StaticResource RadiusXLarge}"
+                Padding="40,35"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                MinWidth="380"
+                MaxWidth="460"
+                BorderBrush="{DynamicResource BorderBrush}"
+                BorderThickness="1"
+                IsVisible="{Binding !IsRecoveryKeyModalVisible}">
+            <StackPanel Spacing="24">
+
+                <!-- === UNLOCK FORM (default) === -->
+                <StackPanel Spacing="24" IsVisible="{Binding !IsRecoveryMode}">
+                    <!-- Logo + Title -->
+                    <StackPanel HorizontalAlignment="Center" Spacing="12">
+                        <TextBlock Text="{l:Translate Lock.Title}"
+                                   Foreground="{DynamicResource ForegroundBrush}"
+                                   FontSize="{StaticResource FontSizeHeading}"
+                                   FontWeight="Bold"
+                                   HorizontalAlignment="Center"/>
+                        <TextBlock Text="{l:Translate Lock.Subtitle}"
+                                   Foreground="{DynamicResource ForegroundMutedBrush}"
+                                   FontSize="{StaticResource FontSizeBody}"
+                                   HorizontalAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- Password Field -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="{l:Translate Lock.PasswordLabel}" Foreground="{DynamicResource ForegroundBrush}" FontSize="{StaticResource FontSizeSmall}"/>
+                        <TextBox x:Name="LockPasswordBox"
+                                 Text="{Binding Password}"
+                                 PasswordChar="*"
+                                 Watermark="{l:Translate Lock.PasswordWatermark}"
+                                 Classes="cryptoInput"
+                                 KeyDown="OnPasswordKeyDown"/>
+                    </StackPanel>
+
+                    <!-- Error Message -->
+                    <Border Background="{DynamicResource DangerBackgroundBrush}"
+                            CornerRadius="{StaticResource RadiusMedium}"
+                            Padding="12,8"
+                            IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <heroIcons:HeroIcon Width="16" Height="16"
+                                                Type="ExclamationCircle"
+                                                Kind="Outline"
+                                                Foreground="{DynamicResource DangerBrush}"
+                                                VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding ErrorMessage}"
+                                       Foreground="{DynamicResource DangerBrush}"
+                                       FontSize="{StaticResource FontSizeSmall}"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Unlock Button -->
+                    <Button Cursor="Hand" Classes="primary"
+                            Command="{Binding UnlockCommand}"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            Padding="16,12">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <heroIcons:HeroIcon Width="16" Height="16"
+                                                Type="LockOpen"
+                                                Kind="Outline"
+                                                Foreground="{DynamicResource PrimaryForegroundBrush}"/>
+                            <TextBlock Text="{l:Translate Lock.UnlockButton}" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Forgot Password Link -->
+                    <Button Cursor="Hand" Classes="link"
+                            Command="{Binding StartRecoveryCommand}"
+                            HorizontalAlignment="Center"
+                            Padding="4,2"
+                            Background="Transparent">
+                        <TextBlock Text="{l:Translate Lock.ForgotPassword}"
+                                   Foreground="{DynamicResource ForegroundMutedBrush}"
+                                   FontSize="{StaticResource FontSizeSmall}"
+                                   TextDecorations="Underline"/>
+                    </Button>
+                </StackPanel>
+
+                <!-- === RECOVERY FORM === -->
+                <StackPanel Spacing="20" IsVisible="{Binding IsRecoveryMode}">
+                    <!-- Title -->
+                    <StackPanel HorizontalAlignment="Center" Spacing="10">
+                        <heroIcons:HeroIcon Width="28" Height="28"
+                                            Type="Key"
+                                            Kind="Outline"
+                                            Foreground="{DynamicResource PrimaryBrush}"
+                                            HorizontalAlignment="Center"/>
+                        <TextBlock Text="{l:Translate Lock.Recovery.Title}"
+                                   Foreground="{DynamicResource ForegroundBrush}"
+                                   FontSize="{StaticResource FontSizeLarge}"
+                                   FontWeight="Bold"
+                                   HorizontalAlignment="Center"/>
+                        <TextBlock Text="{l:Translate Lock.Recovery.Subtitle}"
+                                   Foreground="{DynamicResource ForegroundMutedBrush}"
+                                   FontSize="{StaticResource FontSizeBody}"
+                                   HorizontalAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- Recovery Key Field -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="{l:Translate Lock.RecoveryKeyLabel}" Foreground="{DynamicResource ForegroundBrush}" FontSize="{StaticResource FontSizeSmall}"/>
+                        <TextBox x:Name="RecoveryKeyBox"
+                                 Text="{Binding RecoveryKey}"
+                                 Watermark="{l:Translate Lock.RecoveryKeyWatermark}"
+                                 Classes="cryptoInput"
+                                 FontFamily="Consolas, monospace"/>
+                    </StackPanel>
+
+                    <!-- New Password -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="{l:Translate Lock.NewPasswordLabel}" Foreground="{DynamicResource ForegroundBrush}" FontSize="{StaticResource FontSizeSmall}"/>
+                        <TextBox Text="{Binding NewPassword}"
+                                 PasswordChar="*"
+                                 Watermark="{l:Translate Lock.NewPasswordWatermark}"
+                                 Classes="cryptoInput"/>
+                    </StackPanel>
+
+                    <!-- Confirm New Password -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="{l:Translate Lock.ConfirmPasswordLabel}" Foreground="{DynamicResource ForegroundBrush}" FontSize="{StaticResource FontSizeSmall}"/>
+                        <TextBox Text="{Binding NewPasswordConfirm}"
+                                 PasswordChar="*"
+                                 Watermark="{l:Translate Lock.ConfirmPasswordWatermark}"
+                                 Classes="cryptoInput"/>
+                    </StackPanel>
+
+                    <!-- Password Strength -->
+                    <StackPanel Spacing="4">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <TextBlock Text="{l:Translate Lock.PasswordStrength.Label}"
+                                       Foreground="{DynamicResource ForegroundMutedBrush}" FontSize="{StaticResource FontSizeXSmall}"/>
+                            <TextBlock Text="{l:Translate Lock.PasswordStrength.Weak}" FontSize="{StaticResource FontSizeXSmall}" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource DangerBrush}"
+                                       IsVisible="{Binding IsNewStrengthWeak}"/>
+                            <TextBlock Text="{l:Translate Lock.PasswordStrength.Medium}" FontSize="{StaticResource FontSizeXSmall}" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource WarningBrush}"
+                                       IsVisible="{Binding IsNewStrengthMedium}"/>
+                            <TextBlock Text="{l:Translate Lock.PasswordStrength.Strong}" FontSize="{StaticResource FontSizeXSmall}" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource SuccessBrush}"
+                                       IsVisible="{Binding IsNewStrengthStrong}"/>
+                            <TextBlock Text="{l:Translate Lock.PasswordStrength.VeryStrong}" FontSize="{StaticResource FontSizeXSmall}" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource PrimaryBrush}"
+                                       IsVisible="{Binding IsNewStrengthVeryStrong}"/>
+                        </StackPanel>
+                        <Grid ColumnDefinitions="*,*,*,*" Height="4">
+                            <Panel Grid.Column="0" Margin="0,0,2,0">
+                                <Border CornerRadius="2" Background="{DynamicResource ProfileInactiveBrush}" Opacity="0.3"/>
+                                <Border CornerRadius="2" Background="{DynamicResource DangerBrush}" IsVisible="{Binding IsNewStrengthWeak}"/>
+                                <Border CornerRadius="2" Background="{DynamicResource WarningBrush}" IsVisible="{Binding IsNewStrengthMedium}"/>
+                                <Border CornerRadius="2" Background="{DynamicResource SuccessBrush}" IsVisible="{Binding IsNewStrengthStrong}"/>
+                                <Border CornerRadius="2" Background="{DynamicResource PrimaryBrush}" IsVisible="{Binding IsNewStrengthVeryStrong}"/>
+                            </Panel>
+                            <Panel Grid.Column="1" Margin="0,0,2,0">
+                                <Border CornerRadius="2" Background="{DynamicResource ProfileInactiveBrush}" Opacity="0.3"/>
+                                <Border CornerRadius="2" Background="{DynamicResource WarningBrush}" IsVisible="{Binding IsNewStrengthMedium}"/>
+                                <Border CornerRadius="2" Background="{DynamicResource SuccessBrush}" IsVisible="{Binding IsNewStrengthStrong}"/>
+                                <Border CornerRadius="2" Background="{DynamicResource PrimaryBrush}" IsVisible="{Binding IsNewStrengthVeryStrong}"/>
+                            </Panel>
+                            <Panel Grid.Column="2" Margin="0,0,2,0">
+                                <Border CornerRadius="2" Background="{DynamicResource ProfileInactiveBrush}" Opacity="0.3"/>
+                                <Border CornerRadius="2" Background="{DynamicResource SuccessBrush}" IsVisible="{Binding IsNewStrengthStrong}"/>
+                                <Border CornerRadius="2" Background="{DynamicResource PrimaryBrush}" IsVisible="{Binding IsNewStrengthVeryStrong}"/>
+                            </Panel>
+                            <Panel Grid.Column="3">
+                                <Border CornerRadius="2" Background="{DynamicResource ProfileInactiveBrush}" Opacity="0.3"/>
+                                <Border CornerRadius="2" Background="{DynamicResource PrimaryBrush}" IsVisible="{Binding IsNewStrengthVeryStrong}"/>
+                            </Panel>
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- Error Message -->
+                    <Border Background="{DynamicResource DangerBackgroundBrush}"
+                            CornerRadius="{StaticResource RadiusMedium}"
+                            Padding="12,8"
+                            IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <heroIcons:HeroIcon Width="16" Height="16"
+                                                Type="ExclamationCircle"
+                                                Kind="Outline"
+                                                Foreground="{DynamicResource DangerBrush}"
+                                                VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding ErrorMessage}"
+                                       Foreground="{DynamicResource DangerBrush}"
+                                       FontSize="{StaticResource FontSizeSmall}"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Buttons -->
+                    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                        <Button Cursor="Hand" Classes="secondary" Padding="14,10"
+                                Command="{Binding CancelRecoveryCommand}">
+                            <TextBlock Text="{l:Translate Common.Button.Cancel}" FontSize="{StaticResource FontSizeBody}"/>
+                        </Button>
+                        <Button Cursor="Hand" Classes="primary" Padding="14,10"
+                                Command="{Binding ResetPasswordCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <heroIcons:HeroIcon Width="14" Height="14"
+                                                    Type="Key"
+                                                    Kind="Outline"
+                                                    Foreground="{DynamicResource PrimaryForegroundBrush}"/>
+                                <TextBlock Text="{l:Translate Common.Button.Reset}" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Recovery Key Modal (shown after successful reset) -->
+        <Border Background="{DynamicResource CardBrush}"
+                CornerRadius="{StaticResource RadiusXLarge}"
+                Padding="32,28"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                MinWidth="420"
+                MaxWidth="500"
+                BorderBrush="{DynamicResource BorderBrush}"
+                BorderThickness="1"
+                IsVisible="{Binding IsRecoveryKeyModalVisible}">
+            <StackPanel Spacing="20">
+                <!-- Header -->
+                <StackPanel HorizontalAlignment="Center" Spacing="10">
+                    <Border Background="{DynamicResource PrimaryTintBrush}"
+                            CornerRadius="24"
+                            Padding="12"
+                            HorizontalAlignment="Center">
+                        <heroIcons:HeroIcon Width="28" Height="28"
+                                            Type="Key"
+                                            Kind="Outline"
+                                            Foreground="{DynamicResource PrimaryBrush}"/>
+                    </Border>
+                    <TextBlock Text="{l:Translate Lock.NewRecoveryKey.Title}"
+                               Foreground="{DynamicResource ForegroundBrush}"
+                               FontSize="{StaticResource FontSizeLarge}"
+                               FontWeight="Bold"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="{l:Translate Lock.NewRecoveryKey.Message}"
+                               Foreground="{DynamicResource ForegroundMutedBrush}"
+                               FontSize="{StaticResource FontSizeBody}"
+                               TextWrapping="Wrap"
+                               TextAlignment="Center"
+                               MaxWidth="400"/>
+                </StackPanel>
+
+                <!-- Recovery Key Display -->
+                <Border Background="{DynamicResource BackgroundBrush}"
+                        CornerRadius="{StaticResource RadiusLarge}"
+                        Padding="16,12">
+                    <TextBlock Text="{Binding RecoveryKeyDisplay}"
+                               Foreground="{DynamicResource PrimaryBrush}"
+                               FontSize="{StaticResource FontSizeSubheading}"
+                               FontWeight="Bold"
+                               FontFamily="Consolas, monospace"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               TextWrapping="Wrap"/>
+                </Border>
+
+                <!-- Copy Button -->
+                <Button Cursor="Hand" Classes="secondary"
+                        Command="{Binding CopyRecoveryKeyCommand}"
+                        HorizontalAlignment="Center"
+                        Padding="16,10">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <heroIcons:HeroIcon Width="16" Height="16"
+                                            Type="Clipboard"
+                                            Kind="Outline"
+                                            Foreground="{DynamicResource ForegroundBrush}"/>
+                        <TextBlock Text="{l:Translate Lock.CopyRecoveryKey.Button}" VerticalAlignment="Center" FontSize="{StaticResource FontSizeBody}"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- Warning -->
+                <Border Background="{DynamicResource BackgroundBrush}"
+                        CornerRadius="{StaticResource RadiusMedium}"
+                        Padding="12"
+                        BorderBrush="{DynamicResource ForegroundMutedBrush}"
+                        BorderThickness="1,0,0,0">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <heroIcons:HeroIcon Width="18" Height="18"
+                                            Type="InformationCircle"
+                                            Kind="Outline"
+                                            Foreground="{DynamicResource ForegroundSecondaryBrush}"
+                                            VerticalAlignment="Top"
+                                            Margin="0,2,0,0"/>
+                        <TextBlock Text="{l:Translate Lock.NewRecoveryKey.Warning}"
+                                   Foreground="{DynamicResource ForegroundMutedBrush}"
+                                   FontSize="{StaticResource FontSizeSmall}"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Dismiss Button -->
+                <Button Cursor="Hand" Classes="primary"
+                        Command="{Binding DismissRecoveryKeyModalCommand}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        Padding="16,12">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <heroIcons:HeroIcon Width="16" Height="16"
+                                            Type="Check"
+                                            Kind="Outline"
+                                            Foreground="{DynamicResource PrimaryForegroundBrush}"/>
+                        <TextBlock Text="{l:Translate Lock.SavedRecoveryKey.Button}" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

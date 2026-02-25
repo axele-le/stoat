@@ -1,0 +1,315 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:heroIcons="clr-namespace:HeroIconsAvalonia.Controls;assembly=HeroIconsAvalonia"
+             xmlns:vm="using:Stoat.Core.ViewModels"
+             xmlns:converters="using:Stoat.Converters"
+             xmlns:l="using:Stoat.Localization"
+             x:Class="Stoat.Views.HashView"
+             x:DataType="vm:HashViewModel">
+
+    <UserControl.Resources>
+        <converters:EnumDisplayConverter x:Key="EnumDisplayConverter"/>
+    </UserControl.Resources>
+
+    <Grid Margin="30" RowDefinitions="Auto,Auto,*,Auto">
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="15" Margin="0,0,0,10">
+            <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                    CornerRadius="{StaticResource RadiusLarge}"
+                    Padding="12">
+                <heroIcons:HeroIcon Width="24" Height="24"
+                                    Type="FingerPrint"
+                                    Kind="Outline"
+                                    Foreground="{DynamicResource PrimaryBrush}"/>
+            </Border>
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="{l:Translate MainWindow.Sidebar.Hash}"
+                           FontSize="{StaticResource FontSizePageTitle}"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource ForegroundBrush}"/>
+                <TextBlock Text="{l:Translate Hash.Header.Subtitle}"
+                           FontSize="{StaticResource FontSizeNormal}"
+                           Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Tab Switcher -->
+        <Border Grid.Row="1"
+                Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                CornerRadius="{StaticResource RadiusLarge}"
+                Padding="4"
+                HorizontalAlignment="Left"
+                Margin="0,0,0,10">
+            <StackPanel Orientation="Horizontal" Spacing="4">
+                <Button Cursor="Hand" Command="{Binding SetTextModeCommand}"
+                        Classes.tabActive="{Binding IsTextMode}"
+                        Classes.tabInactive="{Binding !IsTextMode}"
+                        CornerRadius="{StaticResource RadiusMedium}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <heroIcons:HeroIcon Width="16" Height="16"
+                                            Type="DocumentText"
+                                            Kind="Outline"
+                                            Foreground="{Binding $parent[Button].Foreground}"/>
+                        <TextBlock Text="{l:Translate Common.Label.Text}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Cursor="Hand" Command="{Binding SetFileModeCommand}"
+                        Classes.tabActive="{Binding IsFileMode}"
+                        Classes.tabInactive="{Binding !IsFileMode}"
+                        CornerRadius="{StaticResource RadiusMedium}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <heroIcons:HeroIcon Width="16" Height="16"
+                                            Type="ArrowUpTray"
+                                            Kind="Outline"
+                                            Foreground="{Binding $parent[Button].Foreground}"/>
+                        <TextBlock Text="{l:Translate Common.Label.File}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Border>
+
+        <!-- Two-Column Layout -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,20,*">
+
+            <!-- ═══════════════ LEFT: Input ═══════════════ -->
+            <Grid Grid.Column="0" RowDefinitions="Auto,*">
+
+                <!-- Algorithm Selector -->
+                <Border Grid.Row="0"
+                        Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                        CornerRadius="{StaticResource RadiusLarge}"
+                        Padding="15"
+                        Margin="0,0,0,15">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="{l:Translate Hash.AlgorithmLabel}"
+                                   FontSize="{StaticResource FontSizeSmall}"
+                                   Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                        <ComboBox ItemsSource="{Binding AlgorithmOptions}"
+                                  SelectedItem="{Binding SelectedAlgorithm}"
+                                  HorizontalAlignment="Stretch">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Converter={StaticResource EnumDisplayConverter}}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                </Border>
+
+                <!-- Text Mode Input -->
+                <Grid Grid.Row="1" RowDefinitions="Auto,*"
+                      IsVisible="{Binding IsTextMode}">
+                    <TextBlock Grid.Row="0"
+                               Text="{l:Translate Hash.TextInput.Label}"
+                               Foreground="{DynamicResource ForegroundBrush}"
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,10"/>
+                    <Border Grid.Row="1"
+                            Background="{DynamicResource CardBrush}"
+                            CornerRadius="{StaticResource RadiusLarge}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1">
+                        <TextBox Text="{Binding InputText}"
+                                 Classes="cryptoArea"
+                                 AcceptsReturn="True"
+                                 TextWrapping="Wrap"
+                                 FontFamily="Consolas"
+                                 Watermark="{l:Translate Hash.TextInput.Watermark}"/>
+                    </Border>
+                </Grid>
+
+                <!-- File Mode Input -->
+                <Border Grid.Row="1"
+                        IsVisible="{Binding IsFileMode}"
+                        Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                        CornerRadius="{StaticResource RadiusLarge}"
+                        Padding="20"
+                        Name="DropZone">
+                    <Button Cursor="Hand" Command="{Binding SelectFileCommand}"
+                            Background="Transparent"
+                            BorderBrush="{DynamicResource ForegroundMutedBrush}"
+                            BorderThickness="2"
+                            CornerRadius="{StaticResource RadiusLarge}"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            Padding="40">
+                        <StackPanel HorizontalAlignment="Center" Spacing="15">
+                            <heroIcons:HeroIcon Width="48" Height="48"
+                                                Type="ArrowUpTray"
+                                                Kind="Outline"
+                                                Foreground="{DynamicResource ForegroundSecondaryBrush}"
+                                                HorizontalAlignment="Center"/>
+                            <TextBlock Text="{l:Translate Hash.DropZone.DragText}"
+                                       FontSize="{StaticResource FontSizeLarge}"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource ForegroundBrush}"
+                                       HorizontalAlignment="Center"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBlock Text="{l:Translate Common.Label.Or}"
+                                           FontSize="{StaticResource FontSizeNormal}"
+                                           Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                                <TextBlock Text="{l:Translate Common.Label.ClickToSelect}"
+                                           FontSize="{StaticResource FontSizeNormal}"
+                                           Foreground="{DynamicResource PrimaryBrush}"/>
+                            </StackPanel>
+                            <TextBlock Text="{Binding SelectedFileName}"
+                                       FontSize="{StaticResource FontSizeNormal}"
+                                       Foreground="{DynamicResource SuccessBrush}"
+                                       HorizontalAlignment="Center"
+                                       IsVisible="{Binding SelectedFileName, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                        </StackPanel>
+                    </Button>
+                </Border>
+            </Grid>
+
+            <!-- ═══════════════ RIGHT: Output + Verify ═══════════════ -->
+            <Grid Grid.Column="2" RowDefinitions="Auto,*,Auto">
+
+                <!-- Computed Hash Output -->
+                <StackPanel Grid.Row="0" Spacing="4">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Grid.Column="0"
+                                   Text="{l:Translate Hash.Output.Label}"
+                                   Foreground="{DynamicResource ForegroundBrush}"
+                                   FontWeight="SemiBold"/>
+                        <Button Grid.Column="1"
+                                Cursor="Hand" Command="{Binding CopyOutputCommand}"
+                                Classes="ghost"
+                                Padding="6,4"
+                                ToolTip.Tip="{l:Translate Hash.CopyHash.Tooltip}">
+                            <heroIcons:HeroIcon Width="14" Height="14"
+                                                Type="ClipboardDocument"
+                                                Kind="Outline"
+                                                Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                        </Button>
+                    </Grid>
+                    <Border Background="{DynamicResource CardBrush}"
+                            CornerRadius="{StaticResource RadiusLarge}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1"
+                            Padding="12,10"
+                            MinHeight="60">
+                        <TextBox Text="{Binding OutputHash}"
+                                 IsReadOnly="True"
+                                 FontFamily="Consolas"
+                                 TextWrapping="Wrap"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 Watermark="{l:Translate Hash.Output.Watermark}"/>
+                    </Border>
+
+                    <!-- Progress Bar (File mode) -->
+                    <StackPanel IsVisible="{Binding IsHashing}"
+                                Margin="0,8,0,0">
+                        <ProgressBar Value="{Binding HashProgress}"
+                                     Minimum="0"
+                                     Maximum="100"
+                                     Height="6"
+                                     Foreground="{DynamicResource PrimaryBrush}"
+                                     Background="{DynamicResource CardBrush}"/>
+                        <TextBlock Text="{Binding HashProgress, StringFormat={}{0:F0}%}"
+                                   FontSize="{StaticResource FontSizeSmall}"
+                                   Foreground="{DynamicResource ForegroundMutedBrush}"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,4,0,0"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Spacer -->
+                <Panel Grid.Row="1"/>
+
+                <!-- Verify Section -->
+                <StackPanel Grid.Row="2" Spacing="8">
+                    <Separator Background="{DynamicResource BorderBrush}" Margin="0,0,0,4"/>
+                    <TextBlock Text="{l:Translate Hash.Verify.Title}"
+                               Foreground="{DynamicResource ForegroundBrush}"
+                               FontWeight="SemiBold"/>
+                    <TextBlock Text="{l:Translate Hash.Verify.Hint}"
+                               FontSize="{StaticResource FontSizeSmall}"
+                               Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                    <Border Background="{DynamicResource CardBrush}"
+                            CornerRadius="{StaticResource RadiusLarge}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1"
+                            Padding="12,10">
+                        <TextBox Text="{Binding VerifyHash}"
+                                 FontFamily="Consolas"
+                                 TextWrapping="Wrap"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 Watermark="{l:Translate Hash.VerifyInput.Watermark}"/>
+                    </Border>
+                    <Button Cursor="Hand" Command="{Binding VerifyHashRelayCommand}"
+                            Classes="ghost"
+                            HorizontalAlignment="Left"
+                            Padding="12,8">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <heroIcons:HeroIcon Width="16" Height="16"
+                                                Type="CheckCircle"
+                                                Kind="Outline"
+                                                Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                            <TextBlock Text="{l:Translate Hash.VerifyButton.Label}"
+                                       Foreground="{DynamicResource ForegroundBrush}"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Grid>
+
+        <!-- Bottom Bar: Hash Button + Status -->
+        <Grid Grid.Row="3" ColumnDefinitions="*,Auto" Margin="0,15,0,0">
+
+            <!-- Status -->
+            <Border Grid.Column="0"
+                    Background="{DynamicResource CardBrush}"
+                    CornerRadius="{StaticResource RadiusLarge}"
+                    Padding="15,12"
+                    Margin="0,0,15,0"
+                    IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                <StackPanel Orientation="Horizontal">
+                    <heroIcons:HeroIcon Width="18" Height="18"
+                                        Type="CheckCircle"
+                                        Kind="Solid"
+                                        Foreground="{DynamicResource SuccessBrush}"
+                                        IsVisible="{Binding !IsError}"
+                                        Margin="0,0,10,0"/>
+                    <heroIcons:HeroIcon Width="18" Height="18"
+                                        Type="ExclamationCircle"
+                                        Kind="Solid"
+                                        Foreground="{DynamicResource DangerBrush}"
+                                        IsVisible="{Binding IsError}"
+                                        Margin="0,0,10,0"/>
+                    <TextBlock Text="{Binding StatusMessage}"
+                               Foreground="{DynamicResource ForegroundSecondaryBrush}"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Hash Button -->
+            <Button Grid.Column="1"
+                    Cursor="Hand" Command="{Binding ComputeHashCommand}"
+                    IsEnabled="{Binding CanHash}"
+                    Classes="primary"
+                    Padding="24,12">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <heroIcons:HeroIcon Width="18" Height="18"
+                                        Type="FingerPrint"
+                                        Kind="Outline"
+                                        Foreground="{DynamicResource PrimaryForegroundBrush}"
+                                        IsVisible="{Binding !IsHashing}"/>
+                    <TextBlock Text="{l:Translate Hash.ComputeButton.Label}"
+                               VerticalAlignment="Center"
+                               FontWeight="SemiBold"
+                               IsVisible="{Binding !IsHashing}"/>
+                    <TextBlock Text="{l:Translate Hash.ComputeButton.Loading}"
+                               VerticalAlignment="Center"
+                               FontWeight="SemiBold"
+                               IsVisible="{Binding IsHashing}"/>
+                </StackPanel>
+            </Button>
+        </Grid>
+    </Grid>
+</UserControl>

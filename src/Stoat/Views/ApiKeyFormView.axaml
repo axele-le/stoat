@@ -1,0 +1,133 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Stoat.Core.ViewModels"
+             xmlns:models="using:Stoat.Services.Models"
+             xmlns:local="clr-namespace:Stoat.Views"
+             xmlns:l="using:Stoat.Localization"
+             x:Class="Stoat.Views.ApiKeyFormView"
+             x:DataType="vm:ApiKeyFormViewModel"
+             HorizontalAlignment="Stretch">
+
+    <StackPanel Spacing="20" HorizontalAlignment="Stretch">
+
+        <!-- Name --> 
+        <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                CornerRadius="{StaticResource RadiusLarge}"
+                Padding="15">
+            <StackPanel Spacing="5">
+                <TextBlock Text="{l:Translate ApiKeyForm.NameLabel}"
+                           Foreground="{DynamicResource ForegroundBrush}"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,5"/>
+                <TextBox Text="{Binding NewKeyName}"
+                         Watermark="{l:Translate ApiKeyForm.NameWatermark}"
+                         Classes="cryptoInput"/>
+                <TextBlock Text="{l:Translate ApiKeyForm.NameHint}"
+                           Classes="hint"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Length and Type -->
+        <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                CornerRadius="{StaticResource RadiusLarge}"
+                Padding="15">
+            <StackPanel Spacing="15">
+                <TextBlock Text="{l:Translate ApiKeyForm.Configuration.Title}"
+                           Classes="sectionTitle"/>
+
+                <Grid ColumnDefinitions="*,20,*">
+                    <!-- Length Slider -->
+                    <StackPanel Grid.Column="0">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Grid.Column="0"
+                                       Text="{l:Translate ApiKeyForm.LengthLabel}"
+                                       Foreground="{DynamicResource ForegroundBrush}"
+                                       FontWeight="SemiBold"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding KeyLengthDisplay, StringFormat='{}{0} {l:Translate ApiKeyForm.Characters}'}"
+                                       Foreground="{DynamicResource PrimaryBrush}"
+                                       FontWeight="Bold"
+                                       FontSize="{StaticResource FontSizeNormal}"/>
+                        </Grid>
+                        <Slider Minimum="{Binding MinLength}"
+                                Maximum="{Binding MaxLength}"
+                                Value="{Binding KeyLength}"
+                                Foreground="{DynamicResource PrimaryBrush}"
+                                TickFrequency="1"
+                                IsSnapToTickEnabled="True"
+                                Margin="0,0,0,0"/>
+                        <Grid ColumnDefinitions="*,*" Margin="0,0,0,0">
+                            <TextBlock Grid.Column="0"
+                                       Text="{Binding MinLength}"
+                                       Foreground="{DynamicResource ForegroundMutedBrush}"
+                                       FontSize="{StaticResource FontSizeXSmall}"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding MaxLength}"
+                                       Foreground="{DynamicResource ForegroundMutedBrush}"
+                                       FontSize="{StaticResource FontSizeXSmall}"
+                                       HorizontalAlignment="Right"/>
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- Type Selector -->
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="{l:Translate ApiKeyForm.TypeLabel}"
+                                   Foreground="{DynamicResource ForegroundBrush}"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,10"/>
+                        <ComboBox ItemsSource="{Binding AvailableTypes}"
+                                  SelectedItem="{Binding SelectedType}"
+                                  HorizontalAlignment="Stretch">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="models:ApiKeyType">
+                                    <TextBlock Text="{Binding}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!-- Complexity and Prefix -->
+        <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                CornerRadius="{StaticResource RadiusLarge}"
+                Padding="15">
+            <StackPanel Spacing="15">
+                <TextBlock Text="{l:Translate ApiKeyForm.Format.Title}"
+                           Classes="sectionTitle"/>
+
+                <Grid ColumnDefinitions="*,20,*">
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="{l:Translate ApiKeyForm.ComplexityLabel}"
+                                   Foreground="{DynamicResource ForegroundBrush}"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,10"/>
+                        <ComboBox ItemsSource="{Binding AvailableComplexities}"
+                                  SelectedItem="{Binding SelectedComplexity}"
+                                  HorizontalAlignment="Stretch">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="models:ApiKeyComplexity">
+                                    <TextBlock Text="{Binding}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="{l:Translate ApiKeyForm.PrefixLabel}"
+                                   Foreground="{DynamicResource ForegroundBrush}"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,10"/>
+                        <TextBox Text="{Binding KeyPrefix}"
+                                 Watermark="{l:Translate ApiKeyForm.PrefixWatermark}"
+                                 Classes="cryptoInput"/>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!-- Bottom spacing for scroll comfort -->
+        <Panel Height="20"/>
+    </StackPanel>
+</UserControl>

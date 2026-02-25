@@ -1,0 +1,367 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Stoat.Core.ViewModels"
+             xmlns:models="using:Stoat.Services.Models"
+             xmlns:heroIcons="clr-namespace:HeroIconsAvalonia.Controls;assembly=HeroIconsAvalonia"
+             xmlns:local="clr-namespace:Stoat.Views"
+             xmlns:l="using:Stoat.Localization"
+             x:Class="Stoat.Views.ApiKeyView"
+             x:DataType="vm:ApiKeyViewModel">
+
+    <Panel>
+        <!-- List View (shown when form is closed) -->
+        <Grid Margin="30" RowDefinitions="Auto,*,Auto"
+              IsVisible="{Binding !IsFormOpen}">
+
+            <!-- Header -->
+            <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="15">
+                    <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                            CornerRadius="{StaticResource RadiusLarge}"
+                            Padding="12">
+                        <heroIcons:HeroIcon Type="Key" Kind="Outline" Width="24" Height="24" Foreground="{DynamicResource ApiKeyBrush}"/>
+                    </Border>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="{l:Translate MainWindow.Sidebar.ApiKeys}"
+                                   FontSize="{StaticResource FontSizePageTitle}"
+                                   FontWeight="Bold"
+                                   Foreground="{DynamicResource ForegroundBrush}"/>
+                        <TextBlock Text="{l:Translate ApiKey.Header.Subtitle}"
+                                   FontSize="{StaticResource FontSizeNormal}"
+                                   Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- New API Key Button -->
+                <Button Grid.Column="1"
+                        Cursor="Hand"
+                        Command="{Binding OpenNewApiKeyFormCommand}"
+                        Classes="primary"
+                        VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <heroIcons:HeroIcon Type="Plus" Width="16" Height="16" Foreground="{Binding $parent[Button].Foreground}"/>
+                        <TextBlock Text="{l:Translate ApiKey.NewButton.Label}"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+
+            <!-- Skeleton Loading -->
+            <StackPanel Grid.Row="1" Spacing="10" Margin="0,10,0,0"
+                        IsVisible="{Binding IsLoading}">
+                <!-- Skeleton Key Card 1 -->
+                <Border Background="{DynamicResource CardBrush}" CornerRadius="{StaticResource RadiusLarge}" Padding="15">
+                    <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                        <Border Classes="skeletonRound" Width="10" Height="10" Margin="0,0,15,0"/>
+                        <StackPanel Grid.Column="1" Spacing="6">
+                            <Border Classes="skeleton" Height="14" Width="160" HorizontalAlignment="Left"/>
+                            <Border Classes="skeleton" Height="12" Width="220" HorizontalAlignment="Left"/>
+                        </StackPanel>
+                        <Border Classes="skeleton" Grid.Column="2" Height="24" Width="90" Margin="15,0"/>
+                        <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="4">
+                            <Border Classes="skeleton" Width="28" Height="28"/>
+                            <Border Classes="skeleton" Width="28" Height="28"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                <!-- Skeleton Key Card 2 -->
+                <Border Background="{DynamicResource CardBrush}" CornerRadius="{StaticResource RadiusLarge}" Padding="15">
+                    <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                        <Border Classes="skeletonRound" Width="10" Height="10" Margin="0,0,15,0"/>
+                        <StackPanel Grid.Column="1" Spacing="6">
+                            <Border Classes="skeleton" Height="14" Width="140" HorizontalAlignment="Left"/>
+                            <Border Classes="skeleton" Height="12" Width="200" HorizontalAlignment="Left"/>
+                        </StackPanel>
+                        <Border Classes="skeleton" Grid.Column="2" Height="24" Width="100" Margin="15,0"/>
+                        <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="4">
+                            <Border Classes="skeleton" Width="28" Height="28"/>
+                            <Border Classes="skeleton" Width="28" Height="28"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </StackPanel>
+
+            <!-- Content -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                          IsVisible="{Binding !IsLoading}">
+                <ScrollViewer.Transitions>
+                    <Transitions>
+                        <DoubleTransition Property="Opacity" Duration="0:0:0.2"/>
+                    </Transitions>
+                </ScrollViewer.Transitions>
+                <StackPanel Spacing="20">
+
+                    <!-- Empty State -->
+                    <Border Classes="card" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                            IsVisible="{Binding !HasKeys}">
+                        <StackPanel HorizontalAlignment="Center" Spacing="12">
+                            <Border Background="{DynamicResource BackgroundSecondaryBrush}"
+                                    CornerRadius="{StaticResource RadiusRound}"
+                                    Padding="16"
+                                    HorizontalAlignment="Center">
+                                <heroIcons:HeroIcon Type="Key"
+                                                    Width="32" Height="32"
+                                                    Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                            </Border>
+                            <TextBlock Text="{l:Translate ApiKey.EmptyState.Title}"
+                                       Foreground="{DynamicResource ForegroundBrush}"
+                                       HorizontalAlignment="Center"
+                                       FontSize="{StaticResource FontSizeLarge}"
+                                       FontWeight="Medium"/>
+                            <TextBlock Text="{l:Translate ApiKey.EmptyState.Subtitle}"
+                                       Foreground="{DynamicResource ForegroundMutedBrush}"
+                                       HorizontalAlignment="Center"
+                                       FontSize="{StaticResource FontSizeNormal}"
+                                       TextWrapping="Wrap"
+                                       MaxWidth="400"
+                                       TextAlignment="Center"/>
+                            <Button Cursor="Hand"
+                                    Command="{Binding OpenNewApiKeyFormCommand}"
+                                    Classes="primary"
+                                    Margin="0,8,0,0"
+                                    HorizontalAlignment="Center">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <heroIcons:HeroIcon Type="Plus" Width="16" Height="16" Foreground="{Binding $parent[Button].Foreground}"/>
+                                    <TextBlock Text="{l:Translate ApiKey.NewButton.Label}"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Keys List -->
+                    <StackPanel Spacing="10" IsVisible="{Binding HasKeys}">
+                        <ItemsControl ItemsSource="{Binding Keys}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:ApiKeyItemViewModel">
+                                    <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                                            CornerRadius="{StaticResource RadiusLarge}"
+                                            Padding="15"
+                                            Margin="0,0,0,10">
+                                        <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto">
+                                            <!-- Status Indicator -->
+                                            <Panel Grid.Column="0" Width="10" Height="10" VerticalAlignment="Center" Margin="0,0,15,0">
+                                                <Ellipse Width="10" Height="10" Fill="{DynamicResource ProductionTextBrush}" IsVisible="{Binding IsProduction}"/>
+                                                <Ellipse Width="10" Height="10" Fill="{DynamicResource DevelopmentTextBrush}" IsVisible="{Binding IsDevelopment}"/>
+                                                <Ellipse Width="10" Height="10" Fill="{DynamicResource TestTextBrush}" IsVisible="{Binding IsTest}"/>
+                                            </Panel>
+
+                                            <!-- Key Info -->
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Name}"
+                                                           FontWeight="SemiBold"
+                                                           FontSize="{StaticResource FontSizeNormal}"
+                                                           Foreground="{DynamicResource ForegroundBrush}"/>
+                                                <TextBlock Text="{Binding MaskedPreview}"
+                                                           FontFamily="Consolas"
+                                                           FontSize="{StaticResource FontSizeSmall}"
+                                                           Foreground="{DynamicResource ForegroundMutedBrush}"
+                                                           Margin="0,3,0,0"/>
+                                            </StackPanel>
+
+                                            <!-- Type Badge - Production -->
+                                            <Border Grid.Column="2"
+                                                    CornerRadius="{StaticResource RadiusSmall}"
+                                                    Padding="10,5"
+                                                    Margin="15,0"
+                                                    VerticalAlignment="Center"
+                                                    Background="{DynamicResource ProductionBadgeBrush}"
+                                                    IsVisible="{Binding IsProduction}">
+                                                <TextBlock Text="PRODUCTION"
+                                                           FontSize="{StaticResource FontSizeXSmall}"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource ProductionTextBrush}"/>
+                                            </Border>
+
+                                            <!-- Type Badge - Test -->
+                                            <Border Grid.Column="2"
+                                                    CornerRadius="{StaticResource RadiusSmall}"
+                                                    Padding="10,5"
+                                                    Margin="15,0"
+                                                    VerticalAlignment="Center"
+                                                    Background="{DynamicResource TestBadgeBrush}"
+                                                    IsVisible="{Binding IsTest}">
+                                                <TextBlock Text="TEST"
+                                                           FontSize="{StaticResource FontSizeXSmall}"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource TestTextBrush}"/>
+                                            </Border>
+
+                                            <!-- Type Badge - Development -->
+                                            <Border Grid.Column="2"
+                                                    CornerRadius="{StaticResource RadiusSmall}"
+                                                    Padding="10,5"
+                                                    Margin="15,0"
+                                                    VerticalAlignment="Center"
+                                                    Background="{DynamicResource DevelopmentBadgeBrush}"
+                                                    IsVisible="{Binding IsDevelopment}">
+                                                <TextBlock Text="DEVELOPMENT"
+                                                           FontSize="{StaticResource FontSizeXSmall}"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource DevelopmentTextBrush}"/>
+                                            </Border>
+
+                                            <!-- Copy Button -->
+                                            <Button Grid.Column="3"
+                                                    Classes="icon"
+                                                    Cursor="Hand"
+                                                    Command="{Binding $parent[ItemsControl].((vm:ApiKeyViewModel)DataContext).CopyKeyCommand}"
+                                                    CommandParameter="{Binding Id}"
+                                                    ToolTip.Tip="{l:Translate ApiKey.Copy.Tooltip}"
+                                                    Margin="0,0,5,0">
+                                                <heroIcons:HeroIcon Type="ClipboardDocument" Width="16" Height="16" Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                                            </Button>
+
+                                            <!-- Delete Button -->
+                                            <Button Grid.Column="4"
+                                                    Classes="icon"
+                                                    Cursor="Hand"
+                                                    Command="{Binding $parent[ItemsControl].((vm:ApiKeyViewModel)DataContext).DeleteKeyCommand}"
+                                                    CommandParameter="{Binding Id}"
+                                                    ToolTip.Tip="{l:Translate ApiKey.Delete.Tooltip}">
+                                                <heroIcons:HeroIcon Type="Trash" Width="16" Height="16" Foreground="{DynamicResource DangerBrush}"/>
+                                            </Button>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Status Bar -->
+            <Border Grid.Row="2"
+                    Background="{DynamicResource BackgroundSecondaryBrush}"
+                    CornerRadius="{StaticResource RadiusLarge}"
+                    Padding="16,12"
+                    Margin="0,16,0,0"
+                    IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                <Grid ColumnDefinitions="Auto,*">
+                    <Panel Width="16" Height="16" Margin="0,0,12,0">
+                        <heroIcons:HeroIcon Type="CheckCircle" Width="16" Height="16"
+                                            Foreground="{DynamicResource SuccessBrush}"
+                                            IsVisible="{Binding !IsError}"/>
+                        <heroIcons:HeroIcon Type="ExclamationCircle" Width="16" Height="16"
+                                            Foreground="{DynamicResource DangerBrush}"
+                                            IsVisible="{Binding IsError}"/>
+                    </Panel>
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding StatusMessage}"
+                               FontSize="{StaticResource FontSizeBody}"
+                               Foreground="{DynamicResource ForegroundSecondaryBrush}"
+                               VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- Form View (shown when form is open) -->
+        <Grid Margin="30" RowDefinitions="Auto,*,Auto"
+              IsVisible="{Binding IsFormOpen}">
+
+            <!-- Form Header with close button -->
+            <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,20">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="15">
+                    <Border Background="{DynamicResource CardBrush}"
+                            CornerRadius="{StaticResource RadiusLarge}"
+                            Padding="12"
+                            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                        <heroIcons:HeroIcon Width="24" Height="24"
+                                            Type="Key"
+                                            Kind="Outline"
+                                            Foreground="{DynamicResource ApiKeyBrush}"/>
+                    </Border>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="{l:Translate ApiKey.NewButton.Label}"
+                                   FontSize="{StaticResource FontSizePageTitle}"
+                                   FontWeight="Bold"
+                                   Foreground="{DynamicResource ForegroundBrush}"/>
+                        <TextBlock Text="{l:Translate ApiKey.Form.Subtitle}"
+                                   FontSize="{StaticResource FontSizeNormal}"
+                                   Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Close Button (X) -->
+                <Button Grid.Column="1"
+                        Cursor="Hand"
+                        Command="{Binding CloseFormCommand}"
+                        Classes="icon"
+                        VerticalAlignment="Center"
+                        ToolTip.Tip="{l:Translate Common.Button.Close}">
+                    <heroIcons:HeroIcon Type="XMark" Width="24" Height="24" Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                </Button>
+            </Grid>
+
+            <!-- Form Content -->
+            <ScrollViewer Grid.Row="1"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled"
+                          Padding="0,20,0,0">
+                <ContentControl Content="{Binding FormViewModel}"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch">
+                    <ContentControl.ContentTemplate>
+                        <DataTemplate DataType="{x:Type vm:ApiKeyFormViewModel}">
+                            <local:ApiKeyFormView HorizontalAlignment="Stretch"/>
+                        </DataTemplate>
+                    </ContentControl.ContentTemplate>
+                </ContentControl>
+            </ScrollViewer>
+
+            <!-- Fixed Footer with Action Buttons -->
+            <Border Grid.Row="2"
+                    BorderBrush="{DynamicResource BorderBrush}"
+                    BorderThickness="0,0,0,0"
+                    Padding="20,15">
+                <Grid ColumnDefinitions="*,Auto">
+                    <!-- Status Message -->
+                    <Border Background="{DynamicResource BackgroundSecondaryBrush}"
+                            CornerRadius="{StaticResource RadiusSmall}"
+                            Padding="10,8"
+                            IsVisible="{Binding FormViewModel.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                            VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Panel Width="16" Height="16">
+                                <heroIcons:HeroIcon Type="CheckCircle" Width="16" Height="16"
+                                                    Foreground="{DynamicResource SuccessBrush}"
+                                                    IsVisible="{Binding FormViewModel.IsError, Converter={x:Static BoolConverters.Not}}"/>
+                                <heroIcons:HeroIcon Type="ExclamationCircle" Width="16" Height="16"
+                                                    Foreground="{DynamicResource DangerBrush}"
+                                                    IsVisible="{Binding FormViewModel.IsError}"/>
+                            </Panel>
+                            <TextBlock Text="{Binding FormViewModel.StatusMessage}"
+                                       Foreground="{DynamicResource ForegroundMutedBrush}"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Action Buttons -->
+                    <StackPanel Grid.Column="1"
+                                Orientation="Horizontal"
+                                Spacing="10">
+                        <Button Cursor="Hand"
+                                Command="{Binding FormViewModel.CancelCommand}"
+                                Classes="ghost">
+                            <TextBlock Text="{l:Translate Common.Button.Cancel}"/>
+                        </Button>
+                        <Button Cursor="Hand"
+                                Command="{Binding FormViewModel.GenerateKeyCommand}"
+                                IsEnabled="{Binding FormViewModel.IsGenerating, Converter={x:Static BoolConverters.Not}}"
+                                Classes="primary">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <heroIcons:HeroIcon Type="Key" Width="16" Height="16" Foreground="{Binding $parent[Button].Foreground}"
+                                                    IsVisible="{Binding FormViewModel.IsGenerating, Converter={x:Static BoolConverters.Not}}"/>
+                                <heroIcons:HeroIcon Type="ArrowPath" Width="16" Height="16" Foreground="{Binding $parent[Button].Foreground}"
+                                                    IsVisible="{Binding FormViewModel.IsGenerating}"/>
+                                <TextBlock Text="{l:Translate ApiKey.GenerateButton.Label}"
+                                           IsVisible="{Binding FormViewModel.IsGenerating, Converter={x:Static BoolConverters.Not}}"/>
+                                <TextBlock Text="{l:Translate ApiKey.GenerateButton.Loading}"
+                                           IsVisible="{Binding FormViewModel.IsGenerating}"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Panel>
+</UserControl>

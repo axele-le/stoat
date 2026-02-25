@@ -1,0 +1,179 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Styles.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <!-- ═══════════════════════════════════════════════════════════════════
+                     DARK THEME
+                     ═══════════════════════════════════════════════════════════════════ -->
+                <ResourceDictionary x:Key="Dark">
+                    <!-- Background Colors -->
+                    <Color x:Key="BackgroundColor">#171717</Color>
+                    <Color x:Key="BackgroundSecondaryColor">#121212</Color>
+
+                    <!-- Card Colors -->
+                    <Color x:Key="CardColor">#1F1F1F</Color>
+
+                    <!-- Foreground Colors -->
+                    <Color x:Key="ForegroundColor">#F2F2F2</Color>
+                    <Color x:Key="ForegroundSecondaryColor">#CCCCCC</Color>
+                    <Color x:Key="ForegroundMutedColor">#8C8C8C</Color>
+
+                    <!-- Primary/Accent Colors -->
+                    <Color x:Key="PrimaryColor">#24DBC9</Color>
+                    <Color x:Key="PrimaryHoverColor">#20C5B5</Color>
+                    <Color x:Key="PrimaryPressedColor">#3ADFCE</Color>
+                    <Color x:Key="PrimaryForegroundColor">#FFFFFF</Color>
+
+                    <!-- Secondary Colors -->
+                    <Color x:Key="SecondaryColor">#292929</Color>
+                    <Color x:Key="SecondaryHoverColor">#333333</Color>
+                    <Color x:Key="SecondaryPressedColor">#3D3D3D</Color>
+
+                    <!-- Status Colors -->
+                    <Color x:Key="SuccessColor">#20C55D</Color>
+                    <Color x:Key="SuccessHoverColor">#1BAF50</Color>
+                    <Color x:Key="SuccessPressedColor">#179943</Color>
+                    <Color x:Key="WarningColor">#E4B363</Color>
+                    <Color x:Key="WarningBackgroundColor">#15E4B363</Color>
+                    <Color x:Key="InfoColor">#60A5FA</Color>
+
+                    <!-- Danger -->
+                    <Color x:Key="DangerColor">#EF6461</Color>
+                    <Color x:Key="DangerBackgroundColor">#15EF6461</Color>
+                    <Color x:Key="DangerBorderColor">#30EF6461</Color>
+
+                    <!-- Success semi-transparent -->
+                    <Color x:Key="SuccessBackgroundColor">#1520C55D</Color>
+                    <Color x:Key="SuccessBorderColor">#3020C55D</Color>
+
+                    <!-- Semantic Foreground Colors -->
+                    <Color x:Key="DangerForegroundColor">#FFFFFF</Color>
+                    <Color x:Key="SuccessForegroundColor">#FFFFFF</Color>
+
+                    <!-- Feature Colors -->
+                    <Color x:Key="ApiKeyColor">#ffcc00</Color>
+                    <Color x:Key="PEMColor">#899FFD</Color>
+                    <Color x:Key="CSRColor">#FF7B72</Color>
+
+                    <!-- Feature Tint Backgrounds -->
+                    <Color x:Key="PEMTintColor">#15899FFD</Color>
+                    <Color x:Key="CSRTintColor">#15FF7B72</Color>
+                    <Color x:Key="PrimaryTintColor">#1524DBC9</Color>
+                    <Color x:Key="ApiKeyTintColor">#15ffcc00</Color>
+
+                    <!-- Badge Colors -->
+                    <Color x:Key="ProductionBadgeColor">#2820C55D</Color>
+                    <Color x:Key="ProductionTextColor">#32CD32</Color>
+                    <Color x:Key="DevelopmentBadgeColor">#28161ef9</Color>
+                    <Color x:Key="DevelopmentTextColor">#1653f9</Color>
+                    <Color x:Key="TestBadgeColor">#28f97316</Color>
+                    <Color x:Key="TestTextColor">#FFA500</Color>
+
+                    <!-- Profile Indicators -->
+                    <Color x:Key="ProfileActiveColor">#2d8a4e</Color>
+                    <Color x:Key="ProfileInactiveColor">#4a9eff</Color>
+
+                    <!-- Sidebar -->
+                    <Color x:Key="SidebarColor">#1A1A1A</Color>
+
+                    <!-- Warning Tint (semi-transparent) -->
+                    <Color x:Key="WarningTintColor">#33E4B363</Color>
+
+                    <!-- Toast -->
+                    <Color x:Key="ToastSuccessColor">#CC2d8a4e</Color>
+
+                    <!-- Border Colors -->
+                    <Color x:Key="BorderColor">#2E2E2E</Color>
+                    <Color x:Key="BorderActiveColor">#24DBC9</Color>
+                </ResourceDictionary>
+
+                <!-- ═══════════════════════════════════════════════════════════════════
+                     LIGHT THEME
+                     ═══════════════════════════════════════════════════════════════════ -->
+                <ResourceDictionary x:Key="Light">
+                    <!-- Background Colors -->
+                    <Color x:Key="BackgroundColor">#F2F2F2</Color>
+                    <Color x:Key="BackgroundSecondaryColor">#F8F8F5</Color>
+
+                    <!-- Sidebar -->
+                    <Color x:Key="SidebarColor">#ecece9</Color>
+
+                    <!-- Card Colors -->
+                    <Color x:Key="CardColor">#FFFFFF</Color>
+
+                    <!-- Foreground Colors -->
+                    <Color x:Key="ForegroundColor">#1A1A1A</Color>
+                    <Color x:Key="ForegroundSecondaryColor">#4A4A4A</Color>
+                    <Color x:Key="ForegroundMutedColor">#737373</Color>
+
+                    <!-- Primary/Accent Colors -->
+                    <Color x:Key="PrimaryColor">#c23836</Color>
+                    <Color x:Key="PrimaryHoverColor">#a5302e</Color>
+                    <Color x:Key="PrimaryPressedColor">#c84c4a</Color>
+                    <Color x:Key="PrimaryForegroundColor">#FFFFFF</Color>
+
+                    <!-- Secondary Colors -->
+                    <Color x:Key="SecondaryColor">#E5E5E5</Color>
+                    <Color x:Key="SecondaryHoverColor">#D9D9D9</Color>
+                    <Color x:Key="SecondaryPressedColor">#CCCCCC</Color>
+
+                    <!-- Status Colors -->
+                    <Color x:Key="SuccessColor">#6f8b48</Color>
+                    <Color x:Key="SuccessHoverColor">#647d41</Color>
+                    <Color x:Key="SuccessPressedColor">#7d975a</Color>
+                    <Color x:Key="WarningColor">#ed7b10</Color>
+                    <Color x:Key="WarningBackgroundColor">#15ed7b10</Color>
+                    <Color x:Key="InfoColor">#3B82F6</Color>
+
+                    <!-- Danger -->
+                    <Color x:Key="DangerColor">#D94845</Color>
+                    <Color x:Key="DangerBackgroundColor">#15D94845</Color>
+                    <Color x:Key="DangerBorderColor">#30D94845</Color>
+
+                    <!-- Success semi-transparent -->
+                    <Color x:Key="SuccessBackgroundColor">#151A9E4B</Color>
+                    <Color x:Key="SuccessBorderColor">#301A9E4B</Color>
+
+                    <!-- Semantic Foreground Colors -->
+                    <Color x:Key="DangerForegroundColor">#FFFFFF</Color>
+                    <Color x:Key="SuccessForegroundColor">#FFFFFF</Color>
+
+                    <!-- Feature Colors -->
+                    <Color x:Key="ApiKeyColor">#D4A800</Color>
+                    <Color x:Key="PEMColor">#5A72E0</Color>
+                    <Color x:Key="CSRColor">#D9534F</Color>
+
+                    <!-- Feature Tint Backgrounds -->
+                    <Color x:Key="PEMTintColor">#155A72E0</Color>
+                    <Color x:Key="CSRTintColor">#15D9534F</Color>
+                    <Color x:Key="PrimaryTintColor">#150FA897</Color>
+                    <Color x:Key="ApiKeyTintColor">#15D4A800</Color>
+
+                    <!-- Badge Colors -->
+                    <Color x:Key="ProductionBadgeColor">#281A9E4B</Color>
+                    <Color x:Key="ProductionTextColor">#1A9E4B</Color>
+                    <Color x:Key="TestBadgeColor">#28D4780A</Color>
+                    <Color x:Key="TestTextColor">#FFA500</Color>
+                    <Color x:Key="DevelopmentBadgeColor">#28161ef9</Color>
+                    <Color x:Key="DevelopmentTextColor">#1653f9</Color>
+
+                    <!-- Profile Indicators -->
+                    <Color x:Key="ProfileActiveColor">#2d8a4e</Color>
+                    <Color x:Key="ProfileInactiveColor">#3A7FCC</Color>
+
+                    <!-- Warning Tint (semi-transparent) -->
+                    <Color x:Key="WarningTintColor">#33C8952E</Color>
+
+                    <!-- Toast -->
+                    <Color x:Key="ToastSuccessColor">#CC2d8a4e</Color>
+
+                    <!-- Border Colors -->
+                    <Color x:Key="BorderColor">#D4D4D4</Color>
+                    <Color x:Key="BorderActiveColor">#0FA897</Color>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Styles.Resources>
+</Styles>

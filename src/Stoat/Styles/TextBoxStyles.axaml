@@ -1,0 +1,95 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Crypto Input TextBox -->
+    <Style Selector="TextBox.cryptoInput">
+        <Setter Property="Background" Value="{DynamicResource CardBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="12,10"/>
+        <Setter Property="CornerRadius" Value="{StaticResource RadiusMedium}"/>
+    </Style>
+    <Style Selector="TextBox.cryptoInput:pointerover /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="{DynamicResource BackgroundSecondaryBrush}"/>
+    </Style>
+    <Style Selector="TextBox.cryptoInput:focus /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="{DynamicResource BackgroundSecondaryBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
+    </Style>
+
+    <!-- Crypto Input Dark (for expanded sections) -->
+    <Style Selector="TextBox.cryptoInputDark">
+        <Setter Property="Background" Value="{DynamicResource BackgroundSecondaryBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="10,8"/>
+        <Setter Property="CornerRadius" Value="{StaticResource RadiusMedium}"/>
+    </Style>
+    <Style Selector="TextBox.cryptoInputDark:pointerover /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="{DynamicResource BackgroundSecondaryBrush}"/>
+    </Style>
+    <Style Selector="TextBox.cryptoInputDark:focus /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="{DynamicResource BackgroundSecondaryBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
+    </Style>
+
+    <!-- Crypto Text Area (multiline input/output areas) -->
+    <Style Selector="TextBox.cryptoArea">
+        <Setter Property="Background" Value="{DynamicResource BackgroundSecondaryBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="10"/>
+        <Setter Property="CornerRadius" Value="{StaticResource RadiusMedium}"/>
+    </Style>
+    <Style Selector="TextBox.cryptoArea:pointerover /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="{DynamicResource BackgroundSecondaryBrush}"/>
+    </Style>
+    <Style Selector="TextBox.cryptoArea:focus /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="{DynamicResource BackgroundSecondaryBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
+    </Style>
+    <Style Selector="TextBox.cryptoArea:focus">
+        <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
+    </Style>
+
+    <!-- Crypto Text Area Muted (for readonly output) -->
+    <Style Selector="TextBox.cryptoAreaMuted">
+        <Setter Property="Background" Value="{DynamicResource BackgroundSecondaryBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ForegroundSecondaryBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="10"/>
+        <Setter Property="CornerRadius" Value="{StaticResource RadiusMedium}"/>
+    </Style>
+    <Style Selector="TextBox.cryptoAreaMuted:pointerover /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="{DynamicResource BackgroundSecondaryBrush}"/>
+    </Style>
+    <Style Selector="TextBox.cryptoAreaMuted:focus /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="{DynamicResource BackgroundSecondaryBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
+    </Style>
+    <Style Selector="TextBox.cryptoAreaMuted:focus">
+        <Setter Property="Foreground" Value="{DynamicResource ForegroundSecondaryBrush}"/>
+    </Style>
+
+    <!-- Edit Input (inline editing) -->
+    <Style Selector="TextBox.editInput">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="8,4"/>
+        <Setter Property="FontSize" Value="{StaticResource FontSizeNormal}"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="CornerRadius" Value="{StaticResource RadiusSmall}"/>
+    </Style>
+    <Style Selector="TextBox.editInput:pointerover">
+        <Setter Property="Background" Value="{DynamicResource SecondaryBrush}"/>
+    </Style>
+    <Style Selector="TextBox.editInput:focus">
+        <Setter Property="Background" Value="{DynamicResource SecondaryBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
+    </Style>
+</Styles>

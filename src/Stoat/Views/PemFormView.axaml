@@ -1,0 +1,151 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Stoat.Core.ViewModels"
+             xmlns:heroIcons="clr-namespace:HeroIconsAvalonia.Controls;assembly=HeroIconsAvalonia"
+             xmlns:l="using:Stoat.Localization"
+             x:Class="Stoat.Views.PemFormView"
+             x:DataType="vm:PemFormViewModel"
+             HorizontalAlignment="Stretch">
+
+    <StackPanel Spacing="20" HorizontalAlignment="Stretch">
+
+        <!-- Tab Switcher -->
+        <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                CornerRadius="{StaticResource RadiusLarge}"
+                Padding="4"
+                HorizontalAlignment="Left">
+            <StackPanel Orientation="Horizontal" Spacing="4">
+                <Button Cursor="Hand" Command="{Binding SetGenerateModeCommand}"
+                        Classes.tabActive="{Binding IsGenerateMode}"
+                        Classes.tabInactive="{Binding !IsGenerateMode}"
+                        CornerRadius="{StaticResource RadiusMedium}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <heroIcons:HeroIcon Width="16" Height="16"
+                                            Type="Key"
+                                            Kind="Outline"
+                                            Foreground="{Binding $parent[Button].Foreground}"/>
+                        <TextBlock Text="{l:Translate PemForm.GenerateTab.Label}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Cursor="Hand" Command="{Binding SetImportModeCommand}"
+                        Classes.tabActive="{Binding IsImportMode}"
+                        Classes.tabInactive="{Binding !IsImportMode}"
+                        CornerRadius="{StaticResource RadiusMedium}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <heroIcons:HeroIcon Width="16" Height="16"
+                                            Type="ArrowUpTray"
+                                            Kind="Outline"
+                                            Foreground="{Binding $parent[Button].Foreground}"/>
+                        <TextBlock Text="{l:Translate PemForm.ImportTab.Label}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Border>
+
+        <!-- Generate Tab Content -->
+        <StackPanel Spacing="20" IsVisible="{Binding IsGenerateMode}">
+
+            <!-- Key Name -->
+            <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                    CornerRadius="{StaticResource RadiusLarge}"
+                    Padding="15">
+                <StackPanel Spacing="5">
+                    <TextBlock Text="{l:Translate PemForm.NameLabel}"
+                               Foreground="{DynamicResource ForegroundBrush}"
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,5"/>
+                    <TextBox Text="{Binding NewKeyName}"
+                             Watermark="{l:Translate PemForm.NameWatermark}"
+                             Classes="cryptoInput"/>
+                    <TextBlock Text="{l:Translate PemForm.NameHint}"
+                               Classes="hint"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Configuration -->
+            <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                    CornerRadius="{StaticResource RadiusLarge}"
+                    Padding="15">
+                <StackPanel Spacing="15">
+                    <TextBlock Text="{l:Translate PemForm.Configuration.Title}"
+                               Classes="sectionTitle"/>
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="{l:Translate Common.Label.Algorithm}"
+                                   Foreground="{DynamicResource ForegroundBrush}"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,5"/>
+                        <ComboBox ItemsSource="{Binding AvailableKeySizes}"
+                                  SelectedItem="{Binding SelectedKeySize}"
+                                  MinWidth="200">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding StringFormat='RSA-{0}'}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <!-- Import Tab Content -->
+        <StackPanel Spacing="20" IsVisible="{Binding IsImportMode}">
+
+            <!-- Drop Zone -->
+            <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                    CornerRadius="{StaticResource RadiusLarge}"
+                    Padding="15">
+                <StackPanel Spacing="15">
+                    <TextBlock Text="{l:Translate PemForm.ImportSection.Title}"
+                               Classes="sectionTitle"/>
+
+                    <Border x:Name="DropZone"
+                            Background="{DynamicResource BackgroundSecondaryBrush}"
+                            CornerRadius="{StaticResource RadiusLarge}"
+                            Padding="30"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="2"
+                            DragDrop.AllowDrop="True">
+                        <StackPanel HorizontalAlignment="Center" Spacing="10">
+                            <heroIcons:HeroIcon Type="ArrowUpTray"
+                                                Width="32" Height="32"
+                                                Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                            <TextBlock Text="{l:Translate PemForm.DropZone.DragText}"
+                                       Foreground="{DynamicResource ForegroundMutedBrush}"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="{l:Translate Common.Label.Or}"
+                                       Foreground="{DynamicResource ForegroundMutedBrush}"
+                                       HorizontalAlignment="Center"
+                                       FontSize="{StaticResource FontSizeSmall}"/>
+                            <Button Command="{Binding ImportKeyCommand}"
+                                    Cursor="Hand" Classes="secondary"
+                                    HorizontalAlignment="Center">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <heroIcons:HeroIcon Type="FolderOpen" Width="16" Height="16" Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                                    <TextBlock Text="{l:Translate Common.Button.Browse}"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Selected file feedback -->
+                    <Border Background="{DynamicResource BackgroundSecondaryBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                            CornerRadius="{StaticResource RadiusSmall}"
+                            Padding="10,8"
+                            IsVisible="{Binding SelectedFileName, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <heroIcons:HeroIcon Type="DocumentText" Width="16" Height="16"
+                                                Foreground="{DynamicResource PEMBrush}"/>
+                            <TextBlock Text="{Binding SelectedFileName}"
+                                       Foreground="{DynamicResource ForegroundSecondaryBrush}"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <!-- Bottom spacing for scroll comfort -->
+        <Panel Height="20"/>
+    </StackPanel>
+</UserControl>

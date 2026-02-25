@@ -1,0 +1,57 @@
+# Build results
+bin/
+obj/
+out/
+
+# Visual Studio cache/options
+.vs/
+.vscode/
+
+# Visual Studio Code
+*.code-workspace
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build lock file
+packages.lock.json
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+
+# Local history
+.history/
+.historyrc
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Avalonia
+.cache/
+.avalonia/
+
+# Test results
+TestResults/
+*.trx
+
+# ReSharper
+.resharper
+.resharper.user
+*.DotSettings.user
+
+# Coverage
+coverage/
+*.coverage

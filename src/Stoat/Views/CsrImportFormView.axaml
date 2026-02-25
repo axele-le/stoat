@@ -1,0 +1,356 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Stoat.Core.ViewModels"
+             xmlns:heroIcons="clr-namespace:HeroIconsAvalonia.Controls;assembly=HeroIconsAvalonia"
+             xmlns:local="clr-namespace:Stoat.Views" 
+             xmlns:l="using:Stoat.Localization"
+             x:Class="Stoat.Views.CsrImportFormView"
+             x:DataType="vm:CsrImportFormViewModel">
+
+    <StackPanel Spacing="20">
+
+        <!-- Import Mode Selection -->
+        <Border Classes="card" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+            <StackPanel Spacing="12">
+                <TextBlock Text="{l:Translate CsrImport.ImportMode.Title}"
+                           FontWeight="SemiBold"
+                           FontSize="{StaticResource FontSizeNormal}"
+                           Foreground="{DynamicResource ForegroundBrush}"/>
+
+                <StackPanel Spacing="8">
+                    <Button Cursor="Hand"
+                            Command="{Binding SetImportCsrOnlyCommand}"
+                            Background="Transparent"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            Padding="12,10"
+                            CornerRadius="{StaticResource RadiusLarge}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1"
+                            Classes.selected="{Binding ImportCsrOnly}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Panel Width="20" Height="20" VerticalAlignment="Center">
+                                <Border Width="20" Height="20" CornerRadius="10"
+                                        BorderBrush="{DynamicResource ForegroundMutedBrush}"
+                                        BorderThickness="2"
+                                        IsVisible="{Binding !ImportCsrOnly}"/>
+                                <Border Width="20" Height="20" CornerRadius="10"
+                                        BorderBrush="{DynamicResource CSRBrush}"
+                                        BorderThickness="2"
+                                        IsVisible="{Binding ImportCsrOnly}">
+                                    <Border Width="10" Height="10" CornerRadius="5"
+                                            Background="{DynamicResource CSRBrush}"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"/>
+                                </Border>
+                            </Panel>
+                            <StackPanel>
+                                <TextBlock Text="{l:Translate CsrImport.CsrOnly.Label}"
+                                           FontWeight="Medium"
+                                           Foreground="{DynamicResource ForegroundBrush}"/>
+                                <TextBlock Text="{l:Translate CsrImport.CsrOnly.Hint}"
+                                           FontSize="{StaticResource FontSizeSmall}"
+                                           Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Cursor="Hand"
+                            Command="{Binding SetImportCsrWithKeyCommand}"
+                            Background="Transparent"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            Padding="12,10"
+                            CornerRadius="{StaticResource RadiusLarge}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1"
+                            Classes.selected="{Binding ImportCsrWithKey}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Panel Width="20" Height="20" VerticalAlignment="Center">
+                                <Border Width="20" Height="20" CornerRadius="10"
+                                        BorderBrush="{DynamicResource ForegroundMutedBrush}"
+                                        BorderThickness="2"
+                                        IsVisible="{Binding !ImportCsrWithKey}"/>
+                                <Border Width="20" Height="20" CornerRadius="10"
+                                        BorderBrush="{DynamicResource CSRBrush}"
+                                        BorderThickness="2"
+                                        IsVisible="{Binding ImportCsrWithKey}">
+                                    <Border Width="10" Height="10" CornerRadius="5"
+                                            Background="{DynamicResource CSRBrush}"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"/>
+                                </Border>
+                            </Panel>
+                            <StackPanel>
+                                <TextBlock Text="{l:Translate CsrImport.CsrWithKey.Label}"
+                                           FontWeight="Medium"
+                                           Foreground="{DynamicResource ForegroundBrush}"/>
+                                <TextBlock Text="{l:Translate CsrImport.CsrWithKey.Hint}"
+                                           FontSize="{StaticResource FontSizeSmall}"
+                                           Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- File Selection -->
+        <Border Classes="card" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+            <StackPanel Spacing="16">
+                <StackPanel Spacing="4">
+                    <TextBlock Text="{l:Translate CsrImport.FileSelection.Title}"
+                               FontWeight="SemiBold"
+                               FontSize="{StaticResource FontSizeNormal}"
+                               Foreground="{DynamicResource ForegroundBrush}"/>
+                    <TextBlock Text="{l:Translate CsrImport.FileSelection.Hint}"
+                               FontSize="{StaticResource FontSizeXSmall}"
+                               Foreground="{DynamicResource ForegroundMutedBrush}"
+                               FontStyle="Italic"/>
+                </StackPanel>
+
+                <!-- CSR File -->
+                <StackPanel Spacing="6">
+                    <TextBlock Text="{l:Translate CsrImport.CsrFileLabel}"
+                               FontSize="{StaticResource FontSizeSmall}"
+                               Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,0">
+                        <Border Grid.Column="0"
+                                Background="{DynamicResource BackgroundSecondaryBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                                CornerRadius="{StaticResource RadiusMedium}"
+                                Padding="12,10"
+                                VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <heroIcons:HeroIcon Width="16" Height="16"
+                                                    Type="DocumentText"
+                                                    Kind="Outline"
+                                                    Foreground="{DynamicResource ForegroundMutedBrush}"
+                                                    IsVisible="{Binding !HasCsrFile}"/>
+                                <heroIcons:HeroIcon Width="16" Height="16"
+                                                    Type="DocumentCheck"
+                                                    Kind="Outline"
+                                                    Foreground="{DynamicResource CSRBrush}"
+                                                    IsVisible="{Binding HasCsrFile}"/>
+                                <TextBlock Text="{l:Translate CsrImport.NoFileSelected}"
+                                           FontSize="{StaticResource FontSizeBody}"
+                                           Foreground="{DynamicResource ForegroundMutedBrush}"
+                                           IsVisible="{Binding !HasCsrFile}"/>
+                                <TextBlock Text="{Binding CsrFileName}"
+                                           FontSize="{StaticResource FontSizeBody}"
+                                           Foreground="{DynamicResource ForegroundBrush}"
+                                           IsVisible="{Binding HasCsrFile}"/>
+                            </StackPanel>
+                        </Border>
+                        <Button Grid.Column="1"
+                                Cursor="Hand"
+                                Command="{Binding SelectCsrFileCommand}"
+                                Classes="ghost"
+                                Margin="10,0,0,0"
+                                VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <heroIcons:HeroIcon Width="14" Height="14"
+                                                    Type="FolderOpen"
+                                                    Kind="Outline"
+                                                    Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                                <TextBlock Text="{l:Translate Common.Button.Browse}" FontSize="{StaticResource FontSizeBody}"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                </StackPanel>
+
+                <!-- Private Key File (only when ImportCsrWithKey) -->
+                <StackPanel Spacing="6" IsVisible="{Binding ImportCsrWithKey}">
+                    <TextBlock Text="{l:Translate CsrImport.PrivateKeyFileLabel}"
+                               FontSize="{StaticResource FontSizeSmall}"
+                               Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Border Grid.Column="0"
+                                Background="{DynamicResource BackgroundSecondaryBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                                CornerRadius="{StaticResource RadiusMedium}"
+                                Padding="12,10"
+                                VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <heroIcons:HeroIcon Width="16" Height="16"
+                                                    Type="Key"
+                                                    Kind="Outline"
+                                                    Foreground="{DynamicResource ForegroundMutedBrush}"
+                                                    IsVisible="{Binding !HasKeyFile}"/>
+                                <heroIcons:HeroIcon Width="16" Height="16"
+                                                    Type="Key"
+                                                    Kind="Outline"
+                                                    Foreground="{DynamicResource SuccessBrush}"
+                                                    IsVisible="{Binding HasKeyFile}"/>
+                                <TextBlock Text="{l:Translate CsrImport.NoFileSelected}"
+                                           FontSize="{StaticResource FontSizeBody}"
+                                           Foreground="{DynamicResource ForegroundMutedBrush}"
+                                           IsVisible="{Binding !HasKeyFile}"/>
+                                <TextBlock Text="{Binding KeyFileName}"
+                                           FontSize="{StaticResource FontSizeBody}"
+                                           Foreground="{DynamicResource ForegroundBrush}"
+                                           IsVisible="{Binding HasKeyFile}"/>
+                            </StackPanel>
+                        </Border>
+                        <Button Grid.Column="1"
+                                Cursor="Hand"
+                                Command="{Binding SelectKeyFileCommand}"
+                                Classes="ghost"
+                                Margin="10,0,0,0"
+                                VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <heroIcons:HeroIcon Width="14" Height="14"
+                                                    Type="FolderOpen"
+                                                    Kind="Outline"
+                                                    Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                                <TextBlock Text="{l:Translate Common.Button.Browse}" FontSize="{StaticResource FontSizeBody}"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+
+                    <!-- Key pair match error -->
+                    <Border IsVisible="{Binding KeyPairMatchError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                            Background="{DynamicResource DangerBackgroundBrush}"
+                            CornerRadius="{StaticResource RadiusMedium}"
+                            Padding="10,6"
+                            Margin="0,4,0,0">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <heroIcons:HeroIcon Width="14" Height="14"
+                                                Type="ExclamationCircle"
+                                                Kind="Outline"
+                                                Foreground="{DynamicResource DangerBrush}"/>
+                            <TextBlock Text="{Binding KeyPairMatchError}"
+                                       FontSize="{StaticResource FontSizeSmall}"
+                                       Foreground="{DynamicResource DangerBrush}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Key pair match success -->
+                    <Border IsVisible="{Binding KeyPairMatch}"
+                            Background="{DynamicResource SuccessBackgroundBrush}"
+                            CornerRadius="{StaticResource RadiusMedium}"
+                            Padding="10,6"
+                            Margin="0,4,0,0">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <heroIcons:HeroIcon Width="14" Height="14"
+                                                Type="CheckCircle"
+                                                Kind="Outline"
+                                                Foreground="{DynamicResource SuccessBrush}"/>
+                            <TextBlock Text="{l:Translate CsrImport.KeyMatch.Message}"
+                                       FontSize="{StaticResource FontSizeSmall}"
+                                       Foreground="{DynamicResource SuccessBrush}"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Preview Card (shown after parsing) -->
+        <Border Classes="card" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                IsVisible="{Binding ShowPreview}">
+            <StackPanel Spacing="12">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <heroIcons:HeroIcon Width="18" Height="18"
+                                        Type="Eye"
+                                        Kind="Outline"
+                                        Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                    <TextBlock Text="{l:Translate CsrImport.Preview.Title}"
+                               FontWeight="SemiBold"
+                               FontSize="{StaticResource FontSizeNormal}"
+                               Foreground="{DynamicResource ForegroundBrush}"/>
+                </StackPanel>
+
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" Margin="0,4,0,0">
+                    <!-- CN -->
+                    <StackPanel Grid.Row="0" Grid.Column="0" Spacing="2" Margin="0,0,0,10">
+                        <TextBlock Text="{l:Translate CsrImport.Preview.CN}"
+                                   FontSize="{StaticResource FontSizeXSmall}"
+                                   Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                        <TextBlock Text="{Binding PreviewCommonName}"
+                                   FontSize="{StaticResource FontSizeBody}"
+                                   FontWeight="Medium"
+                                   Foreground="{DynamicResource ForegroundBrush}"/>
+                    </StackPanel>
+
+                    <!-- Algorithm -->
+                    <StackPanel Grid.Row="0" Grid.Column="1" Spacing="2" Margin="0,0,0,10">
+                        <TextBlock Text="{l:Translate Common.Label.Algorithm}"
+                                   FontSize="{StaticResource FontSizeXSmall}"
+                                   Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                        <TextBlock Text="{Binding PreviewAlgorithm}"
+                                   FontSize="{StaticResource FontSizeBody}"
+                                   FontWeight="Medium"
+                                   Foreground="{DynamicResource ForegroundBrush}"/>
+                    </StackPanel>
+
+                    <!-- Subject DN -->
+                    <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Spacing="2" Margin="0,0,0,10">
+                        <TextBlock Text="{l:Translate CsrImport.Preview.SubjectDN}"
+                                   FontSize="{StaticResource FontSizeXSmall}"
+                                   Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                        <TextBlock Text="{Binding PreviewSubjectDN}"
+                                   FontSize="{StaticResource FontSizeSmall}"
+                                   FontFamily="Consolas"
+                                   Foreground="{DynamicResource ForegroundSecondaryBrush}"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+
+                    <!-- SAN Count -->
+                    <StackPanel Grid.Row="2" Grid.Column="0" Spacing="2">
+                        <TextBlock Text="{l:Translate CsrImport.Preview.SANC}"
+                                   FontSize="{StaticResource FontSizeXSmall}"
+                                   Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                        <TextBlock Text="{Binding PreviewSanCount, StringFormat={}{0} {l:Translate CsrImport.Preview.ItemCountSuffix}}"
+                                   FontSize="{StaticResource FontSizeBody}"
+                                   Foreground="{DynamicResource ForegroundBrush}"/>
+                    </StackPanel>
+
+                    <!-- Has Private Key -->
+                    <StackPanel Grid.Row="2" Grid.Column="1" Spacing="2">
+                        <TextBlock Text="{l:Translate CsrImport.Preview.PrivateKey}"
+                                   FontSize="{StaticResource FontSizeXSmall}"
+                                   Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <heroIcons:HeroIcon Width="14" Height="14"
+                                                Type="CheckCircle" Kind="Solid"
+                                                Foreground="{DynamicResource SuccessBrush}"
+                                                IsVisible="{Binding PreviewHasPrivateKey}"/>
+                            <heroIcons:HeroIcon Width="14" Height="14"
+                                                Type="XCircle" Kind="Solid"
+                                                Foreground="{DynamicResource ForegroundMutedBrush}"
+                                                IsVisible="{Binding !PreviewHasPrivateKey}"/>
+                            <TextBlock Text="{l:Translate CsrImport.Preview.PrivateKeyIncluded}"
+                                       FontSize="{StaticResource FontSizeBody}"
+                                       Foreground="{DynamicResource SuccessBrush}"
+                                       IsVisible="{Binding PreviewHasPrivateKey}"/>
+                            <TextBlock Text="{l:Translate CsrImport.Preview.PrivateKeyNotIncluded}"
+                                       FontSize="{StaticResource FontSizeBody}"
+                                       Foreground="{DynamicResource ForegroundMutedBrush}"
+                                       IsVisible="{Binding !PreviewHasPrivateKey}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!-- Import Name -->
+        <Border Classes="card" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                IsVisible="{Binding ShowPreview}">
+            <StackPanel Spacing="8">
+                <TextBlock Text="{l:Translate CsrImport.ImportName.Label}"
+                           FontWeight="SemiBold"
+                           FontSize="{StaticResource FontSizeNormal}"
+                           Foreground="{DynamicResource ForegroundBrush}"/>
+                <TextBlock Text="{l:Translate CsrImport.ImportName.Hint}"
+                           FontSize="{StaticResource FontSizeSmall}"
+                           Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                <TextBox Text="{Binding ImportName}"
+                         Watermark="{l:Translate CsrImport.ImportName.Watermark}"
+                         Margin="0,4,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Bottom spacing for scroll comfort -->
+        <Panel Height="20"/>
+
+    </StackPanel>
+
+</UserControl>

@@ -1,0 +1,18 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:heroIcons="clr-namespace:HeroIconsAvalonia.Controls;assembly=HeroIconsAvalonia"
+             x:Class="Stoat.App">
+    <Application.Styles>
+        <FluentTheme />
+        <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
+        <StyleInclude Source="avares://Stoat/Styles/Tokens/Typography.axaml"/>
+        <StyleInclude Source="avares://Stoat/Styles/Tokens/Colors.axaml"/>
+        <StyleInclude Source="avares://Stoat/Styles/Tokens/Brushes.axaml"/>
+        <StyleInclude Source="avares://Stoat/Styles/BaseStyles.axaml"/>
+        <StyleInclude Source="avares://Stoat/Styles/ButtonStyles.axaml"/>
+        <StyleInclude Source="avares://Stoat/Styles/TextBoxStyles.axaml"/>
+        <StyleInclude Source="avares://Stoat/Styles/CardStyles.axaml"/>
+        <StyleInclude Source="avares://Stoat/Styles/TextBlockStyles.axaml"/>
+        <StyleInclude Source="avares://Stoat/Styles/SkeletonStyles.axaml"/>
+    </Application.Styles>
+</Application>

@@ -1,0 +1,295 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Stoat.Core.ViewModels"
+             xmlns:heroIcons="clr-namespace:HeroIconsAvalonia.Controls;assembly=HeroIconsAvalonia"
+             xmlns:l="using:Stoat.Localization"
+             x:Class="Stoat.Views.HomeView"
+             x:DataType="vm:HomeViewModel">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="30" Spacing="24">
+
+            <!-- ═══ Header ═══ -->
+            <StackPanel Orientation="Horizontal" Spacing="15">
+                <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                        CornerRadius="{StaticResource RadiusLarge}"
+                        Padding="12">
+                    <heroIcons:HeroIcon Width="24" Height="24"
+                                        Type="ShieldCheck"
+                                        Kind="Outline"
+                                        Foreground="{DynamicResource PrimaryBrush}"/>
+                </Border>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="{l:Translate Home.Title}"
+                               FontSize="{StaticResource FontSizePageTitle}"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource ForegroundBrush}"/>
+                    <TextBlock Text="{l:Translate Home.Subtitle}"
+                               FontSize="{StaticResource FontSizeNormal}"
+                               Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- ═══ Stats Row ═══ -->
+            <UniformGrid Columns="3" HorizontalAlignment="Stretch">
+
+                <!-- API Keys -->
+                <Border Classes="card" Margin="0,0,8,0" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="8">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <heroIcons:HeroIcon Width="18" Height="18"
+                                                Type="Key" Kind="Outline"
+                                                Foreground="{DynamicResource ApiKeyBrush}"/>
+                            <TextBlock Text="{l:Translate MainWindow.Sidebar.ApiKeys}"
+                                       FontSize="{StaticResource FontSizeBody}"
+                                       Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                        </StackPanel>
+                        <Panel Height="38">
+                            <Border Classes="skeleton" Height="32" Width="50"
+                                    HorizontalAlignment="Left"
+                                    IsVisible="{Binding IsLoading}"/>
+                            <TextBlock Text="{Binding ApiKeyCount}"
+                                       FontSize="32"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource ForegroundBrush}"
+                                       IsVisible="{Binding !IsLoading}"/>
+                        </Panel>
+                        <TextBlock Text="{l:Translate Home.Stats.ApiKeysLabel}"
+                                   FontSize="{StaticResource FontSizeSmall}"
+                                   Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- PEM Keys -->
+                <Border Classes="card" Margin="4,0,4,0" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="8">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <heroIcons:HeroIcon Width="18" Height="18"
+                                                Type="DocumentText" Kind="Outline"
+                                                Foreground="{DynamicResource PEMBrush}"/>
+                            <TextBlock Text="{l:Translate MainWindow.Sidebar.Pem}"
+                                       FontSize="{StaticResource FontSizeBody}"
+                                       Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                        </StackPanel>
+                        <Panel Height="38">
+                            <Border Classes="skeleton" Height="32" Width="50"
+                                    HorizontalAlignment="Left"
+                                    IsVisible="{Binding IsLoading}"/>
+                            <TextBlock Text="{Binding PemKeyCount}"
+                                       FontSize="32"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource ForegroundBrush}"
+                                       IsVisible="{Binding !IsLoading}"/>
+                        </Panel>
+                        <TextBlock Text="{l:Translate Home.Stats.PemKeysLabel}"
+                                   FontSize="{StaticResource FontSizeSmall}"
+                                   Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- CSR Generated -->
+                <Border Classes="card" Margin="8,0,0,0" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="8">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <heroIcons:HeroIcon Width="18" Height="18"
+                                                Type="DocumentCheck" Kind="Outline"
+                                                Foreground="{DynamicResource CSRBrush}"/>
+                            <TextBlock Text="{l:Translate MainWindow.Sidebar.Csr}"
+                                       FontSize="{StaticResource FontSizeBody}"
+                                       Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                        </StackPanel>
+                        <Panel Height="38">
+                            <Border Classes="skeleton" Height="32" Width="50"
+                                    HorizontalAlignment="Left"
+                                    IsVisible="{Binding IsLoading}"/>
+                            <TextBlock Text="{Binding CsrCount}"
+                                       FontSize="32"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource ForegroundBrush}"
+                                       IsVisible="{Binding !IsLoading}"/>
+                        </Panel>
+                        <TextBlock Text="{l:Translate Home.Stats.CsrLabel}"
+                                   FontSize="{StaticResource FontSizeSmall}"
+                                   Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                    </StackPanel>
+                </Border>
+
+            </UniformGrid>
+
+            <!-- ═══ Quick Actions ═══ -->
+            <Border Classes="card" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="{l:Translate Home.QuickActions.Title}"
+                               FontSize="{StaticResource FontSizeMedium}"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource ForegroundBrush}"/>
+
+                    <UniformGrid Columns="2" Rows="2">
+                        <!-- Encrypt -->
+                        <Button Command="{Binding NavigateToEncryptCommand}"
+                                Cursor="Hand"
+                                Background="Transparent"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Left"
+                                Padding="16,14"
+                                Margin="0,4,4,0"
+                                CornerRadius="{StaticResource RadiusLarge}">
+                            <Button.Styles>
+                                <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                    <Setter Property="Background" Value="{DynamicResource SecondaryBrush}"/>
+                                </Style>
+                            </Button.Styles>
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <Border Background="{DynamicResource PrimaryTintBrush}"
+                                        CornerRadius="{StaticResource RadiusLarge}"
+                                        Padding="10">
+                                    <heroIcons:HeroIcon Width="20" Height="20"
+                                                        Type="LockClosed" Kind="Outline"
+                                                        Foreground="{DynamicResource PrimaryBrush}"/>
+                                </Border>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="{l:Translate MainWindow.Sidebar.Encryption}"
+                                               FontSize="{StaticResource FontSizeNormal}"
+                                               FontWeight="Medium"
+                                               Foreground="{DynamicResource ForegroundBrush}"/>
+                                    <TextBlock Text="{l:Translate Home.QuickActions.EncryptDesc}"
+                                               FontSize="{StaticResource FontSizeSmall}"
+                                               Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- API Keys -->
+                        <Button Command="{Binding NavigateToApiKeysCommand}"
+                                Cursor="Hand"
+                                Background="Transparent"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Left"
+                                Padding="16,14"
+                                Margin="4,4,0,0"
+                                CornerRadius="{StaticResource RadiusLarge}">
+                            <Button.Styles>
+                                <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                    <Setter Property="Background" Value="{DynamicResource SecondaryBrush}"/>
+                                </Style>
+                            </Button.Styles>
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <Border Background="{DynamicResource ApiKeyTintBrush}"
+                                        CornerRadius="{StaticResource RadiusLarge}"
+                                        Padding="10">
+                                    <heroIcons:HeroIcon Width="20" Height="20"
+                                                        Type="Key" Kind="Outline"
+                                                        Foreground="{DynamicResource ApiKeyBrush}"/>
+                                </Border>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="{l:Translate MainWindow.Sidebar.ApiKeys}"
+                                               FontSize="{StaticResource FontSizeNormal}"
+                                               FontWeight="Medium"
+                                               Foreground="{DynamicResource ForegroundBrush}"/>
+                                    <TextBlock Text="{l:Translate Home.QuickActions.ApiKeysDesc}"
+                                               FontSize="{StaticResource FontSizeSmall}"
+                                               Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Button>
+
+                        
+                        <!-- PEM -->
+                        <Button Command="{Binding NavigateToPemCommand}"
+                                Cursor="Hand"
+                                Background="Transparent"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Left"
+                                Padding="16,14"
+                                Margin="0,0,4,4"
+                                CornerRadius="{StaticResource RadiusLarge}">
+                            <Button.Styles>
+                                <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                    <Setter Property="Background" Value="{DynamicResource SecondaryBrush}"/>
+                                </Style>
+                            </Button.Styles>
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <Border Background="{DynamicResource PEMTintBrush}"
+                                        CornerRadius="{StaticResource RadiusLarge}"
+                                        Padding="10">
+                                    <heroIcons:HeroIcon Width="20" Height="20"
+                                                        Type="DocumentText" Kind="Outline"
+                                                        Foreground="{DynamicResource PEMBrush}"/>
+                                </Border>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="{l:Translate MainWindow.Sidebar.Pem}"
+                                               FontSize="{StaticResource FontSizeNormal}"
+                                               FontWeight="Medium"
+                                               Foreground="{DynamicResource ForegroundBrush}"/>
+                                    <TextBlock Text="{l:Translate Home.QuickActions.PemKeysDesc}"
+                                               FontSize="{StaticResource FontSizeSmall}"
+                                               Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- CSR -->
+                        <Button Command="{Binding NavigateToCsrCommand}"
+                                Cursor="Hand"
+                                Background="Transparent"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Left"
+                                Padding="16,14"
+                                Margin="4,0,0,4"
+                                CornerRadius="{StaticResource RadiusLarge}">
+                            <Button.Styles>
+                                <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                    <Setter Property="Background" Value="{DynamicResource SecondaryBrush}"/>
+                                </Style>
+                            </Button.Styles>
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <Border Background="{DynamicResource CSRTintBrush}"
+                                        CornerRadius="{StaticResource RadiusLarge}"
+                                        Padding="10">
+                                    <heroIcons:HeroIcon Width="20" Height="20"
+                                                        Type="DocumentCheck" Kind="Outline"
+                                                        Foreground="{DynamicResource CSRBrush}"/>
+                                </Border>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="{l:Translate MainWindow.Sidebar.Csr}"
+                                               FontSize="{StaticResource FontSizeNormal}"
+                                               FontWeight="Medium"
+                                               Foreground="{DynamicResource ForegroundBrush}"/>
+                                    <TextBlock Text="{l:Translate Home.QuickActions.CsrDesc}"
+                                               FontSize="{StaticResource FontSizeSmall}"
+                                               Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Button>
+
+                    </UniformGrid>
+                </StackPanel>
+            </Border>
+
+            <!-- ═══ Security Status ═══ -->
+            <Border Background="{DynamicResource SuccessBackgroundBrush}"
+                    BorderBrush="{DynamicResource SuccessBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="{StaticResource RadiusLarge}"
+                    Padding="20">
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <heroIcons:HeroIcon Width="24" Height="24"
+                                        Type="ShieldCheck" Kind="Outline"
+                                        Foreground="{DynamicResource SuccessBrush}"/>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="{l:Translate Home.Security.Title}"
+                                   FontSize="{StaticResource FontSizeNormal}"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource SuccessBrush}"/>
+                        <TextBlock Text="{l:Translate Home.Security.Message}"
+                                   FontSize="{StaticResource FontSizeBody}"
+                                   Foreground="{DynamicResource ForegroundMutedBrush}"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -1,0 +1,620 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:heroIcons="clr-namespace:HeroIconsAvalonia.Controls;assembly=HeroIconsAvalonia"
+             xmlns:vm="using:Stoat.Core.ViewModels"
+             xmlns:converters="using:Stoat.Converters"
+             xmlns:local="clr-namespace:Stoat.Views"
+             xmlns:l="using:Stoat.Localization"
+             x:Class="Stoat.Views.EncryptionView"
+             x:DataType="vm:EncryptionViewModel">
+
+    <UserControl.Resources>
+        <converters:EnumDisplayConverter x:Key="EnumDisplayConverter"/>
+    </UserControl.Resources>
+
+    <Panel>
+    <Grid Margin="30" RowDefinitions="Auto,Auto,Auto,*,Auto,Auto">
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="15" Margin="0,0,0,10">
+            <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                    CornerRadius="{StaticResource RadiusLarge}"
+                    Padding="12">
+                <Panel>
+                    <heroIcons:HeroIcon Width="24" Height="24"
+                                        Type="LockClosed"
+                                        Kind="Outline"
+                                        Foreground="{DynamicResource PrimaryBrush}"
+                                        IsVisible="{Binding IsEncryptMode}"/>
+                    <heroIcons:HeroIcon Width="24" Height="24"
+                                        Type="LockOpen"
+                                        Kind="Outline"
+                                        Foreground="{DynamicResource SuccessBrush}"
+                                        IsVisible="{Binding !IsEncryptMode}"/>
+                </Panel>
+            </Border>
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="{l:Translate MainWindow.Sidebar.Encryption}"
+                           FontSize="{StaticResource FontSizePageTitle}"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource ForegroundBrush}"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{l:Translate Encryption.Header.ProfilePrefix}"
+                               FontSize="{StaticResource FontSizeNormal}"
+                               Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                    <TextBlock Text="{Binding ActiveProfileName}"
+                               FontSize="{StaticResource FontSizeNormal}"
+                               Foreground="{DynamicResource PrimaryBrush}"
+                               FontWeight="SemiBold"/>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Tab Bar: Mode toggle (left) + Preset dropdown (center) + Text/File tabs (right) -->
+        <Grid Grid.Row="1" ColumnDefinitions="Auto,Auto,*,Auto" Margin="0,0,0,10">
+            <!-- Mode Toggle (Encrypt / Decrypt) -->
+            <Border Grid.Column="0" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                    Background="{DynamicResource CardBrush}"
+                    CornerRadius="{StaticResource RadiusLarge}"
+                    Padding="4">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <Button Cursor="Hand" Command="{Binding SetEncryptModeCommand}"
+                            Classes.tabActive="{Binding IsEncryptMode}"
+                            Classes.tabInactive="{Binding !IsEncryptMode}"
+                            CornerRadius="{StaticResource RadiusMedium}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <heroIcons:HeroIcon Width="16" Height="16"
+                                                Type="LockClosed"
+                                                Kind="Outline"
+                                                Foreground="{Binding $parent[Button].Foreground}"/>
+                            <TextBlock Text="{l:Translate Encryption.Button.Encrypt}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Cursor="Hand" Command="{Binding SetDecryptModeCommand}"
+                            Classes.tabActive="{Binding !IsEncryptMode}"
+                            Classes.tabInactive="{Binding IsEncryptMode}"
+                            CornerRadius="{StaticResource RadiusMedium}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <heroIcons:HeroIcon Width="16" Height="16"
+                                                Type="LockOpen"
+                                                Kind="Outline"
+                                                Foreground="{Binding $parent[Button].Foreground}"/>
+                            <TextBlock Text="{l:Translate Encryption.Button.Decrypt}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+
+            <!-- Preset Dropdown + Save/Delete -->
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" Margin="12,0,0,0"
+                        VerticalAlignment="Center">
+                <ComboBox ItemsSource="{Binding PresetItems}"
+                          SelectedItem="{Binding SelectedPresetItem}"
+                          MinWidth="300"
+                          MaxWidth="300">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Button Cursor="Hand" Command="{Binding ShowSavePresetModalCommand}"
+                        Classes="ghost"
+                        ToolTip.Tip="{l:Translate Encryption.Preset.SaveTooltip}"
+                        Padding="6">
+                    <heroIcons:HeroIcon Width="18" Height="18"
+                                        Type="Plus"
+                                        Kind="Outline"
+                                        Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                </Button>
+                <Button Cursor="Hand" Command="{Binding DeletePresetCommand}"
+                        Classes="ghost"
+                        ToolTip.Tip="{l:Translate Encryption.Preset.DeleteTooltip}"
+                        Padding="6"
+                        IsVisible="{Binding IsPresetSelected}">
+                    <heroIcons:HeroIcon Width="18" Height="18"
+                                        Type="Trash"
+                                        Kind="Outline"
+                                        Foreground="{DynamicResource DangerBrush}"/>
+                </Button>
+                <Button Cursor="Hand" Command="{Binding UpdatePresetCommand}"
+                        Classes="ghost"
+                        ToolTip.Tip="{l:Translate Encryption.Preset.UpdateTooltip}"
+                        Padding="6"
+                        IsVisible="{Binding IsPresetModified}">
+                    <heroIcons:HeroIcon Width="18" Height="18"
+                                        Type="Check"
+                                        Kind="Outline"
+                                        Foreground="{DynamicResource SuccessBrush}"/>
+                </Button>
+            </StackPanel>
+
+            <!-- Text/File Tabs -->
+            <Border Grid.Column="3" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                    Background="{DynamicResource CardBrush}"
+                    CornerRadius="{StaticResource RadiusLarge}"
+                    Padding="4">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <Button Cursor="Hand" Command="{Binding SetTextModeCommand}"
+                            Classes.tabActive="{Binding IsTextMode}"
+                            Classes.tabInactive="{Binding !IsTextMode}"
+                            CornerRadius="{StaticResource RadiusMedium}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <heroIcons:HeroIcon Width="16" Height="16"
+                                                Type="DocumentText"
+                                                Kind="Outline"
+                                                Foreground="{Binding $parent[Button].Foreground}"/>
+                            <TextBlock Text="{l:Translate Common.Label.Text}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Cursor="Hand" Command="{Binding SetFileModeCommand}"
+                            Classes.tabActive="{Binding IsFileMode}"
+                            Classes.tabInactive="{Binding !IsFileMode}"
+                            CornerRadius="{StaticResource RadiusMedium}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <heroIcons:HeroIcon Width="16" Height="16"
+                                                Type="ArrowUpTray"
+                                                Kind="Outline"
+                                                Foreground="{Binding $parent[Button].Foreground}"/>
+                            <TextBlock Text="{l:Translate Common.Label.File}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- Encryption Settings (ShowSettings binding) -->
+        <Border Grid.Row="2"
+                Background="{DynamicResource CardBrush}"
+                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                CornerRadius="{StaticResource RadiusLarge}"
+                Padding="15"
+                Margin="0,0,0,0"
+                IsVisible="{Binding ShowSettings}">
+            <StackPanel Spacing="12">
+                <!-- Settings Header with Toggle -->
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
+                        <heroIcons:HeroIcon Width="18" Height="18"
+                                            Type="Cog6Tooth"
+                                            Kind="Outline"
+                                            Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                        <TextBlock Text="{Binding SettingsTitle}"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource ForegroundBrush}"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <ToggleSwitch Grid.Column="2"
+                                  IsChecked="{Binding ShowAdvancedSettings}"
+                                  OnContent="{l:Translate Encryption.Settings.AdvancedToggle}"
+                                  OffContent="{l:Translate Encryption.Settings.AdvancedToggle}"
+                                  VerticalAlignment="Center"/>
+                </Grid>
+
+                <!-- Row 1: Cipher, Key Size, Mode -->
+                <Grid ColumnDefinitions="*,20,*,20,*">
+                    <StackPanel Grid.Column="0" Spacing="4">
+                        <TextBlock Text="{l:Translate Encryption.Settings.AlgorithmLabel}"
+                                   FontSize="{StaticResource FontSizeSmall}"
+                                   Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                        <ComboBox ItemsSource="{Binding CipherOptions}"
+                                  SelectedItem="{Binding SelectedCipher}"
+                                  HorizontalAlignment="Stretch">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Converter={StaticResource EnumDisplayConverter}}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Spacing="4">
+                        <TextBlock Text="{l:Translate Encryption.Settings.KeySizeLabel}"
+                                   FontSize="{StaticResource FontSizeSmall}"
+                                   Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                        <ComboBox ItemsSource="{Binding KeySizeOptions}"
+                                  SelectedItem="{Binding SelectedKeySizeBits}"
+                                  HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="4" Spacing="4"
+                                IsVisible="{Binding ShowModeSelector}">
+                        <TextBlock Text="{l:Translate Encryption.Settings.ModeLabel}"
+                                   FontSize="{StaticResource FontSizeSmall}"
+                                   Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                        <ComboBox ItemsSource="{Binding ModeOptions}"
+                                  SelectedItem="{Binding SelectedMode}"
+                                  HorizontalAlignment="Stretch">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Converter={StaticResource EnumDisplayConverter}}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                </Grid>
+
+                <!-- 64-bit block cipher warning (encrypt mode only) -->
+                <Border IsVisible="{Binding Show64BitWarning}"
+                        Background="{DynamicResource WarningTintBrush}"
+                        CornerRadius="{StaticResource RadiusMedium}"
+                        Padding="10,6">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <heroIcons:HeroIcon Width="16" Height="16"
+                                            Type="ExclamationTriangle"
+                                            Kind="Outline"
+                                            Foreground="{DynamicResource WarningBrush}"/>
+                        <TextBlock Text="{l:Translate Encryption.Settings.64BitWarning}"
+                                   FontSize="{StaticResource FontSizeSmall}"
+                                   Foreground="{DynamicResource WarningBrush}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Row 2: KDF, KDF Hash, Iterations (visible when advanced) -->
+                <Grid ColumnDefinitions="*,20,*,20,*"
+                      IsVisible="{Binding ShowAdvancedSettings}">
+                    <StackPanel Grid.Column="0" Spacing="4">
+                        <TextBlock Text="{l:Translate Encryption.Settings.KdfLabel}"
+                                   FontSize="{StaticResource FontSizeSmall}"
+                                   Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                        <ComboBox ItemsSource="{Binding KdfOptions}"
+                                  SelectedItem="{Binding SelectedKdf}"
+                                  HorizontalAlignment="Stretch">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Converter={StaticResource EnumDisplayConverter}}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Spacing="4">
+                        <TextBlock Text="{l:Translate Encryption.Settings.KdfHashLabel}"
+                                   FontSize="{StaticResource FontSizeSmall}"
+                                   Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                        <ComboBox ItemsSource="{Binding KdfHashOptions}"
+                                  SelectedItem="{Binding SelectedKdfHash}"
+                                  HorizontalAlignment="Stretch">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Converter={StaticResource EnumDisplayConverter}}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Grid.Column="4" Spacing="4"
+                                IsVisible="{Binding ShowPbkdf2Options}">
+                        <TextBlock Text="{l:Translate Encryption.Settings.IterationsLabel}"
+                                   FontSize="{StaticResource FontSizeSmall}"
+                                   Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                        <NumericUpDown Value="{Binding SelectedIterations}"
+                                       Minimum="1"
+                                       Maximum="1000000"
+                                       Increment="10000"
+                                       FormatString="N0"
+                                       HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Row 3: Argon2 parameters (conditional) -->
+                <Grid ColumnDefinitions="*,20,*,20,*"
+                      IsVisible="{Binding ShowArgon2Options}">
+                    <StackPanel Grid.Column="0" Spacing="4">
+                        <TextBlock Text="{l:Translate Encryption.Settings.Argon2MemoryLabel}"
+                                   FontSize="{StaticResource FontSizeSmall}"
+                                   Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                        <NumericUpDown Value="{Binding Argon2MemoryKB}"
+                                       Minimum="1024"
+                                       Maximum="1048576"
+                                       Increment="1024"
+                                       FormatString="N0"
+                                       HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Spacing="4">
+                        <TextBlock Text="{l:Translate Encryption.Settings.Argon2ParallelismLabel}"
+                                   FontSize="{StaticResource FontSizeSmall}"
+                                   Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                        <NumericUpDown Value="{Binding Argon2Parallelism}"
+                                       Minimum="1"
+                                       Maximum="16"
+                                       Increment="1"
+                                       HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="4" Spacing="4">
+                        <TextBlock Text="{l:Translate Encryption.Settings.Argon2IterationsLabel}"
+                                   FontSize="{StaticResource FontSizeSmall}"
+                                   Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                        <NumericUpDown Value="{Binding Argon2Iterations}"
+                                       Minimum="1"
+                                       Maximum="100"
+                                       Increment="1"
+                                       HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Row 3: Scrypt parameters (conditional) -->
+                <Grid ColumnDefinitions="*,20,*,20,*"
+                      IsVisible="{Binding ShowScryptOptions}">
+                    <StackPanel Grid.Column="0" Spacing="4">
+                        <TextBlock Text="{l:Translate Encryption.Settings.ScryptNLabel}"
+                                   FontSize="{StaticResource FontSizeSmall}"
+                                   Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                        <NumericUpDown Value="{Binding ScryptN}"
+                                       Minimum="1024"
+                                       Maximum="1048576"
+                                       Increment="1024"
+                                       FormatString="N0"
+                                       HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Spacing="4">
+                        <TextBlock Text="{l:Translate Encryption.Settings.ScryptRLabel}"
+                                   FontSize="{StaticResource FontSizeSmall}"
+                                   Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                        <NumericUpDown Value="{Binding ScryptR}"
+                                       Minimum="1"
+                                       Maximum="32"
+                                       Increment="1"
+                                       HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="4" Spacing="4">
+                        <TextBlock Text="{l:Translate Encryption.Settings.ScryptPLabel}"
+                                   FontSize="{StaticResource FontSizeSmall}"
+                                   Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                        <NumericUpDown Value="{Binding ScryptP}"
+                                       Minimum="1"
+                                       Maximum="16"
+                                       Increment="1"
+                                       HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Reset Button -->
+                <Button Cursor="Hand" Command="{Binding ResetToDefaultsCommand}"
+                        Classes="ghost"
+                        HorizontalAlignment="Left"
+                        Padding="8,4">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <heroIcons:HeroIcon Width="14" Height="14"
+                                            Type="ArrowPath"
+                                            Kind="Outline"
+                                            Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                        <TextBlock Text="{l:Translate Encryption.Settings.ResetButton}"
+                                   FontSize="{StaticResource FontSizeSmall}"
+                                   Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Border>
+
+        <!-- Text Mode Content -->
+        <Grid Grid.Row="3"
+              ColumnDefinitions="*,20,*"
+              Margin="0,20,0,0"
+              IsVisible="{Binding IsTextMode}">
+
+            <!-- Input -->
+            <Grid Grid.Column="0" RowDefinitions="Auto,*">
+                <TextBlock Grid.Row="0"
+                           Text="{Binding InputLabel}"
+                           Foreground="{DynamicResource ForegroundBrush}"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,10"/>
+                <Border Grid.Row="1"
+                        Background="{DynamicResource CardBrush}"
+                        CornerRadius="{StaticResource RadiusLarge}"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="1">
+                    <TextBox Text="{Binding InputText}"
+                             Classes="cryptoArea"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"
+                             FontFamily="Consolas"
+                             Watermark="{Binding InputWatermark}"/>
+                </Border>
+            </Grid>
+
+            <!-- Output -->
+            <Grid Grid.Column="2" RowDefinitions="Auto,*">
+                <TextBlock Grid.Row="0"
+                           Text="{Binding OutputLabel}"
+                           Foreground="{DynamicResource ForegroundBrush}"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,10"/>
+                <Border Grid.Row="1"
+                        Background="{DynamicResource CardBrush}"
+                        CornerRadius="{StaticResource RadiusLarge}"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="1">
+                    <TextBox Text="{Binding OutputText}"
+                             Classes="cryptoAreaMuted"
+                             IsReadOnly="True"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"
+                             FontFamily="Consolas"
+                             Watermark="{l:Translate Encryption.Output.Watermark}"/>
+                </Border>
+            </Grid>
+        </Grid>
+
+        <!-- File Mode Content -->
+        <Border Grid.Row="3"
+                IsVisible="{Binding IsFileMode}"
+                Background="{DynamicResource CardBrush}"
+                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                CornerRadius="{StaticResource RadiusLarge}"
+                Padding="20"
+                Margin="0,20,0,0"
+                Name="DropZone">
+            <Button Command="{Binding SelectFileCommand}"
+                    Cursor="Hand" Background="Transparent"
+                    BorderBrush="{DynamicResource ForegroundMutedBrush}"
+                    BorderThickness="2"
+                    CornerRadius="{StaticResource RadiusLarge}"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    Padding="60">
+                <StackPanel HorizontalAlignment="Center" Spacing="15">
+                    <Panel HorizontalAlignment="Center">
+                        <heroIcons:HeroIcon Width="48" Height="48"
+                                            Type="ArrowUpTray"
+                                            Kind="Outline"
+                                            Foreground="{DynamicResource ForegroundSecondaryBrush}"
+                                            IsVisible="{Binding IsEncryptMode}"/>
+                        <heroIcons:HeroIcon Width="48" Height="48"
+                                            Type="ArrowDownTray"
+                                            Kind="Outline"
+                                            Foreground="{DynamicResource ForegroundSecondaryBrush}"
+                                            IsVisible="{Binding !IsEncryptMode}"/>
+                    </Panel>
+                    <TextBlock Text="{Binding DropZoneText}"
+                               FontSize="{StaticResource FontSizeLarge}"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource ForegroundBrush}"
+                               HorizontalAlignment="Center"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="{l:Translate Common.Label.Or}"
+                                   FontSize="{StaticResource FontSizeNormal}"
+                                   Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                        <TextBlock Text="{l:Translate Common.Label.ClickToSelect}"
+                                   FontSize="{StaticResource FontSizeNormal}"
+                                   Foreground="{DynamicResource PrimaryBrush}"/>
+                    </StackPanel>
+                    <TextBlock Text="{Binding SelectedFileName}"
+                               FontSize="{StaticResource FontSizeNormal}"
+                               Foreground="{DynamicResource SuccessBrush}"
+                               HorizontalAlignment="Center"
+                               IsVisible="{Binding SelectedFileName, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                    <TextBlock Text="{Binding DropZoneHint}"
+                               FontSize="{StaticResource FontSizeSmall}"
+                               Foreground="{DynamicResource ForegroundMutedBrush}"
+                               HorizontalAlignment="Center"
+                               FontStyle="Italic"
+                               IsVisible="{Binding !IsEncryptMode}"/>
+                </StackPanel>
+            </Button>
+        </Border>
+
+        <!-- Bottom Bar -->
+        <Grid Grid.Row="4"
+              ColumnDefinitions="*,Auto"
+              Margin="0,15,0,0">
+
+            <!-- Progress Bar (File mode) -->
+            <StackPanel Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Margin="0,0,20,0"
+                        IsVisible="{Binding IsProcessing}">
+                <ProgressBar Value="{Binding Progress}"
+                             Minimum="0"
+                             Maximum="100"
+                             Height="6"
+                             Foreground="{DynamicResource PrimaryBrush}"
+                             Background="{DynamicResource CardBrush}"/>
+                <TextBlock Text="{Binding Progress, StringFormat={}{0:F0}%}"
+                           FontSize="{StaticResource FontSizeSmall}"
+                           Foreground="{DynamicResource ForegroundMutedBrush}"
+                           HorizontalAlignment="Center"
+                           Margin="0,4,0,0"/>
+            </StackPanel>
+
+            <!-- Action Button: primary for encrypt, success for decrypt -->
+            <Button Grid.Column="1"
+                    Command="{Binding ProcessCommand}"
+                    Cursor="Hand"
+                    IsEnabled="{Binding CanProcess}"
+                    Classes.primary="{Binding IsEncryptMode}"
+                    Classes.success="{Binding !IsEncryptMode}"
+                    Padding="24,12">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <Panel IsVisible="{Binding !IsProcessing}">
+                        <heroIcons:HeroIcon Width="18" Height="18"
+                                            Type="LockClosed"
+                                            Kind="Outline"
+                                            Foreground="{DynamicResource PrimaryForegroundBrush}"
+                                            IsVisible="{Binding IsEncryptMode}"/>
+                        <heroIcons:HeroIcon Width="18" Height="18"
+                                            Type="LockOpen"
+                                            Kind="Outline"
+                                            Foreground="{DynamicResource ForegroundBrush}"
+                                            IsVisible="{Binding !IsEncryptMode}"/>
+                    </Panel>
+                    <TextBlock Text="{Binding ActionButtonText}"
+                               VerticalAlignment="Center"
+                               FontWeight="SemiBold"
+                               IsVisible="{Binding !IsProcessing}"/>
+                    <TextBlock Text="{Binding ProcessingText}"
+                               VerticalAlignment="Center"
+                               FontWeight="SemiBold"
+                               IsVisible="{Binding IsProcessing}"/>
+                </StackPanel>
+            </Button>
+        </Grid>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="5"
+                Background="{DynamicResource CardBrush}"
+                CornerRadius="{StaticResource RadiusLarge}"
+                Padding="15,12"
+                Margin="0,15,0,0"
+                IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <heroIcons:HeroIcon Grid.Column="0"
+                                    Width="18" Height="18"
+                                    Type="CheckCircle"
+                                    Kind="Solid"
+                                    Foreground="{DynamicResource SuccessBrush}"
+                                    IsVisible="{Binding !IsError}"
+                                    Margin="0,0,10,0"/>
+                <heroIcons:HeroIcon Grid.Column="0"
+                                    Width="18" Height="18"
+                                    Type="ExclamationCircle"
+                                    Kind="Solid"
+                                    Foreground="{DynamicResource DangerBrush}"
+                                    IsVisible="{Binding IsError}"
+                                    Margin="0,0,10,0"/>
+                <TextBlock Grid.Column="1"
+                           Text="{Binding StatusMessage}"
+                           Foreground="{DynamicResource ForegroundSecondaryBrush}"
+                           VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="2"
+                           Text="{Binding OutputFilePath}"
+                           Foreground="{DynamicResource ForegroundMutedBrush}"
+                           FontSize="{StaticResource FontSizeSmall}"
+                           VerticalAlignment="Center"
+                           IsVisible="{Binding OutputFilePath, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+            </Grid>
+        </Border>
+    </Grid>
+
+    <!-- Save Preset Modal Overlay -->
+    <Border IsVisible="{Binding IsShowingSavePresetModal}"
+            Background="{DynamicResource OverlayBrush}"
+            ZIndex="100">
+        <Border Background="{DynamicResource CardBrush}"
+                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                CornerRadius="{StaticResource RadiusLarge}"
+                Padding="24" MaxWidth="400" MinWidth="400"
+                HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel Spacing="16">
+                <TextBlock Text="{l:Translate Encryption.SavePresetModal.Title}"
+                           FontSize="{StaticResource FontSizeLarge}"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource ForegroundBrush}"/>
+                <TextBox Text="{Binding NewPresetName}"
+                         Watermark="{l:Translate Encryption.SavePresetModal.Watermark}"/>
+                <TextBlock Text="{Binding SavePresetError}"
+                           Foreground="{DynamicResource DangerBrush}"
+                           FontSize="{StaticResource FontSizeSmall}"
+                           IsVisible="{Binding SavePresetError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                    <Button Cursor="Hand" Command="{Binding CancelSavePresetCommand}"
+                            Classes="ghost"
+                            Content="{l:Translate Common.Button.Cancel}"/>
+                    <Button Cursor="Hand" Command="{Binding SavePresetCommand}"
+                            Classes="primary"
+                            Content="{l:Translate Common.Button.Save}"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Border>
+    </Panel>
+</UserControl>

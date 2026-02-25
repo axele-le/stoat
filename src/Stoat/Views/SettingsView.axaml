@@ -1,0 +1,1273 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:heroIcons="clr-namespace:HeroIconsAvalonia.Controls;assembly=HeroIconsAvalonia"
+             xmlns:vm="using:Stoat.Core.ViewModels"
+             x:Class="Stoat.Views.SettingsView"
+             xmlns:local="clr-namespace:Stoat.Views"
+             xmlns:l="using:Stoat.Localization"
+             x:DataType="vm:SettingsViewModel">
+
+    <Grid Margin="30" RowDefinitions="Auto,Auto,*,Auto">
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="15" Margin="0,0,0,20">
+            <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                    CornerRadius="{StaticResource RadiusLarge}"
+                    Padding="12">
+                <heroIcons:HeroIcon Width="24" Height="24"
+                                    Type="Cog6Tooth"
+                                    Kind="Outline"
+                                    Foreground="{DynamicResource PrimaryBrush}"/>
+            </Border>
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="{l:Translate Settings.Header.Title}"
+                           FontSize="{StaticResource FontSizePageTitle}"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource ForegroundBrush}"/>
+                <TextBlock Text="{l:Translate Settings.Header.Subtitle}"
+                           FontSize="{StaticResource FontSizeNormal}"
+                           Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Tab Buttons -->
+        <Border Grid.Row="1"
+                Background="{DynamicResource CardBrush}"
+                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                CornerRadius="{StaticResource RadiusLarge}"
+                Padding="4"
+                HorizontalAlignment="Left"
+                Margin="0,0,0,20">
+            <StackPanel Orientation="Horizontal" Spacing="4">
+                <Button x:Name="TabProfili"
+                        Cursor="Hand" Click="TabProfili_Click"
+                        Classes.tabActive="{Binding IsProfiliTabActive}"
+                        Classes.tabInactive="{Binding !IsProfiliTabActive}"
+                        CornerRadius="{StaticResource RadiusMedium}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <heroIcons:HeroIcon Width="16" Height="16"
+                                            Type="User"
+                                            Kind="Outline"
+                                            Foreground="{Binding $parent[Button].Foreground}"/>
+                        <TextBlock Text="{l:Translate Settings.Tab.Profiles}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="TabClient"
+                        Cursor="Hand" Click="TabClient_Click"
+                        Classes.tabActive="{Binding IsClientTabActive}"
+                        Classes.tabInactive="{Binding !IsClientTabActive}"
+                        CornerRadius="{StaticResource RadiusMedium}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <heroIcons:HeroIcon Width="16" Height="16"
+                                            Type="Cog6Tooth"
+                                            Kind="Outline"
+                                            Foreground="{Binding $parent[Button].Foreground}"/>
+                        <TextBlock Text="{l:Translate Settings.Tab.Client}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="TabExportImport"
+                        Cursor="Hand" Click="TabExportImport_Click"
+                        Classes.tabActive="{Binding IsExportImportTabActive}"
+                        Classes.tabInactive="{Binding !IsExportImportTabActive}"
+                        CornerRadius="{StaticResource RadiusMedium}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <heroIcons:HeroIcon Width="16" Height="16"
+                                            Type="ArrowsRightLeft"
+                                            Kind="Outline"
+                                            Foreground="{Binding $parent[Button].Foreground}"/>
+                        <TextBlock Text="{l:Translate Settings.Tab.ExportImport}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Border>
+
+        <!-- Tab Content -->
+        <ScrollViewer Grid.Row="2">
+            <Grid>
+                <!-- Profili Tab -->
+                <StackPanel x:Name="ProfiliContent" Spacing="15" IsVisible="{Binding IsProfiliTabActive}">
+                    <!-- Create Profile Section -->
+                    <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="{StaticResource RadiusLarge}" Padding="20">
+                        <StackPanel Spacing="12">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <heroIcons:HeroIcon Width="18" Height="18"
+                                                    Type="PlusCircle"
+                                                    Kind="Outline"
+                                                    Foreground="{DynamicResource PrimaryBrush}"/>
+                                <TextBlock Text="{l:Translate Settings.Profiles.CreateTitle}"
+                                           Foreground="{DynamicResource ForegroundBrush}"
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBox Grid.Column="0"
+                                         Text="{Binding NewProfileName}"
+                                         Watermark="{l:Translate Settings.Profiles.NameWatermark}"
+                                         Classes="cryptoInput"/>
+                                <Button Grid.Column="1"
+                                        Cursor="Hand"
+                                        Command="{Binding CreateProfileCommand}"
+                                        Margin="10,0,0,0"
+                                        Classes="primary"
+                                        Padding="16,10">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <heroIcons:HeroIcon Width="16" Height="16"
+                                                            Type="Plus"
+                                                            Kind="Outline"
+                                                            Foreground="{DynamicResource PrimaryForegroundBrush}"/>
+                                        <TextBlock Text="{l:Translate Common.Button.Create}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Existing Profiles -->
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="{l:Translate Settings.Profiles.ManageTitle}"
+                                   Foreground="{DynamicResource ForegroundBrush}"
+                                   FontWeight="SemiBold"
+                                   Margin="0,10,0,5"/>
+
+                        <ItemsControl ItemsSource="{Binding Profiles}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:ProfileItemViewModel">
+                                    <Border x:Name="ProfileCard"
+                                            Background="{DynamicResource CardBrush}"
+                                            CornerRadius="{StaticResource RadiusLarge}"
+                                            Padding="15"
+                                            Margin="0,0,0,8"
+                                            BorderBrush="{DynamicResource BorderBrush}" 
+                                            BorderThickness="1"
+                                            Classes.active="{Binding IsActive}"
+                                            Classes.editing="{Binding IsEditing}">
+                                        <StackPanel Spacing="12">
+                                            <!-- Profile Header Row -->
+                                            <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto">
+                                                <!-- Status Indicator -->
+                                                <Panel Grid.Column="0" Width="12" Height="12" Margin="0,0,12,0" VerticalAlignment="Center">
+                                                    <Border Width="12" Height="12" CornerRadius="{StaticResource RadiusMedium}" Background="{DynamicResource PrimaryBrush}"
+                                                            IsVisible="{Binding IsActive}"/>
+                                                    <Border Width="12" Height="12" CornerRadius="{StaticResource RadiusMedium}" Background="{DynamicResource ProfileInactiveBrush}"
+                                                            IsVisible="{Binding !IsActive}"/>
+                                                </Panel>
+
+                                                <!-- Profile Info (Normal Mode) -->
+                                                <StackPanel Grid.Column="1" VerticalAlignment="Center"
+                                                            IsVisible="{Binding !IsEditing}">
+                                                    <TextBlock Text="{Binding Name}"
+                                                               Foreground="{DynamicResource ForegroundBrush}"
+                                                               FontWeight="SemiBold"
+                                                               FontSize="{StaticResource FontSizeNormal}"/>
+                                                    <TextBlock Text="{l:Translate Settings.Profile.ActiveProfile}"
+                                                               Foreground="{DynamicResource PrimaryBrush}"
+                                                               FontSize="{StaticResource FontSizeXSmall}"
+                                                               IsVisible="{Binding IsActive}"/>
+                                                </StackPanel>
+
+                                                <!-- Profile Info (Edit Mode) -->
+                                                <TextBox Grid.Column="1"
+                                                         Text="{Binding EditingName}"
+                                                         IsVisible="{Binding IsEditing}"
+                                                         Classes="editInput"
+                                                         VerticalAlignment="Center"
+                                                         MinWidth="150"/>
+
+                                                <!-- Activate Button (for non-active profiles, hidden in edit mode) -->
+                                                <Button Grid.Column="2"
+                                                        Cursor="Hand" Content="{l:Translate Settings.MasterPassword.Status.Active}"
+                                                        Classes="secondary"
+                                                        Command="{Binding $parent[ItemsControl].((vm:SettingsViewModel)DataContext).SetActiveProfileCommand}"
+                                                        CommandParameter="{Binding}"
+                                                        Padding="12,6"
+                                                        Margin="0,0,8,0">
+                                                    <Button.IsVisible>
+                                                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                                            <Binding Path="!IsActive"/>
+                                                            <Binding Path="!IsEditing"/>
+                                                        </MultiBinding>
+                                                    </Button.IsVisible>
+                                                </Button>
+
+                                                <!-- Edit Button (Normal Mode) -->
+                                                <Button Grid.Column="3"
+                                                        Cursor="Hand" Classes="icon"
+                                                        Command="{Binding $parent[ItemsControl].((vm:SettingsViewModel)DataContext).StartEditingCommand}"
+                                                        CommandParameter="{Binding}"
+                                                        IsVisible="{Binding !IsEditing}"
+                                                        Margin="0,0,4,0">
+                                                    <heroIcons:HeroIcon Width="15" Height="15"
+                                                                        Type="Pencil"
+                                                                        Kind="Outline"
+                                                                        Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                                                </Button>
+
+                                                <!-- Confirm Edit Button (Edit Mode) -->
+                                                <Button Grid.Column="5"
+                                                        Cursor="Hand" Classes="iconActive"
+                                                        Command="{Binding $parent[ItemsControl].((vm:SettingsViewModel)DataContext).ConfirmEditCommand}"
+                                                        CommandParameter="{Binding}"
+                                                        IsVisible="{Binding IsEditing}"
+                                                        Padding="8,6">
+                                                    <heroIcons:HeroIcon Width="15" Height="15"
+                                                                        Type="Check"
+                                                                        Kind="Outline"
+                                                                        Foreground="{DynamicResource ForegroundBrush}"/>
+                                                </Button>
+
+                                                <!-- Expand/Collapse Button (hidden in edit mode) -->
+                                                <Button Grid.Column="4"
+                                                        Cursor="Hand" Classes="icon"
+                                                        Margin="0,0,4,0"
+                                                        IsVisible="{Binding !IsEditing}"
+                                                        Command="{Binding $parent[ItemsControl].((vm:SettingsViewModel)DataContext).ToggleExpandCommand}"
+                                                        CommandParameter="{Binding}">
+                                                    <Panel>
+                                                        <heroIcons:HeroIcon Width="15" Height="15"
+                                                                            Type="ChevronDown"
+                                                                            Kind="Outline"
+                                                                            Foreground="{DynamicResource ForegroundSecondaryBrush}"
+                                                                            IsVisible="{Binding !IsExpanded}"/>
+                                                        <heroIcons:HeroIcon Width="15" Height="15"
+                                                                            Type="ChevronUp"
+                                                                            Kind="Outline"
+                                                                            Foreground="{DynamicResource ForegroundSecondaryBrush}"
+                                                                            IsVisible="{Binding IsExpanded}"/>
+                                                    </Panel>
+                                                </Button>
+
+                                                <!-- Delete Button (hidden in edit mode) -->
+                                                <Button Grid.Column="5"
+                                                        Cursor="Hand" Classes="icon"
+                                                        Command="{Binding $parent[ItemsControl].((vm:SettingsViewModel)DataContext).DeleteProfileCommand}"
+                                                        CommandParameter="{Binding}"
+                                                        IsVisible="{Binding !IsEditing}">
+                                                    <heroIcons:HeroIcon Width="15" Height="15"
+                                                                        Type="Trash"
+                                                                        Kind="Outline"
+                                                                        Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                                                </Button>
+                                            </Grid>
+
+                                            <!-- Expanded Content (Salt & Secret) -->
+                                            <StackPanel Spacing="15" IsVisible="{Binding IsExpanded}" Margin="24,0,0,0">
+                                                <!-- Salt -->
+                                                <StackPanel Spacing="4">
+                                                    <TextBlock Text="{l:Translate Settings.Profile.SaltLabel}"
+                                                               Foreground="{DynamicResource ForegroundBrush}"
+                                                               FontSize="{StaticResource FontSizeBody}"
+                                                               FontWeight="SemiBold"/>
+                                                    <TextBlock Text="{l:Translate Settings.Profile.SaltHint}"
+                                                               Foreground="{DynamicResource ForegroundMutedBrush}"
+                                                               FontSize="{StaticResource FontSizeXSmall}"/>
+                                                    <Grid ColumnDefinitions="*,Auto,Auto,Auto">
+                                                        <TextBox Grid.Column="0"
+                                                                 Text="{Binding Salt}"
+                                                                 Watermark="{l:Translate Settings.Profile.SaltWatermark}"
+                                                                 PasswordChar="*"
+                                                                 IsVisible="{Binding !ShowSalt}"
+                                                                 Classes="cryptoInputDark"/>
+                                                        <TextBox Grid.Column="0"
+                                                                 Text="{Binding Salt}"
+                                                                 Watermark="{l:Translate Settings.Profile.SaltWatermark}"
+                                                                 IsVisible="{Binding ShowSalt}"
+                                                                 Classes="cryptoInputDark"/>
+                                                        <Button Grid.Column="1"
+                                                                Cursor="Hand" Classes="secondary"
+                                                                Command="{Binding $parent[ItemsControl].((vm:SettingsViewModel)DataContext).ToggleSaltVisibilityCommand}"
+                                                                CommandParameter="{Binding}"
+                                                                Padding="10,8"
+                                                                Margin="4,0,0,0"
+                                                                ToolTip.Tip="{l:Translate Common.Tooltip.ShowHide}">
+                                                            <heroIcons:HeroIcon Width="15" Height="15"
+                                                                                Type="Eye"
+                                                                                Kind="Outline"
+                                                                                Foreground="{DynamicResource ForegroundBrush}"/>
+                                                        </Button>
+                                                        <Button Grid.Column="2"
+                                                                Cursor="Hand" Classes="primary"
+                                                                Command="{Binding $parent[ItemsControl].((vm:SettingsViewModel)DataContext).SaveSaltCommand}"
+                                                                CommandParameter="{Binding}"
+                                                                Padding="10,8"
+                                                                Margin="4,0,0,0"
+                                                                ToolTip.Tip="{l:Translate Common.Tooltip.SaveChanges}">
+                                                            <heroIcons:HeroIcon Width="15" Height="15"
+                                                                                Type="Check"
+                                                                                Kind="Outline"
+                                                                                Foreground="{DynamicResource PrimaryForegroundBrush}"/>
+                                                        </Button>
+                                                        <Button Grid.Column="3"
+                                                                Cursor="Hand" Classes="secondary"
+                                                                Command="{Binding $parent[ItemsControl].((vm:SettingsViewModel)DataContext).RegenerateSaltCommand}"
+                                                                CommandParameter="{Binding}"
+                                                                Padding="10,8"
+                                                                Margin="4,0,0,0"
+                                                                ToolTip.Tip="{l:Translate Common.Tooltip.Regenerate}">
+                                                            <heroIcons:HeroIcon Width="15" Height="15"
+                                                                                Type="ArrowPath"
+                                                                                Kind="Outline"
+                                                                                Foreground="{DynamicResource ForegroundBrush}"/>
+                                                        </Button>
+                                                    </Grid>
+                                                </StackPanel>
+
+                                                <!-- Secret -->
+                                                <StackPanel Spacing="4">
+                                                    <TextBlock Text="{l:Translate Settings.Profile.SecretLabel}"
+                                                               Foreground="{DynamicResource ForegroundBrush}"
+                                                               FontSize="{StaticResource FontSizeBody}"
+                                                               FontWeight="SemiBold"/>
+                                                    <TextBlock Text="{l:Translate Settings.Profile.SecretHint}"
+                                                               Foreground="{DynamicResource ForegroundMutedBrush}"
+                                                               FontSize="{StaticResource FontSizeXSmall}"/>
+                                                    <Grid ColumnDefinitions="*,Auto,Auto,Auto">
+                                                        <TextBox Grid.Column="0"
+                                                                 Text="{Binding Secret}"
+                                                                 Watermark="{l:Translate Settings.Profile.SecretWatermark}"
+                                                                 PasswordChar="*"
+                                                                 IsVisible="{Binding !ShowSecret}"
+                                                                 Classes="cryptoInputDark"/>
+                                                        <TextBox Grid.Column="0"
+                                                                 Text="{Binding Secret}"
+                                                                 Watermark="{l:Translate Settings.Profile.SecretWatermark}"
+                                                                 IsVisible="{Binding ShowSecret}"
+                                                                 Classes="cryptoInputDark"/>
+                                                        <Button Grid.Column="1"
+                                                                Cursor="Hand" Classes="secondary"
+                                                                Command="{Binding $parent[ItemsControl].((vm:SettingsViewModel)DataContext).ToggleSecretVisibilityCommand}"
+                                                                CommandParameter="{Binding}"
+                                                                Padding="10,8"
+                                                                Margin="4,0,0,0"
+                                                                ToolTip.Tip="{l:Translate Common.Tooltip.ShowHide}">
+                                                            <heroIcons:HeroIcon Width="15" Height="15"
+                                                                                Type="Eye"
+                                                                                Kind="Outline"
+                                                                                Foreground="{DynamicResource ForegroundBrush}"/>
+                                                        </Button>
+                                                        <Button Grid.Column="2"
+                                                                Cursor="Hand" Classes="primary"
+                                                                Command="{Binding $parent[ItemsControl].((vm:SettingsViewModel)DataContext).SaveSecretCommand}"
+                                                                CommandParameter="{Binding}"
+                                                                Padding="10,8"
+                                                                Margin="4,0,0,0"
+                                                                ToolTip.Tip="{l:Translate Common.Tooltip.SaveChanges}">
+                                                            <heroIcons:HeroIcon Width="15" Height="15"
+                                                                                Type="Check"
+                                                                                Kind="Outline"
+                                                                                Foreground="{DynamicResource PrimaryForegroundBrush}"/>
+                                                        </Button>
+                                                        <Button Grid.Column="3"
+                                                                Cursor="Hand" Classes="secondary"
+                                                                Command="{Binding $parent[ItemsControl].((vm:SettingsViewModel)DataContext).RegenerateSecretCommand}"
+                                                                CommandParameter="{Binding}"
+                                                                Padding="10,8"
+                                                                Margin="4,0,0,0"
+                                                                ToolTip.Tip="{l:Translate Common.Tooltip.Regenerate}">
+                                                            <heroIcons:HeroIcon Width="15" Height="15"
+                                                                                Type="ArrowPath"
+                                                                                Kind="Outline"
+                                                                                Foreground="{DynamicResource ForegroundBrush}"/>
+                                                        </Button>
+                                                    </Grid>
+                                                </StackPanel>
+
+                                                <!-- Warning -->
+                                                <Border Background="{DynamicResource WarningBackgroundBrush}"
+                                                        CornerRadius="{StaticResource RadiusMedium}"
+                                                        Padding="12"
+                                                        BorderBrush="{DynamicResource WarningBrush}"
+                                                        BorderThickness="1,0,0,0">
+                                                    <StackPanel Orientation="Horizontal" Spacing="10">
+                                                        <heroIcons:HeroIcon Width="18" Height="18"
+                                                                            Type="ExclamationTriangle"
+                                                                            Kind="Outline"
+                                                                            Foreground="{DynamicResource PrimaryForegroundBrush}"
+                                                                            VerticalAlignment="Top"
+                                                                            Margin="0,2,0,0"/>
+                                                        <StackPanel Spacing="2">
+                                                            <TextBlock Text="{l:Translate Settings.Warning.Title}"
+                                                                       Foreground="{DynamicResource PrimaryForegroundBrush}"
+                                                                       FontWeight="SemiBold"
+                                                                       FontSize="{StaticResource FontSizeSmall}"/>
+                                                            <TextBlock Text="{l:Translate Settings.Warning.Message}"
+                                                                       Foreground="{DynamicResource PrimaryForegroundBrush}"
+                                                                       FontSize="{StaticResource FontSizeXSmall}"
+                                                                       TextWrapping="Wrap"/>
+                                                        </StackPanel>
+                                                    </StackPanel>
+                                                </Border>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Client Tab -->
+                <StackPanel x:Name="ClientContent" IsVisible="{Binding IsClientTabActive}" Spacing="20">
+                    <!-- Aspetto Section -->
+                    <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="{StaticResource RadiusLarge}" Padding="20">
+                        <StackPanel Spacing="20">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <heroIcons:HeroIcon Width="18" Height="18"
+                                                    Type="Swatch"
+                                                    Kind="Outline"
+                                                    Foreground="{DynamicResource PrimaryBrush}"
+                                                    VerticalAlignment="Center"/>
+                                <TextBlock Text="{l:Translate Settings.Appearance.Title}"
+                                           Foreground="{DynamicResource ForegroundBrush}"
+                                           FontWeight="SemiBold"
+                                           FontSize="{StaticResource FontSizeMedium}"/>
+                            </StackPanel>
+
+                            <!-- Tema -->
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="{l:Translate Settings.Theme.Label}"
+                                               Foreground="{DynamicResource ForegroundBrush}"
+                                               FontWeight="SemiBold"/>
+                                    <TextBlock Text="{l:Translate Settings.Theme.Hint}"
+                                               Foreground="{DynamicResource ForegroundMutedBrush}"
+                                               FontSize="{StaticResource FontSizeSmall}"/>
+                                </StackPanel>
+                                <ComboBox Grid.Column="1"
+                                          Width="150"
+                                          SelectedIndex="{Binding SelectedThemeIndex}">
+                                    <ComboBoxItem Content="{l:Translate Settings.Theme.Dark}"/>
+                                    <ComboBoxItem Content="{l:Translate Settings.Theme.Light}"/>
+                                    <ComboBoxItem Content="{l:Translate Settings.Theme.System}"/>
+                                </ComboBox>
+                            </Grid>
+
+                            <!-- Lingua -->
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="{l:Translate Settings.Language.Label}"
+                                               Foreground="{DynamicResource ForegroundBrush}"
+                                               FontWeight="SemiBold"/>
+                                    <TextBlock Text="{l:Translate Settings.Language.Hint}"
+                                               Foreground="{DynamicResource ForegroundMutedBrush}"
+                                               FontSize="{StaticResource FontSizeSmall}"/>
+                                </StackPanel>
+                                <ComboBox Grid.Column="1"
+                                          Width="150"
+                                          SelectedIndex="{Binding SelectedLanguageIndex}">
+                                    <ComboBoxItem Content="Italiano"/>
+                                    <ComboBoxItem Content="English"/>
+                                    <ComboBoxItem Content="Deutsch"/>
+                                    <ComboBoxItem Content="Français"/>
+                                    <ComboBoxItem Content="Español"/>
+                                    <ComboBoxItem Content="Polski"/>
+                                </ComboBox>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Sicurezza & Comportamento Section -->
+                    <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="{StaticResource RadiusLarge}" Padding="20">
+                        <StackPanel Spacing="20">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <heroIcons:HeroIcon Width="18" Height="18"
+                                                    Type="ShieldCheck"
+                                                    Kind="Outline"
+                                                    Foreground="{DynamicResource PrimaryBrush}"
+                                                    VerticalAlignment="Center"/>
+                                <TextBlock Text="{l:Translate Settings.Security.Title}"
+                                           Foreground="{DynamicResource ForegroundBrush}"
+                                           FontWeight="SemiBold"
+                                           FontSize="{StaticResource FontSizeMedium}"/>
+                            </StackPanel>
+
+                            <!-- Password Master -->
+                            <StackPanel Spacing="12">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="{l:Translate Settings.MasterPassword.Label}"
+                                                   Foreground="{DynamicResource ForegroundBrush}"
+                                                   FontWeight="SemiBold"/>
+                                        <TextBlock Text="{l:Translate Settings.MasterPassword.Hint}"
+                                                   Foreground="{DynamicResource ForegroundMutedBrush}"
+                                                   FontSize="{StaticResource FontSizeSmall}"/>
+                                    </StackPanel>
+                                    <!-- No master password: show setup button -->
+                                    <Button Grid.Column="1"
+                                            Cursor="Hand" Classes="primary"
+                                            Padding="14,8"
+                                            Command="{Binding StartSetupMasterPasswordCommand}"
+                                            IsVisible="{Binding !HasMasterPassword}">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <heroIcons:HeroIcon Width="14" Height="14"
+                                                                Type="LockClosed"
+                                                                Kind="Outline"
+                                                                Foreground="{DynamicResource PrimaryForegroundBrush}"/>
+                                            <TextBlock Text="{l:Translate Settings.MasterPassword.SetupButton}" VerticalAlignment="Center" FontSize="{StaticResource FontSizeSmall}"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <!-- Has master password: show change/remove buttons -->
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6"
+                                                IsVisible="{Binding HasMasterPassword}">
+                                        <Button Cursor="Hand" Classes="secondary"
+                                                Padding="14,8"
+                                                Command="{Binding StartChangeMasterPasswordCommand}">
+                                            <TextBlock Text="{l:Translate Common.Button.Change}" FontSize="{StaticResource FontSizeSmall}"/>
+                                        </Button>
+                                        <Button Cursor="Hand" Classes="secondary"
+                                                Padding="14,8"
+                                                Command="{Binding RemoveMasterPasswordCommand}">
+                                            <TextBlock Text="{l:Translate Common.Button.Remove}" FontSize="{StaticResource FontSizeSmall}"/>
+                                        </Button>
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- Setup Master Password Inline Form -->
+                                <Border Background="{DynamicResource BackgroundBrush}"
+                                        CornerRadius="{StaticResource RadiusMedium}"
+                                        Padding="16"
+                                        IsVisible="{Binding IsSettingMasterPassword}">
+                                    <StackPanel Spacing="12">
+                                        <TextBlock Text="{l:Translate Settings.MasterPassword.Setup.Title}"
+                                                   Foreground="{DynamicResource ForegroundBrush}"
+                                                   FontWeight="SemiBold"
+                                                   FontSize="{StaticResource FontSizeBody}"/>
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Text="{l:Translate Common.Label.Password}" Foreground="{DynamicResource ForegroundBrush}" FontSize="{StaticResource FontSizeSmall}"/>
+                                            <TextBox Text="{Binding MasterPassword}"
+                                                     PasswordChar="*"
+                                                     Watermark="{l:Translate Settings.MasterPassword.Setup.NewPasswordWatermark}"
+                                                     Classes="cryptoInput"/>
+                                        </StackPanel>
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Text="{l:Translate Settings.MasterPassword.Setup.ConfirmPassword}" Foreground="{DynamicResource ForegroundBrush}" FontSize="{StaticResource FontSizeSmall}"/>
+                                            <TextBox Text="{Binding MasterPasswordConfirm}"
+                                                     PasswordChar="*"
+                                                     Watermark="{l:Translate Settings.MasterPassword.Setup.ConfirmPasswordWatermark}"
+                                                     Classes="cryptoInput"/>
+                                        </StackPanel>
+                                        <!-- Password Strength -->
+                                        <StackPanel Spacing="4">
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <TextBlock Text="{l:Translate Settings.MasterPassword.StrengthLabel}"
+                                                           Foreground="{DynamicResource ForegroundMutedBrush}" FontSize="{StaticResource FontSizeXSmall}"/>
+                                                <TextBlock Text="{l:Translate Settings.MasterPassword.Strength.Weak}" FontSize="{StaticResource FontSizeXSmall}" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource DangerBrush}"
+                                                           IsVisible="{Binding IsMasterStrengthWeak}"/>
+                                                <TextBlock Text="{l:Translate Settings.MasterPassword.Strength.Medium}" FontSize="{StaticResource FontSizeXSmall}" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource WarningBrush}"
+                                                           IsVisible="{Binding IsMasterStrengthMedium}"/>
+                                                <TextBlock Text="{l:Translate Settings.MasterPassword.Strength.Strong}" FontSize="{StaticResource FontSizeXSmall}" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource SuccessBrush}"
+                                                           IsVisible="{Binding IsMasterStrengthStrong}"/>
+                                                <TextBlock Text="{l:Translate Settings.MasterPassword.Strength.VeryStrong}" FontSize="{StaticResource FontSizeXSmall}" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource PrimaryBrush}"
+                                                           IsVisible="{Binding IsMasterStrengthVeryStrong}"/>
+                                            </StackPanel>
+                                            <Grid ColumnDefinitions="*,*,*,*" Height="4">
+                                                <Panel Grid.Column="0" Margin="0,0,2,0">
+                                                    <Border CornerRadius="2" Background="{DynamicResource ProfileInactiveBrush}" Opacity="0.3"/>
+                                                    <Border CornerRadius="2" Background="{DynamicResource DangerBrush}" IsVisible="{Binding IsMasterStrengthWeak}"/>
+                                                    <Border CornerRadius="2" Background="{DynamicResource WarningBrush}" IsVisible="{Binding IsMasterStrengthMedium}"/>
+                                                    <Border CornerRadius="2" Background="{DynamicResource SuccessBrush}" IsVisible="{Binding IsMasterStrengthStrong}"/>
+                                                    <Border CornerRadius="2" Background="{DynamicResource PrimaryBrush}" IsVisible="{Binding IsMasterStrengthVeryStrong}"/>
+                                                </Panel>
+                                                <Panel Grid.Column="1" Margin="0,0,2,0">
+                                                    <Border CornerRadius="2" Background="{DynamicResource ProfileInactiveBrush}" Opacity="0.3"/>
+                                                    <Border CornerRadius="2" Background="{DynamicResource WarningBrush}" IsVisible="{Binding IsMasterStrengthMedium}"/>
+                                                    <Border CornerRadius="2" Background="{DynamicResource SuccessBrush}" IsVisible="{Binding IsMasterStrengthStrong}"/>
+                                                    <Border CornerRadius="2" Background="{DynamicResource PrimaryBrush}" IsVisible="{Binding IsMasterStrengthVeryStrong}"/>
+                                                </Panel>
+                                                <Panel Grid.Column="2" Margin="0,0,2,0">
+                                                    <Border CornerRadius="2" Background="{DynamicResource ProfileInactiveBrush}" Opacity="0.3"/>
+                                                    <Border CornerRadius="2" Background="{DynamicResource SuccessBrush}" IsVisible="{Binding IsMasterStrengthStrong}"/>
+                                                    <Border CornerRadius="2" Background="{DynamicResource PrimaryBrush}" IsVisible="{Binding IsMasterStrengthVeryStrong}"/>
+                                                </Panel>
+                                                <Panel Grid.Column="3">
+                                                    <Border CornerRadius="2" Background="{DynamicResource ProfileInactiveBrush}" Opacity="0.3"/>
+                                                    <Border CornerRadius="2" Background="{DynamicResource PrimaryBrush}" IsVisible="{Binding IsMasterStrengthVeryStrong}"/>
+                                                </Panel>
+                                            </Grid>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                                            <Button Cursor="Hand" Classes="secondary" Padding="14,8"
+                                                    Command="{Binding CancelMasterPasswordActionCommand}">
+                                                <TextBlock Text="{l:Translate Common.Button.Cancel}" FontSize="{StaticResource FontSizeSmall}"/>
+                                            </Button>
+                                            <Button Cursor="Hand" Classes="primary" Padding="14,8"
+                                                    Command="{Binding ConfirmSetupMasterPasswordCommand}">
+                                                <TextBlock Text="{l:Translate Common.Button.Save}" FontSize="{StaticResource FontSizeSmall}"/>
+                                            </Button>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Change Master Password Inline Form -->
+                                <Border Background="{DynamicResource BackgroundBrush}"
+                                        CornerRadius="{StaticResource RadiusMedium}"
+                                        Padding="16"
+                                        IsVisible="{Binding IsChangingMasterPassword}">
+                                    <StackPanel Spacing="12">
+                                        <TextBlock Text="{l:Translate Settings.MasterPassword.Change.Title}"
+                                                   Foreground="{DynamicResource ForegroundBrush}"
+                                                   FontWeight="SemiBold"
+                                                   FontSize="{StaticResource FontSizeBody}"/>
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Text="{l:Translate Settings.MasterPassword.Change.CurrentPassword}" Foreground="{DynamicResource ForegroundBrush}" FontSize="{StaticResource FontSizeSmall}"/>
+                                            <TextBox Text="{Binding CurrentMasterPassword}"
+                                                     PasswordChar="*"
+                                                     Watermark="{l:Translate Settings.MasterPassword.Change.CurrentPasswordWatermark}"
+                                                     Classes="cryptoInput"/>
+                                        </StackPanel>
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Text="{l:Translate Settings.MasterPassword.Setup.NewPassword}" Foreground="{DynamicResource ForegroundBrush}" FontSize="{StaticResource FontSizeSmall}"/>
+                                            <TextBox Text="{Binding MasterPassword}"
+                                                     PasswordChar="*"
+                                                     Watermark="{l:Translate Settings.MasterPassword.Setup.NewPasswordWatermark}"
+                                                     Classes="cryptoInput"/>
+                                        </StackPanel>
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Text="{l:Translate Settings.MasterPassword.Setup.ConfirmPassword}" Foreground="{DynamicResource ForegroundBrush}" FontSize="{StaticResource FontSizeSmall}"/>
+                                            <TextBox Text="{Binding MasterPasswordConfirm}"
+                                                     PasswordChar="*"
+                                                     Watermark="{l:Translate Settings.MasterPassword.Setup.ConfirmPasswordWatermark}"
+                                                     Classes="cryptoInput"/>
+                                        </StackPanel>
+                                        <!-- Password Strength -->
+                                        <StackPanel Spacing="4">
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <TextBlock Text="{l:Translate Settings.MasterPassword.StrengthLabel}"
+                                                           Foreground="{DynamicResource ForegroundMutedBrush}" FontSize="{StaticResource FontSizeXSmall}"/>
+                                                <TextBlock Text="{l:Translate Settings.MasterPassword.Strength.Weak}" FontSize="{StaticResource FontSizeXSmall}" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource DangerBrush}"
+                                                           IsVisible="{Binding IsMasterStrengthWeak}"/>
+                                                <TextBlock Text="{l:Translate Settings.MasterPassword.Strength.Medium}" FontSize="{StaticResource FontSizeXSmall}" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource WarningBrush}"
+                                                           IsVisible="{Binding IsMasterStrengthMedium}"/>
+                                                <TextBlock Text="{l:Translate Settings.MasterPassword.Strength.Strong}" FontSize="{StaticResource FontSizeXSmall}" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource SuccessBrush}"
+                                                           IsVisible="{Binding IsMasterStrengthStrong}"/>
+                                                <TextBlock Text="{l:Translate Settings.MasterPassword.Strength.VeryStrong}" FontSize="{StaticResource FontSizeXSmall}" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource PrimaryBrush}"
+                                                           IsVisible="{Binding IsMasterStrengthVeryStrong}"/>
+                                            </StackPanel>
+                                            <Grid ColumnDefinitions="*,*,*,*" Height="4">
+                                                <Panel Grid.Column="0" Margin="0,0,2,0">
+                                                    <Border CornerRadius="2" Background="{DynamicResource ProfileInactiveBrush}" Opacity="0.3"/>
+                                                    <Border CornerRadius="2" Background="{DynamicResource DangerBrush}" IsVisible="{Binding IsMasterStrengthWeak}"/>
+                                                    <Border CornerRadius="2" Background="{DynamicResource WarningBrush}" IsVisible="{Binding IsMasterStrengthMedium}"/>
+                                                    <Border CornerRadius="2" Background="{DynamicResource SuccessBrush}" IsVisible="{Binding IsMasterStrengthStrong}"/>
+                                                    <Border CornerRadius="2" Background="{DynamicResource PrimaryBrush}" IsVisible="{Binding IsMasterStrengthVeryStrong}"/>
+                                                </Panel>
+                                                <Panel Grid.Column="1" Margin="0,0,2,0">
+                                                    <Border CornerRadius="2" Background="{DynamicResource ProfileInactiveBrush}" Opacity="0.3"/>
+                                                    <Border CornerRadius="2" Background="{DynamicResource WarningBrush}" IsVisible="{Binding IsMasterStrengthMedium}"/>
+                                                    <Border CornerRadius="2" Background="{DynamicResource SuccessBrush}" IsVisible="{Binding IsMasterStrengthStrong}"/>
+                                                    <Border CornerRadius="2" Background="{DynamicResource PrimaryBrush}" IsVisible="{Binding IsMasterStrengthVeryStrong}"/>
+                                                </Panel>
+                                                <Panel Grid.Column="2" Margin="0,0,2,0">
+                                                    <Border CornerRadius="2" Background="{DynamicResource ProfileInactiveBrush}" Opacity="0.3"/>
+                                                    <Border CornerRadius="2" Background="{DynamicResource SuccessBrush}" IsVisible="{Binding IsMasterStrengthStrong}"/>
+                                                    <Border CornerRadius="2" Background="{DynamicResource PrimaryBrush}" IsVisible="{Binding IsMasterStrengthVeryStrong}"/>
+                                                </Panel>
+                                                <Panel Grid.Column="3">
+                                                    <Border CornerRadius="2" Background="{DynamicResource ProfileInactiveBrush}" Opacity="0.3"/>
+                                                    <Border CornerRadius="2" Background="{DynamicResource PrimaryBrush}" IsVisible="{Binding IsMasterStrengthVeryStrong}"/>
+                                                </Panel>
+                                            </Grid>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                                            <Button Cursor="Hand" Classes="secondary" Padding="14,8"
+                                                    Command="{Binding CancelMasterPasswordActionCommand}">
+                                                <TextBlock Text="{l:Translate Common.Button.Cancel}" FontSize="{StaticResource FontSizeSmall}"/>
+                                            </Button>
+                                            <Button Cursor="Hand" Classes="primary" Padding="14,8"
+                                                    Command="{Binding ConfirmChangeMasterPasswordCommand}">
+                                                <TextBlock Text="{l:Translate Common.Button.Save}" FontSize="{StaticResource FontSizeSmall}"/>
+                                            </Button>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+
+                            <!-- Blocco automatico -->
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="{l:Translate Settings.AutoLock.Label}"
+                                               Foreground="{DynamicResource ForegroundBrush}"
+                                               FontWeight="SemiBold"/>
+                                    <TextBlock Text="{l:Translate Settings.AutoLock.Hint}"
+                                               Foreground="{DynamicResource ForegroundMutedBrush}"
+                                               FontSize="{StaticResource FontSizeSmall}"/>
+                                </StackPanel>
+                                <ToggleSwitch Grid.Column="1"
+                                              IsChecked="{Binding AutoLockEnabled}"
+                                              IsEnabled="{Binding CanEnableAutoLock}"
+                                              OnContent="" OffContent=""/>
+                            </Grid>
+
+                            <!-- Timeout blocco -->
+                            <Grid ColumnDefinitions="*,Auto"
+                                  IsVisible="{Binding AutoLockEnabled}">
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="{l:Translate Settings.LockTimeout.Label}"
+                                               Foreground="{DynamicResource ForegroundBrush}"
+                                               FontWeight="SemiBold"/>
+                                    <TextBlock Text="{l:Translate Settings.LockTimeout.Hint}"
+                                               Foreground="{DynamicResource ForegroundMutedBrush}"
+                                               FontSize="{StaticResource FontSizeSmall}"/>
+                                </StackPanel>
+                                <ComboBox Grid.Column="1"
+                                          Width="150"
+                                          SelectedIndex="{Binding LockTimeoutIndex}">
+                                    <ComboBoxItem Content="{l:Translate Settings.LockTimeout.1Min}"/>
+                                    <ComboBoxItem Content="{l:Translate Settings.LockTimeout.5Min}"/>
+                                    <ComboBoxItem Content="{l:Translate Settings.LockTimeout.15Min}"/>
+                                    <ComboBoxItem Content="{l:Translate Settings.LockTimeout.30Min}"/>
+                                </ComboBox>
+                            </Grid>
+
+                            <!-- Cancella clipboard -->
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="{l:Translate Settings.ClearClipboard.Label}"
+                                               Foreground="{DynamicResource ForegroundBrush}"
+                                               FontWeight="SemiBold"/>
+                                    <TextBlock Text="{l:Translate Settings.ClearClipboard.Hint}"
+                                               Foreground="{DynamicResource ForegroundMutedBrush}"
+                                               FontSize="{StaticResource FontSizeSmall}"/>
+                                </StackPanel>
+                                <ToggleSwitch Grid.Column="1"
+                                              IsChecked="{Binding ClearClipboardEnabled}"
+                                              OnContent="" OffContent=""/>
+                            </Grid>
+
+                            <!-- Timeout clipboard -->
+                            <Grid ColumnDefinitions="*,Auto"
+                                  IsVisible="{Binding ClearClipboardEnabled}">
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="{l:Translate Settings.ClipboardTimeout.Label}"
+                                               Foreground="{DynamicResource ForegroundBrush}"
+                                               FontWeight="SemiBold"/>
+                                    <TextBlock Text="{l:Translate Settings.ClipboardTimeout.Hint}"
+                                               Foreground="{DynamicResource ForegroundMutedBrush}"
+                                               FontSize="{StaticResource FontSizeSmall}"/>
+                                </StackPanel>
+                                <ComboBox Grid.Column="1"
+                                          Width="150"
+                                          SelectedIndex="{Binding ClipboardTimeoutIndex}">
+                                    <ComboBoxItem Content="{l:Translate Settings.ClipboardTimeout.10s}"/>
+                                    <ComboBoxItem Content="{l:Translate Settings.ClipboardTimeout.30s}"/>
+                                    <ComboBoxItem Content="{l:Translate Settings.ClipboardTimeout.60s}"/>
+                                    <ComboBoxItem Content="{l:Translate Settings.ClipboardTimeout.120s}"/>
+                                </ComboBox>
+                            </Grid>
+
+                            <!-- Conferma operazioni -->
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="{l:Translate Settings.ConfirmOperations.Label}"
+                                               Foreground="{DynamicResource ForegroundBrush}"
+                                               FontWeight="SemiBold"/>
+                                    <TextBlock Text="{l:Translate Settings.ConfirmOperations.Hint}"
+                                               Foreground="{DynamicResource ForegroundMutedBrush}"
+                                               FontSize="{StaticResource FontSizeSmall}"/>
+                                </StackPanel>
+                                <ToggleSwitch Grid.Column="1"
+                                              IsChecked="{Binding ConfirmOperationsEnabled}"
+                                              OnContent="" OffContent=""/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <!-- Export/Import Tab -->
+                <StackPanel x:Name="ExportImportContent" IsVisible="{Binding IsExportImportTabActive}" Spacing="20">
+
+                    <!-- Sub-tab buttons -->
+                    <Border Background="{DynamicResource CardBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}" 
+                            BorderThickness="1"
+                            CornerRadius="{StaticResource RadiusLarge}"
+                            Padding="4"
+                            HorizontalAlignment="Left">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <Button x:Name="SubTabExport"
+                                    Cursor="Hand" Click="SubTabExport_Click"
+                                    Classes.tabActive="{Binding IsExportSubTabActive}"
+                                    Classes.tabInactive="{Binding !IsExportSubTabActive}"
+                                    CornerRadius="{StaticResource RadiusMedium}">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <heroIcons:HeroIcon Width="14" Height="14"
+                                                        Type="ArrowUpTray"
+                                                        Kind="Outline"
+                                                        Foreground="{Binding $parent[Button].Foreground}"/>
+                                    <TextBlock Text="{l:Translate Settings.Export.Button}" VerticalAlignment="Center" FontSize="{StaticResource FontSizeBody}"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="SubTabImport"
+                                    Cursor="Hand" Click="SubTabImport_Click"
+                                    Classes.tabActive="{Binding !IsExportSubTabActive}"
+                                    Classes.tabInactive="{Binding IsExportSubTabActive}"
+                                    CornerRadius="{StaticResource RadiusMedium}">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <heroIcons:HeroIcon Width="14" Height="14"
+                                                        Type="ArrowDownTray"
+                                                        Kind="Outline"
+                                                        Foreground="{Binding $parent[Button].Foreground}"/>
+                                    <TextBlock Text="{l:Translate Settings.Import.Button}" VerticalAlignment="Center" FontSize="{StaticResource FontSizeBody}"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Export Panel -->
+                    <StackPanel Spacing="15" IsVisible="{Binding IsExportSubTabActive}">
+
+                        <!-- Profile Selection -->
+                        <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="{StaticResource RadiusLarge}" Padding="20">
+                            <StackPanel Spacing="12">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <heroIcons:HeroIcon Width="18" Height="18"
+                                                        Type="UserGroup"
+                                                        Kind="Outline"
+                                                        Foreground="{DynamicResource PrimaryBrush}"/>
+                                    <TextBlock Text="{l:Translate Settings.Export.SelectProfiles}"
+                                               Foreground="{DynamicResource ForegroundBrush}"
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+
+                                <!-- Select/Deselect All -->
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Button Cursor="Hand" Classes="secondary" Padding="10,6"
+                                            Command="{Binding SelectAllForExportCommand}">
+                                        <TextBlock Text="{l:Translate Settings.Export.SelectAll}" FontSize="{StaticResource FontSizeSmall}"/>
+                                    </Button>
+                                    <Button Cursor="Hand" Classes="secondary" Padding="10,6"
+                                            Command="{Binding DeselectAllForExportCommand}">
+                                        <TextBlock Text="{l:Translate Settings.Export.DeselectAll}" FontSize="{StaticResource FontSizeSmall}"/>
+                                    </Button>
+                                </StackPanel>
+
+                                <!-- Profile Checkboxes -->
+                                <ItemsControl ItemsSource="{Binding Profiles}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:ProfileItemViewModel">
+                                            <Border Background="Transparent"
+                                                    Padding="8,6"
+                                                    Margin="0,2"
+                                                    CornerRadius="{StaticResource RadiusMedium}"
+                                                    Cursor="Hand">
+                                                <CheckBox IsChecked="{Binding IsSelectedForExport}"
+                                                          Foreground="{DynamicResource ForegroundBrush}">
+                                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                                        <Panel Width="8" Height="8">
+                                                            <Border Width="8" Height="8" CornerRadius="{StaticResource RadiusSmall}"
+                                                                    Background="{DynamicResource PrimaryBrush}"
+                                                                    IsVisible="{Binding IsActive}"/>
+                                                            <Border Width="8" Height="8" CornerRadius="{StaticResource RadiusSmall}"
+                                                                    Background="{DynamicResource ProfileInactiveBrush}"
+                                                                    IsVisible="{Binding !IsActive}"/>
+                                                        </Panel>
+                                                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                                                    </StackPanel>
+                                                </CheckBox>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Password & Export -->
+                        <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="{StaticResource RadiusLarge}" Padding="20">
+                            <StackPanel Spacing="15">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <heroIcons:HeroIcon Width="18" Height="18"
+                                                        Type="LockClosed"
+                                                        Kind="Outline"
+                                                        Foreground="{DynamicResource PrimaryBrush}"/>
+                                    <TextBlock Text="{l:Translate Settings.Export.PasswordLabel}"
+                                               Foreground="{DynamicResource ForegroundBrush}"
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+
+                                <TextBlock Text="{l:Translate Settings.Export.PasswordHint}"
+                                           Foreground="{DynamicResource ForegroundMutedBrush}"
+                                           FontSize="{StaticResource FontSizeSmall}"/>
+
+                                <!-- Password -->
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="{l:Translate Common.Label.Password}" Foreground="{DynamicResource ForegroundBrush}" FontSize="{StaticResource FontSizeSmall}"/>
+                                    <TextBox Text="{Binding ExportPassword}"
+                                             PasswordChar="*"
+                                             Watermark="{l:Translate Settings.Export.InsertPasswordHint}"
+                                             Classes="cryptoInput"/>
+                                </StackPanel>
+
+                                <!-- Confirm Password -->
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="{l:Translate Settings.MasterPassword.Setup.ConfirmPassword}" Foreground="{DynamicResource ForegroundBrush}" FontSize="{StaticResource FontSizeSmall}"/>
+                                    <TextBox Text="{Binding ExportPasswordConfirm}"
+                                             PasswordChar="*"
+                                             Watermark="{l:Translate Settings.Export.ConfirmPasswordWatermark}"
+                                             Classes="cryptoInput"/>
+                                </StackPanel>
+
+                                <!-- Password Strength Bar -->
+                                <StackPanel Spacing="4">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <TextBlock Text="{l:Translate Settings.Export.StrengthLabel}"
+                                                   Foreground="{DynamicResource ForegroundMutedBrush}" FontSize="{StaticResource FontSizeXSmall}"/>
+                                        <TextBlock Text="{l:Translate Settings.Export.Strength.Weak}" FontSize="{StaticResource FontSizeXSmall}" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource DangerBrush}"
+                                                   IsVisible="{Binding IsExportStrengthWeak}"/>
+                                        <TextBlock Text="{l:Translate Settings.Export.Strength.Medium}" FontSize="{StaticResource FontSizeXSmall}" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource WarningBrush}"
+                                                   IsVisible="{Binding IsExportStrengthMedium}"/>
+                                        <TextBlock Text="{l:Translate Settings.Export.Strength.Strong}" FontSize="{StaticResource FontSizeXSmall}" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource SuccessBrush}"
+                                                   IsVisible="{Binding IsExportStrengthStrong}"/>
+                                        <TextBlock Text="{l:Translate Settings.Export.Strength.VeryStrong}" FontSize="{StaticResource FontSizeXSmall}" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource PrimaryBrush}"
+                                                   IsVisible="{Binding IsExportStrengthVeryStrong}"/>
+                                    </StackPanel>
+                                    <Grid ColumnDefinitions="*,*,*,*" Height="4">
+                                        <Panel Grid.Column="0" Margin="0,0,2,0">
+                                            <Border CornerRadius="2" Background="{DynamicResource ProfileInactiveBrush}" Opacity="0.3"/>
+                                            <Border CornerRadius="2" Background="{DynamicResource DangerBrush}" IsVisible="{Binding IsExportStrengthWeak}"/>
+                                            <Border CornerRadius="2" Background="{DynamicResource WarningBrush}" IsVisible="{Binding IsExportStrengthMedium}"/>
+                                            <Border CornerRadius="2" Background="{DynamicResource SuccessBrush}" IsVisible="{Binding IsExportStrengthStrong}"/>
+                                            <Border CornerRadius="2" Background="{DynamicResource PrimaryBrush}" IsVisible="{Binding IsExportStrengthVeryStrong}"/>
+                                        </Panel>
+                                        <Panel Grid.Column="1" Margin="0,0,2,0">
+                                            <Border CornerRadius="2" Background="{DynamicResource ProfileInactiveBrush}" Opacity="0.3"/>
+                                            <Border CornerRadius="2" Background="{DynamicResource WarningBrush}" IsVisible="{Binding IsExportStrengthMedium}"/>
+                                            <Border CornerRadius="2" Background="{DynamicResource SuccessBrush}" IsVisible="{Binding IsExportStrengthStrong}"/>
+                                            <Border CornerRadius="2" Background="{DynamicResource PrimaryBrush}" IsVisible="{Binding IsExportStrengthVeryStrong}"/>
+                                        </Panel>
+                                        <Panel Grid.Column="2" Margin="0,0,2,0">
+                                            <Border CornerRadius="2" Background="{DynamicResource ProfileInactiveBrush}" Opacity="0.3"/>
+                                            <Border CornerRadius="2" Background="{DynamicResource SuccessBrush}" IsVisible="{Binding IsExportStrengthStrong}"/>
+                                            <Border CornerRadius="2" Background="{DynamicResource PrimaryBrush}" IsVisible="{Binding IsExportStrengthVeryStrong}"/>
+                                        </Panel>
+                                        <Panel Grid.Column="3">
+                                            <Border CornerRadius="2" Background="{DynamicResource ProfileInactiveBrush}" Opacity="0.3"/>
+                                            <Border CornerRadius="2" Background="{DynamicResource PrimaryBrush}" IsVisible="{Binding IsExportStrengthVeryStrong}"/>
+                                        </Panel>
+                                    </Grid>
+                                </StackPanel>
+
+                                <!-- Security Info -->
+                                <Border Background="{DynamicResource BackgroundBrush}"
+                                        CornerRadius="{StaticResource RadiusMedium}"
+                                        Padding="12">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <heroIcons:HeroIcon Width="16" Height="16"
+                                                            Type="ShieldCheck"
+                                                            Kind="Outline"
+                                                            Foreground="{DynamicResource PrimaryBrush}"
+                                                            VerticalAlignment="Center"/>
+                                        <TextBlock Text="{l:Translate Settings.Export.SecurityInfo}"
+                                                   Foreground="{DynamicResource ForegroundMutedBrush}"
+                                                   FontSize="{StaticResource FontSizeXSmall}"
+                                                   VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Export Button -->
+                                <Button Cursor="Hand" Classes="primary"
+                                        Command="{Binding ExportProfilesCommand}"
+                                        HorizontalAlignment="Right"
+                                        Padding="20,10">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <heroIcons:HeroIcon Width="16" Height="16"
+                                                            Type="ArrowUpTray"
+                                                            Kind="Outline"
+                                                            Foreground="{DynamicResource PrimaryForegroundBrush}"/>
+                                        <TextBlock Text="{l:Translate Settings.Export.Button}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Import Panel -->
+                    <StackPanel Spacing="15" IsVisible="{Binding !IsExportSubTabActive}">
+
+                        <!-- File Selection -->
+                        <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="{StaticResource RadiusLarge}" Padding="20">
+                            <StackPanel Spacing="12">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <heroIcons:HeroIcon Width="18" Height="18"
+                                                        Type="FolderOpen"
+                                                        Kind="Outline"
+                                                        Foreground="{DynamicResource PrimaryBrush}"/>
+                                    <TextBlock Text="{l:Translate Settings.Import.SelectFileImport}"
+                                               Foreground="{DynamicResource ForegroundBrush}"
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+
+                                <Button Cursor="Hand" Classes="secondary"
+                                        Command="{Binding BrowseImportFileCommand}"
+                                        Padding="16,10">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <heroIcons:HeroIcon Width="16" Height="16"
+                                                            Type="FolderOpen"
+                                                            Kind="Outline"
+                                                            Foreground="{DynamicResource ForegroundBrush}"/>
+                                        <TextBlock Text="{l:Translate Settings.Import.SelectFile}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <!-- File name display -->
+                                <TextBlock Text="{Binding ImportFileName}"
+                                           Foreground="{DynamicResource ForegroundSecondaryBrush}"
+                                           FontSize="{StaticResource FontSizeSmall}"
+                                           IsVisible="{Binding HasImportFile}"/>
+
+                                <!-- Preview Card -->
+                                <Border Background="{DynamicResource BackgroundBrush}"
+                                        CornerRadius="{StaticResource RadiusMedium}"
+                                        Padding="12"
+                                        IsVisible="{Binding HasImportFile}">
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Text="{l:Translate Settings.Import.FileInfo}"
+                                                   Foreground="{DynamicResource ForegroundBrush}"
+                                                   FontWeight="SemiBold"
+                                                   FontSize="{StaticResource FontSizeSmall}"/>
+                                        <TextBlock Text="{Binding ImportPreviewInfo}"
+                                                   Foreground="{DynamicResource ForegroundMutedBrush}"
+                                                   FontSize="{StaticResource FontSizeSmall}"
+                                                   TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Password & Options -->
+                        <Border Background="{DynamicResource CardBrush}" CornerRadius="{StaticResource RadiusLarge}" Padding="20"
+                                IsVisible="{Binding HasImportFile}">
+                            <StackPanel Spacing="15">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <heroIcons:HeroIcon Width="18" Height="18"
+                                                        Type="LockClosed"
+                                                        Kind="Outline"
+                                                        Foreground="{DynamicResource PrimaryBrush}"/>
+                                    <TextBlock Text="{l:Translate Settings.Import.OptionsPassword}"
+                                               Foreground="{DynamicResource ForegroundBrush}"
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+
+                                <!-- Password -->
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="{l:Translate Settings.Import.PasswordLabel}" Foreground="{DynamicResource ForegroundBrush}" FontSize="{StaticResource FontSizeSmall}"/>
+                                    <TextBox Text="{Binding ImportPassword}"
+                                             PasswordChar="*"
+                                             Watermark="{l:Translate Settings.Import.PasswordWatermark}"
+                                             Classes="cryptoInput"/>
+                                </StackPanel>
+
+                                <!-- Conflict Resolution -->
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="{l:Translate Settings.Import.ConflictLabel}"
+                                               Foreground="{DynamicResource ForegroundBrush}"
+                                               FontSize="{StaticResource FontSizeSmall}"
+                                               FontWeight="SemiBold"/>
+                                    <StackPanel Spacing="4">
+                                        <RadioButton GroupName="ConflictResolution"
+                                                     IsChecked="{Binding IsConflictRename}"
+                                                     Click="ConflictRename_Click"
+                                                     Foreground="{DynamicResource ForegroundBrush}">
+                                            <StackPanel Spacing="4">
+                                                <TextBlock Text="{l:Translate Settings.Import.ConflictRename}" FontSize="{StaticResource FontSizeBody}"/>
+                                                <TextBlock Text="{l:Translate Settings.Import.ConflictRenameHint}"
+                                                           Foreground="{DynamicResource ForegroundMutedBrush}" FontSize="{StaticResource FontSizeXSmall}"/>
+                                            </StackPanel>
+                                        </RadioButton>
+                                        <RadioButton GroupName="ConflictResolution"
+                                                     IsChecked="{Binding IsConflictReplace}"
+                                                     Click="ConflictReplace_Click"
+                                                     Foreground="{DynamicResource ForegroundBrush}">
+                                            <StackPanel Spacing="4">
+                                                <TextBlock Text="{l:Translate Settings.Import.ConflictReplace}" FontSize="{StaticResource FontSizeBody}"/>
+                                                <TextBlock Text="{l:Translate Settings.Import.ConflictReplaceHint}"
+                                                           Foreground="{DynamicResource ForegroundMutedBrush}" FontSize="{StaticResource FontSizeXSmall}"/>
+                                            </StackPanel>
+                                        </RadioButton>
+                                        <RadioButton GroupName="ConflictResolution"
+                                                     IsChecked="{Binding IsConflictSkip}"
+                                                     Click="ConflictSkip_Click"
+                                                     Foreground="{DynamicResource ForegroundBrush}">
+                                            <StackPanel Spacing="4">
+                                                <TextBlock Text="{l:Translate Settings.Import.ConflictSkip}" FontSize="{StaticResource FontSizeBody}"/>
+                                                <TextBlock Text="{l:Translate Settings.Import.ConflictSkipHint}"
+                                                           Foreground="{DynamicResource ForegroundMutedBrush}" FontSize="{StaticResource FontSizeXSmall}"/>
+                                            </StackPanel>
+                                        </RadioButton>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <!-- Import Button -->
+                                <Button Cursor="Hand" Classes="primary"
+                                        Command="{Binding ImportProfilesCommand}"
+                                        HorizontalAlignment="Right"
+                                        Padding="20,10">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <heroIcons:HeroIcon Width="16" Height="16"
+                                                            Type="ArrowDownTray"
+                                                            Kind="Outline"
+                                                            Foreground="{DynamicResource PrimaryForegroundBrush}"/>
+                                        <TextBlock Text="{l:Translate Settings.Import.Button}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="3"
+                Background="{DynamicResource CardBrush}"
+                CornerRadius="{StaticResource RadiusLarge}"
+                Padding="15,12"
+                Margin="0,15,0,0"
+                IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+            <Grid ColumnDefinitions="Auto,*">
+                <heroIcons:HeroIcon Grid.Column="0"
+                                    Width="18" Height="18"
+                                    Type="InformationCircle"
+                                    Kind="Solid"
+                                    Foreground="{DynamicResource PrimaryBrush}"
+                                    Margin="0,0,10,0"/>
+                <TextBlock Grid.Column="1"
+                           Text="{Binding StatusMessage}"
+                           Foreground="{DynamicResource ForegroundSecondaryBrush}"
+                           VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+
+        <!-- Recovery Key Modal Overlay -->
+        <Border Grid.Row="0" Grid.RowSpan="4"
+                Background="{DynamicResource OverlayBrush}"
+                ZIndex="100"
+                IsVisible="{Binding IsRecoveryKeyModalVisible}">
+            <Border Background="{DynamicResource CardBrush}"
+                    CornerRadius="{StaticResource RadiusXLarge}"
+                    Padding="32,28"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    MinWidth="420"
+                    MaxWidth="500"
+                    BorderBrush="{DynamicResource BorderBrush}"
+                    BorderThickness="1">
+                <StackPanel Spacing="20">
+                    <!-- Header -->
+                    <StackPanel HorizontalAlignment="Center" Spacing="10">
+                        <Border Background="{DynamicResource PrimaryTintBrush}"
+                                CornerRadius="24"
+                                Padding="12"
+                                HorizontalAlignment="Center">
+                            <heroIcons:HeroIcon Width="28" Height="28"
+                                                Type="Key"
+                                                Kind="Outline"
+                                                Foreground="{DynamicResource PrimaryBrush}"/>
+                        </Border>
+                        <TextBlock Text="{l:Translate Settings.RecoveryKey.Title}"
+                                   Foreground="{DynamicResource ForegroundBrush}"
+                                   FontSize="{StaticResource FontSizeLarge}"
+                                   FontWeight="Bold"
+                                   HorizontalAlignment="Center"/>
+                        <TextBlock Text="{l:Translate Settings.RecoveryKey.Hint}"
+                                   Foreground="{DynamicResource ForegroundMutedBrush}"
+                                   FontSize="{StaticResource FontSizeBody}"
+                                   TextWrapping="Wrap"
+                                   TextAlignment="Center"
+                                   MaxWidth="400"/>
+                    </StackPanel>
+
+                    <!-- Recovery Key Display -->
+                    <Border Background="{DynamicResource BackgroundBrush}"
+                            CornerRadius="{StaticResource RadiusLarge}"
+                            Padding="16,12">
+                        <TextBlock Text="{Binding RecoveryKeyDisplay}"
+                                   Foreground="{DynamicResource PrimaryBrush}"
+                                   FontSize="{StaticResource FontSizeSubheading}"
+                                   FontWeight="Bold"
+                                   FontFamily="Consolas, monospace"
+                                   HorizontalAlignment="Center"
+                                   TextAlignment="Center"
+                                   TextWrapping="Wrap"/>
+                    </Border>
+
+                    <!-- Copy Button -->
+                    <Button Cursor="Hand" Classes="secondary"
+                            Command="{Binding CopyRecoveryKeyCommand}"
+                            HorizontalAlignment="Center"
+                            Padding="16,10">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <heroIcons:HeroIcon Width="16" Height="16"
+                                                Type="Clipboard"
+                                                Kind="Outline"
+                                                Foreground="{DynamicResource ForegroundBrush}"/>
+                            <TextBlock Text="{l:Translate Settings.RecoveryKey.CopyButton}" VerticalAlignment="Center" FontSize="{StaticResource FontSizeBody}"/>
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Warning -->
+                    <Border Background="{DynamicResource BackgroundBrush}"
+                            CornerRadius="{StaticResource RadiusMedium}"
+                            Padding="12"
+                            BorderBrush="{DynamicResource ForegroundMutedBrush}"
+                            BorderThickness="1,0,0,0">
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <heroIcons:HeroIcon Width="18" Height="18"
+                                                Type="InformationCircle"
+                                                Kind="Outline"
+                                                Foreground="{DynamicResource ForegroundSecondaryBrush}"
+                                                VerticalAlignment="Top"
+                                                Margin="0,2,0,0"/>
+                            <TextBlock Text="{l:Translate Settings.RecoveryKey.Warning}"
+                                       Foreground="{DynamicResource ForegroundMutedBrush}"
+                                       FontSize="{StaticResource FontSizeSmall}"
+                                       MaxWidth="400"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Dismiss Button -->
+                    <Button Cursor="Hand" Classes="primary"
+                            Command="{Binding DismissRecoveryKeyModalCommand}"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            Padding="16,12">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <heroIcons:HeroIcon Width="16" Height="16"
+                                                Type="Check"
+                                                Kind="Outline"
+                                                Foreground="{DynamicResource PrimaryForegroundBrush}"/>
+                            <TextBlock Text="{l:Translate Settings.RecoveryKey.DismissButton}" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </Border>
+    </Grid>
+
+    <UserControl.Styles>
+        <!-- Profile Card Border - Active state -->
+        <Style Selector="Border.active">
+            <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+        </Style>
+
+        <!-- Profile Card Border - Editing state -->
+        <Style Selector="Border.editing">
+            <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+        </Style>
+    </UserControl.Styles>
+</UserControl>

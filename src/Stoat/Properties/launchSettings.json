@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Stoat": {
+      "commandName": "Project",
+      "hotReloadEnabled": true
+    }
+  }
+}

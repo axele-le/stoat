@@ -1,0 +1,137 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Styles.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <!-- ═══════════════════════════════════════════════════════════════════
+                     DARK THEME
+                     ═══════════════════════════════════════════════════════════════════ -->
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="BackgroundBrush" Color="{DynamicResource BackgroundColor}"/>
+                    <SolidColorBrush x:Key="BackgroundSecondaryBrush" Color="{DynamicResource BackgroundSecondaryColor}"/>
+                    <SolidColorBrush x:Key="SidebarBrush" Color="{DynamicResource SidebarColor}"/>
+                    <SolidColorBrush x:Key="CardBrush" Color="{DynamicResource CardColor}"/>
+
+                    <SolidColorBrush x:Key="ForegroundBrush" Color="{DynamicResource ForegroundColor}"/>
+                    <SolidColorBrush x:Key="ForegroundSecondaryBrush" Color="{DynamicResource ForegroundSecondaryColor}"/>
+                    <SolidColorBrush x:Key="ForegroundMutedBrush" Color="{DynamicResource ForegroundMutedColor}"/>
+
+                    <SolidColorBrush x:Key="PrimaryBrush" Color="{DynamicResource PrimaryColor}"/>
+                    <SolidColorBrush x:Key="PrimaryHoverBrush" Color="{DynamicResource PrimaryHoverColor}"/>
+                    <SolidColorBrush x:Key="PrimaryPressedBrush" Color="{DynamicResource PrimaryPressedColor}"/>
+                    <SolidColorBrush x:Key="PrimaryForegroundBrush" Color="{DynamicResource PrimaryForegroundColor}"/>
+
+                    <SolidColorBrush x:Key="SecondaryBrush" Color="{DynamicResource SecondaryColor}"/>
+                    <SolidColorBrush x:Key="SecondaryHoverBrush" Color="{DynamicResource SecondaryHoverColor}"/>
+                    <SolidColorBrush x:Key="SecondaryPressedBrush" Color="{DynamicResource SecondaryPressedColor}"/>
+
+                    <SolidColorBrush x:Key="SuccessBrush" Color="{DynamicResource SuccessColor}"/>
+                    <SolidColorBrush x:Key="SuccessHoverBrush" Color="{DynamicResource SuccessHoverColor}"/>
+                    <SolidColorBrush x:Key="SuccessPressedBrush" Color="{DynamicResource SuccessPressedColor}"/>
+                    <SolidColorBrush x:Key="SuccessBackgroundBrush" Color="{DynamicResource SuccessBackgroundColor}"/>
+                    <SolidColorBrush x:Key="SuccessBorderBrush" Color="{DynamicResource SuccessBorderColor}"/>
+                    <SolidColorBrush x:Key="SuccessForegroundBrush" Color="{DynamicResource SuccessForegroundColor}"/>
+                    <SolidColorBrush x:Key="WarningBrush" Color="{DynamicResource WarningColor}"/>
+                    <SolidColorBrush x:Key="WarningBackgroundBrush" Color="{DynamicResource WarningBackgroundColor}"/>
+                    <SolidColorBrush x:Key="WarningTintBrush" Color="{DynamicResource WarningTintColor}"/>
+                    <SolidColorBrush x:Key="DangerBrush" Color="{DynamicResource DangerColor}"/>
+                    <SolidColorBrush x:Key="DangerBackgroundBrush" Color="{DynamicResource DangerBackgroundColor}"/>
+                    <SolidColorBrush x:Key="DangerBorderBrush" Color="{DynamicResource DangerBorderColor}"/>
+                    <SolidColorBrush x:Key="DangerForegroundBrush" Color="{DynamicResource DangerForegroundColor}"/>
+                    <SolidColorBrush x:Key="InfoBrush" Color="{DynamicResource InfoColor}"/>
+
+                    <SolidColorBrush x:Key="ToastSuccessBrush" Color="{DynamicResource ToastSuccessColor}"/>
+
+                    <SolidColorBrush x:Key="ApiKeyBrush" Color="{DynamicResource ApiKeyColor}"/>
+                    <SolidColorBrush x:Key="PEMBrush" Color="{DynamicResource PEMColor}"/>
+                    <SolidColorBrush x:Key="CSRBrush" Color="{DynamicResource CSRColor}"/>
+
+                    <SolidColorBrush x:Key="PEMTintBrush" Color="{DynamicResource PEMTintColor}"/>
+                    <SolidColorBrush x:Key="CSRTintBrush" Color="{DynamicResource CSRTintColor}"/>
+                    <SolidColorBrush x:Key="PrimaryTintBrush" Color="{DynamicResource PrimaryTintColor}"/>
+                    <SolidColorBrush x:Key="ApiKeyTintBrush" Color="{DynamicResource ApiKeyTintColor}"/>
+
+                    <SolidColorBrush x:Key="ProductionBadgeBrush" Color="{DynamicResource ProductionBadgeColor}"/>
+                    <SolidColorBrush x:Key="ProductionTextBrush" Color="{DynamicResource ProductionTextColor}"/>
+                    <SolidColorBrush x:Key="TestBadgeBrush" Color="{DynamicResource TestBadgeColor}"/>
+                    <SolidColorBrush x:Key="TestTextBrush" Color="{DynamicResource TestTextColor}"/>
+                    <SolidColorBrush x:Key="DevelopmentBadgeBrush" Color="{DynamicResource DevelopmentBadgeColor}"/>
+                    <SolidColorBrush x:Key="DevelopmentTextBrush" Color="{DynamicResource DevelopmentTextColor}"/>
+
+                    <SolidColorBrush x:Key="ProfileActiveBrush" Color="{DynamicResource ProfileActiveColor}"/>
+                    <SolidColorBrush x:Key="ProfileInactiveBrush" Color="{DynamicResource ProfileInactiveColor}"/>
+
+                    <SolidColorBrush x:Key="BorderBrush" Color="{DynamicResource BorderColor}"/>
+                    <SolidColorBrush x:Key="BorderActiveBrush" Color="{DynamicResource BorderActiveColor}"/>
+
+                    <SolidColorBrush x:Key="OverlayBrush" Color="#80000000"/>
+                </ResourceDictionary>
+
+                <!-- ═══════════════════════════════════════════════════════════════════
+                     LIGHT THEME
+                     ═══════════════════════════════════════════════════════════════════ -->
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="BackgroundBrush" Color="{DynamicResource BackgroundColor}"/>
+                    <SolidColorBrush x:Key="BackgroundSecondaryBrush" Color="{DynamicResource BackgroundSecondaryColor}"/>
+                    <SolidColorBrush x:Key="SidebarBrush" Color="{DynamicResource SidebarColor}"/>
+                    <SolidColorBrush x:Key="CardBrush" Color="{DynamicResource CardColor}"/>
+
+                    <SolidColorBrush x:Key="ForegroundBrush" Color="{DynamicResource ForegroundColor}"/>
+                    <SolidColorBrush x:Key="ForegroundSecondaryBrush" Color="{DynamicResource ForegroundSecondaryColor}"/>
+                    <SolidColorBrush x:Key="ForegroundMutedBrush" Color="{DynamicResource ForegroundMutedColor}"/>
+
+                    <SolidColorBrush x:Key="PrimaryBrush" Color="{DynamicResource PrimaryColor}"/>
+                    <SolidColorBrush x:Key="PrimaryHoverBrush" Color="{DynamicResource PrimaryHoverColor}"/>
+                    <SolidColorBrush x:Key="PrimaryPressedBrush" Color="{DynamicResource PrimaryPressedColor}"/>
+                    <SolidColorBrush x:Key="PrimaryForegroundBrush" Color="{DynamicResource PrimaryForegroundColor}"/>
+
+                    <SolidColorBrush x:Key="SecondaryBrush" Color="{DynamicResource SecondaryColor}"/>
+                    <SolidColorBrush x:Key="SecondaryHoverBrush" Color="{DynamicResource SecondaryHoverColor}"/>
+                    <SolidColorBrush x:Key="SecondaryPressedBrush" Color="{DynamicResource SecondaryPressedColor}"/>
+
+                    <SolidColorBrush x:Key="SuccessBrush" Color="{DynamicResource SuccessColor}"/>
+                    <SolidColorBrush x:Key="SuccessHoverBrush" Color="{DynamicResource SuccessHoverColor}"/>
+                    <SolidColorBrush x:Key="SuccessPressedBrush" Color="{DynamicResource SuccessPressedColor}"/>
+                    <SolidColorBrush x:Key="SuccessBackgroundBrush" Color="{DynamicResource SuccessBackgroundColor}"/>
+                    <SolidColorBrush x:Key="SuccessBorderBrush" Color="{DynamicResource SuccessBorderColor}"/>
+                    <SolidColorBrush x:Key="SuccessForegroundBrush" Color="{DynamicResource SuccessForegroundColor}"/>
+                    <SolidColorBrush x:Key="WarningBrush" Color="{DynamicResource WarningColor}"/>
+                    <SolidColorBrush x:Key="WarningBackgroundBrush" Color="{DynamicResource WarningBackgroundColor}"/>
+                    <SolidColorBrush x:Key="WarningTintBrush" Color="{DynamicResource WarningTintColor}"/>
+                    <SolidColorBrush x:Key="DangerBrush" Color="{DynamicResource DangerColor}"/>
+                    <SolidColorBrush x:Key="DangerBackgroundBrush" Color="{DynamicResource DangerBackgroundColor}"/>
+                    <SolidColorBrush x:Key="DangerBorderBrush" Color="{DynamicResource DangerBorderColor}"/>
+                    <SolidColorBrush x:Key="DangerForegroundBrush" Color="{DynamicResource DangerForegroundColor}"/>
+                    <SolidColorBrush x:Key="InfoBrush" Color="{DynamicResource InfoColor}"/>
+
+                    <SolidColorBrush x:Key="ToastSuccessBrush" Color="{DynamicResource ToastSuccessColor}"/>
+
+                    <SolidColorBrush x:Key="ApiKeyBrush" Color="{DynamicResource ApiKeyColor}"/>
+                    <SolidColorBrush x:Key="PEMBrush" Color="{DynamicResource PEMColor}"/>
+                    <SolidColorBrush x:Key="CSRBrush" Color="{DynamicResource CSRColor}"/>
+
+                    <SolidColorBrush x:Key="PEMTintBrush" Color="{DynamicResource PEMTintColor}"/>
+                    <SolidColorBrush x:Key="CSRTintBrush" Color="{DynamicResource CSRTintColor}"/>
+                    <SolidColorBrush x:Key="PrimaryTintBrush" Color="{DynamicResource PrimaryTintColor}"/>
+                    <SolidColorBrush x:Key="ApiKeyTintBrush" Color="{DynamicResource ApiKeyTintColor}"/>
+
+                    <SolidColorBrush x:Key="ProductionBadgeBrush" Color="{DynamicResource ProductionBadgeColor}"/>
+                    <SolidColorBrush x:Key="ProductionTextBrush" Color="{DynamicResource ProductionTextColor}"/>
+                    <SolidColorBrush x:Key="TestBadgeBrush" Color="{DynamicResource TestBadgeColor}"/>
+                    <SolidColorBrush x:Key="TestTextBrush" Color="{DynamicResource TestTextColor}"/>
+                    <SolidColorBrush x:Key="DevelopmentBadgeBrush" Color="{DynamicResource DevelopmentBadgeColor}"/>
+                    <SolidColorBrush x:Key="DevelopmentTextBrush" Color="{DynamicResource DevelopmentTextColor}"/>
+
+                    <SolidColorBrush x:Key="ProfileActiveBrush" Color="{DynamicResource ProfileActiveColor}"/>
+                    <SolidColorBrush x:Key="ProfileInactiveBrush" Color="{DynamicResource ProfileInactiveColor}"/>
+
+                    <SolidColorBrush x:Key="BorderBrush" Color="{DynamicResource BorderColor}"/>
+                    <SolidColorBrush x:Key="BorderActiveBrush" Color="{DynamicResource BorderActiveColor}"/>
+
+                    <SolidColorBrush x:Key="OverlayBrush" Color="#40000000"/>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Styles.Resources>
+</Styles>

@@ -1,0 +1,339 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Stoat.Core.ViewModels"
+             xmlns:enums="using:Stoat.Services.Enums"
+             xmlns:utils="using:Stoat.Services.Utils"
+             xmlns:local="clr-namespace:Stoat.Views"
+             xmlns:l="using:Stoat.Localization"
+             xmlns:heroIcons="clr-namespace:HeroIconsAvalonia.Controls;assembly=HeroIconsAvalonia"
+             x:Class="Stoat.Views.CsrFormView"
+             x:DataType="vm:CsrFormViewModel"
+             HorizontalAlignment="Stretch">
+
+    <StackPanel Spacing="20" HorizontalAlignment="Stretch">
+
+        <!-- Preset Buttons -->
+        <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                CornerRadius="{StaticResource RadiusLarge}"
+                Padding="15">
+            <StackPanel Spacing="10">
+                <TextBlock Text="{l:Translate CsrForm.Presets.Title}"
+                           Classes="sectionTitle"/>
+                <WrapPanel Orientation="Horizontal">
+                    <Button Cursor="Hand" Classes="secondary" Margin="0,0,8,8"
+                            Command="{Binding ApplyPresetCommand}"
+                            CommandParameter="{x:Static enums:CsrPresetType.WebServer}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <heroIcons:HeroIcon Type="GlobeAlt" Width="14" Height="14" Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                            <TextBlock Text="{l:Translate CsrForm.Preset.WebServer}"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Cursor="Hand" Classes="secondary" Margin="0,0,8,8"
+                            Command="{Binding ApplyPresetCommand}"
+                            CommandParameter="{x:Static enums:CsrPresetType.ClientAuth}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <heroIcons:HeroIcon Type="User" Width="14" Height="14" Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                            <TextBlock Text="{l:Translate CsrForm.Preset.ClientAuth}"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Cursor="Hand" Classes="secondary" Margin="0,0,8,8"
+                            Command="{Binding ApplyPresetCommand}"
+                            CommandParameter="{x:Static enums:CsrPresetType.CodeSigning}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <heroIcons:HeroIcon Type="CodeBracket" Width="14" Height="14" Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                            <TextBlock Text="{l:Translate CsrForm.Preset.CodeSigning}"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Cursor="Hand" Classes="secondary" Margin="0,0,8,8"
+                            Command="{Binding ApplyPresetCommand}"
+                            CommandParameter="{x:Static enums:CsrPresetType.Email}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <heroIcons:HeroIcon Type="Envelope" Width="14" Height="14" Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                            <TextBlock Text="{l:Translate CsrForm.Preset.Email}"/>
+                        </StackPanel>
+                    </Button>
+                </WrapPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Name -->
+        <StackPanel Spacing="5">
+            <TextBlock Text="{l:Translate CsrForm.NameLabel}" Classes="label"/>
+            <TextBox Text="{Binding Name}"
+                     Watermark="{l:Translate CsrForm.NameWatermark}"
+                     Classes="cryptoInput"/>
+        </StackPanel>
+
+        <!-- Subject DN Section -->
+        <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                CornerRadius="{StaticResource RadiusLarge}"
+                Padding="15">
+            <StackPanel Spacing="15">
+                <TextBlock Text="{l:Translate CsrForm.SubjectDN.Title}"
+                           Classes="sectionTitle"/>
+
+                <!-- Common Name -->
+                <StackPanel Spacing="5">
+                    <TextBlock Text="{l:Translate CsrForm.CommonNameLabel}" Classes="label"/>
+                    <TextBox Text="{Binding CommonName}"
+                             Watermark="{l:Translate CsrForm.CommonNameWatermark}"
+                             Classes="cryptoInputDark"/>
+                    <TextBlock Text="{l:Translate CsrForm.CommonNameHint}"
+                               Classes="hint"/>
+                </StackPanel>
+
+                <!-- Organization / OU -->
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto">
+                    <StackPanel Grid.Column="0" Spacing="5" Margin="0,0,10,0">
+                        <TextBlock Text="{l:Translate CsrForm.OrganizationLabel}" Classes="label"/>
+                        <TextBox Text="{Binding Organization}"
+                                 Watermark="{l:Translate CsrForm.OrganizationWatermark}"
+                                 Classes="cryptoInputDark"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Spacing="5">
+                        <TextBlock Text="{l:Translate CsrForm.OULabel}" Classes="label"/>
+                        <TextBox Text="{Binding OrganizationalUnit}"
+                                 Watermark="{l:Translate CsrForm.OUWatermark}"
+                                 Classes="cryptoInputDark"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Country / State -->
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto">
+                    <StackPanel Grid.Column="0" Spacing="5" Margin="0,0,10,0">
+                        <TextBlock Text="{l:Translate CsrForm.CountryLabel}" Classes="label"/>
+                        <ComboBox ItemsSource="{Binding Countries}"
+                                  SelectedValue="{Binding SelectedCountry}"
+                                  SelectedValueBinding="{Binding Code}"
+                                  PlaceholderText="{l:Translate CsrForm.CountryPlaceholder}"
+                                  HorizontalAlignment="Stretch">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="utils:CountryInfo">
+                                    <TextBlock Text="{Binding DisplayName}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Spacing="5">
+                        <TextBlock Text="{l:Translate CsrForm.StateLabel}" Classes="label"/>
+                        <TextBox Text="{Binding State}"
+                                 Watermark="{l:Translate CsrForm.StateWatermark}"
+                                 Classes="cryptoInputDark"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Locality / Email -->
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto">
+                    <StackPanel Grid.Column="0" Spacing="5" Margin="0,0,10,0">
+                        <TextBlock Text="{l:Translate CsrForm.LocalityLabel}" Classes="label"/>
+                        <TextBox Text="{Binding Locality}"
+                                 Watermark="{l:Translate CsrForm.LocalityWatermark}"
+                                 Classes="cryptoInputDark"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Spacing="5">
+                        <TextBlock Text="{l:Translate CsrForm.EmailLabel}" Classes="label"/>
+                        <TextBox Text="{Binding EmailAddress}"
+                                 Watermark="{l:Translate CsrForm.EmailWatermark}"
+                                 Classes="cryptoInputDark"/>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!-- SAN Section -->
+        <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                CornerRadius="{StaticResource RadiusLarge}"
+                Padding="15">
+            <StackPanel Spacing="10">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{l:Translate CsrForm.SAN.Title}"
+                               Classes="sectionTitle"/>
+                    <Button Grid.Column="1"
+                            Cursor="Hand"
+                            Command="{Binding AddSanEntryCommand}"
+                            Classes="secondary">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <heroIcons:HeroIcon Type="Plus" Width="14" Height="14" Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                            <TextBlock Text="{l:Translate CsrForm.AddSAN.Label}"/>
+                        </StackPanel>
+                    </Button>
+                </Grid>
+
+                <!-- SAN Entries -->
+                <ItemsControl ItemsSource="{Binding SanEntries}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:SanEntryViewModel">
+                            <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,5,0,0">
+                                <ComboBox Grid.Column="0"
+                                          ItemsSource="{x:Static vm:SanEntryViewModel.AvailableSanTypes}"
+                                          SelectedItem="{Binding Type}"
+                                          MinWidth="100"
+                                          Margin="0,0,10,0"/>
+                                <TextBox Grid.Column="1"
+                                         Text="{Binding Value}"
+                                         Watermark="{Binding Placeholder}"
+                                         Classes="cryptoInputDark"/>
+                                <Button Grid.Column="2"
+                                        Cursor="Hand"
+                                        Classes="icon"
+                                        Margin="10,0,0,0"
+                                        Command="{Binding $parent[ItemsControl].((vm:CsrFormViewModel)DataContext).RemoveSanEntryCommand}"
+                                        CommandParameter="{Binding}">
+                                    <heroIcons:HeroIcon Type="Trash" Width="14" Height="14"/>
+                                </Button>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <TextBlock Text="{l:Translate CsrForm.SAN.EmptyHint}"
+                           Classes="hint"
+                           IsVisible="{Binding !SanEntries.Count}"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Private Key Source Section -->
+        <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                CornerRadius="{StaticResource RadiusLarge}"
+                Padding="15">
+            <StackPanel Spacing="15">
+                <TextBlock Text="{l:Translate CsrForm.PrivateKey.Title}"
+                           Classes="sectionTitle"/>
+
+                <!-- Key Source Selection -->
+                <StackPanel Orientation="Horizontal" Spacing="20">
+                    <RadioButton x:Name="NewKeyRadio"
+                                 Content="{l:Translate CsrForm.PrivateKey.GenerateNew}"
+                                 IsChecked="{Binding UseNewKey, Mode=OneWay}"
+                                 GroupName="KeySource"/>
+                    <RadioButton x:Name="ExistingKeyRadio"
+                                 Content="{l:Translate CsrForm.PrivateKey.UseExisting}"
+                                 IsChecked="{Binding UseExistingKey, Mode=OneWay}"
+                                 IsEnabled="{Binding HasExistingKeys}"
+                                 GroupName="KeySource"/>
+                </StackPanel>
+
+                <!-- Existing Key Selector (visible when UseExistingKey is true) -->
+                <Border Background="{DynamicResource BackgroundSecondaryBrush}"
+                        CornerRadius="{StaticResource RadiusSmall}"
+                        Padding="10"
+                        IsVisible="{Binding ShowExistingKeySelector}">
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="{l:Translate CsrForm.PrivateKey.SelectLabel}" Classes="label"/>
+                        <ComboBox ItemsSource="{Binding ExistingKeys}"
+                                  SelectedItem="{Binding SelectedExistingKey}"
+                                  PlaceholderText="{l:Translate CsrForm.PrivateKey.SelectPlaceholder}"
+                                  HorizontalAlignment="Stretch">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        
+                                        <TextBlock Text="{Binding Label}"/>
+                                        <TextBlock Text="{Binding AlgorithmDisplayName, StringFormat='({0})'}"
+                                                   Foreground="{DynamicResource ForegroundMutedBrush}"
+                                                   IsVisible="{Binding AlgorithmDisplayName, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <TextBlock Text="{Binding SelectedExistingKey.AlgorithmDisplayName, StringFormat='Algoritmo: {0}'}"
+                                   Classes="hint"
+                                   IsVisible="{Binding SelectedExistingKey, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- New Key Algorithm Selection (visible when UseExistingKey is false) -->
+                <StackPanel Spacing="5" IsVisible="{Binding ShowNewKeyOptions}">
+                    <TextBlock Text="{l:Translate CsrForm.KeyAlgorithmLabel}" Classes="label"/>
+                    <ComboBox ItemsSource="{Binding AvailableKeyAlgorithms}"
+                              SelectedItem="{Binding SelectedKeyAlgorithm}"
+                              HorizontalAlignment="Stretch"/>
+                </StackPanel>
+
+                <!-- Signature Algorithm (always visible) -->
+                <StackPanel Spacing="5">
+                    <TextBlock Text="{l:Translate CsrForm.SignatureAlgorithmLabel}" Classes="label"/>
+                    <ComboBox ItemsSource="{Binding AvailableSignatureAlgorithms}"
+                              SelectedItem="{Binding SelectedSignatureAlgorithm}"
+                              HorizontalAlignment="Stretch"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Advanced Options -->
+        <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                CornerRadius="{StaticResource RadiusLarge}"
+                Padding="15">
+            <StackPanel Spacing="15">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{l:Translate CsrForm.AdvancedOptions.Title}"
+                               Classes="sectionTitle"/>
+                    <ToggleSwitch Grid.Column="1"
+                                  IsChecked="{Binding ShowAdvancedOptions}"
+                                  OnContent=""
+                                  OffContent=""
+                                  VerticalAlignment="Center"/>
+                </Grid>
+
+                <StackPanel Spacing="15" IsVisible="{Binding ShowAdvancedOptions}">
+                    <!-- Key Usage -->
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="{l:Translate CsrForm.KeyUsage.Title}" Classes="label"/>
+                        <WrapPanel Orientation="Horizontal">
+                            <CheckBox Content="{l:Translate CsrForm.KeyUsage.DigitalSignature}"
+                                      IsChecked="{Binding KeyUsageDigitalSignature}"
+                                      Margin="0,0,15,5"/>
+                            <CheckBox Content="{l:Translate CsrForm.KeyUsage.KeyEncipherment}"
+                                      IsChecked="{Binding KeyUsageKeyEncipherment}"
+                                      Margin="0,0,15,5"/>
+                            <CheckBox Content="{l:Translate CsrForm.KeyUsage.DataEncipherment}"
+                                      IsChecked="{Binding KeyUsageDataEncipherment}"
+                                      Margin="0,0,15,5"/>
+                            <CheckBox Content="{l:Translate CsrForm.KeyUsage.KeyAgreement}"
+                                      IsChecked="{Binding KeyUsageKeyAgreement}"
+                                      Margin="0,0,15,5"/>
+                            <CheckBox Content="{l:Translate CsrForm.KeyUsage.NonRepudiation}"
+                                      IsChecked="{Binding KeyUsageNonRepudiation}"
+                                      Margin="0,0,15,5"/>
+                            <CheckBox Content="{l:Translate CsrForm.KeyUsage.KeyCertSign}"
+                                      IsChecked="{Binding KeyUsageKeyCertSign}"
+                                      Margin="0,0,15,5"/>
+                            <CheckBox Content="{l:Translate CsrForm.KeyUsage.CrlSign}"
+                                      IsChecked="{Binding KeyUsageCrlSign}"
+                                      Margin="0,0,15,5"/>
+                        </WrapPanel>
+                    </StackPanel>
+
+                    <!-- Extended Key Usage -->
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="{l:Translate CsrForm.ExtendedKeyUsage.Title}" Classes="label"/>
+                        <WrapPanel Orientation="Horizontal">
+                            <CheckBox Content="{l:Translate CsrForm.ExtendedKeyUsage.ServerAuth}"
+                                      IsChecked="{Binding EkuServerAuth}"
+                                      Margin="0,0,15,5"/>
+                            <CheckBox Content="{l:Translate CsrForm.ExtendedKeyUsage.ClientAuth}"
+                                      IsChecked="{Binding EkuClientAuth}"
+                                      Margin="0,0,15,5"/>
+                            <CheckBox Content="{l:Translate CsrForm.ExtendedKeyUsage.CodeSigning}"
+                                      IsChecked="{Binding EkuCodeSigning}"
+                                      Margin="0,0,15,5"/>
+                            <CheckBox Content="{l:Translate CsrForm.ExtendedKeyUsage.EmailProtection}"
+                                      IsChecked="{Binding EkuEmailProtection}"
+                                      Margin="0,0,15,5"/>
+                            <CheckBox Content="{l:Translate CsrForm.ExtendedKeyUsage.TimeStamping}"
+                                      IsChecked="{Binding EkuTimeStamping}"
+                                      Margin="0,0,15,5"/>
+                        </WrapPanel>
+                    </StackPanel>
+
+                    <!-- CA -->
+                    <CheckBox Content="{l:Translate CsrForm.IsCA.Label}"
+                              IsChecked="{Binding IsCA}"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Bottom spacing for scroll comfort -->
+        <Panel Height="20"/>
+    </StackPanel>
+</UserControl>

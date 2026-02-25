@@ -1,0 +1,551 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Stoat.Core.ViewModels"
+             xmlns:heroIcons="clr-namespace:HeroIconsAvalonia.Controls;assembly=HeroIconsAvalonia"
+             xmlns:local="clr-namespace:Stoat.Views"
+             xmlns:l="using:Stoat.Localization"
+             x:Class="Stoat.Views.PemView"
+             x:DataType="vm:PemViewModel">
+
+    <Panel>
+        <!-- List View (shown when form is closed) -->
+        <Grid Margin="30" RowDefinitions="Auto,*,Auto"
+              IsVisible="{Binding !IsFormOpen}">
+
+            <!-- Header -->
+            <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="15">
+                    <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                            CornerRadius="{StaticResource RadiusLarge}"
+                            Padding="12">
+                        <heroIcons:HeroIcon Width="24" Height="24"
+                                            Type="DocumentText"
+                                            Kind="Outline"
+                                            Foreground="{DynamicResource PEMBrush}"/>
+                    </Border>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="{l:Translate MainWindow.Sidebar.Pem}"
+                                   FontSize="{StaticResource FontSizePageTitle}"
+                                   FontWeight="Bold"
+                                   Foreground="{DynamicResource ForegroundBrush}"/>
+                        <TextBlock Text="{l:Translate Pem.Header.Subtitle}"
+                                   FontSize="{StaticResource FontSizeNormal}"
+                                   Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- New PEM Key Button -->
+                <Button Grid.Column="1"
+                        Cursor="Hand"
+                        Command="{Binding OpenNewPemFormCommand}"
+                        Classes="primary"
+                        VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <heroIcons:HeroIcon Type="Plus" Width="16" Height="16" Foreground="{Binding $parent[Button].Foreground}"/>
+                        <TextBlock Text="{l:Translate Pem.NewButton.Label}"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+
+            <!-- Skeleton Loading -->
+            <StackPanel Grid.Row="1" Spacing="20" Margin="0,10,0,0"
+                        IsVisible="{Binding IsLoading}">
+                <!-- Skeleton Card 1 -->
+                <Border Classes="card">
+                    <StackPanel Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Spacing="8">
+                                <Border Classes="skeleton" Height="16" Width="180" HorizontalAlignment="Left"/>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Border Classes="skeleton" Height="12" Width="80"/>
+                                    <Border Classes="skeleton" Height="12" Width="60"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <Border Classes="skeleton" Width="28" Height="28" Grid.Column="1"/>
+                        </Grid>
+                        <Border Classes="skeleton" Height="40" HorizontalAlignment="Stretch"/>
+                        <Border Classes="skeleton" Height="40" HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+                </Border>
+                <!-- Skeleton Card 2 -->
+                <Border Classes="card">
+                    <StackPanel Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Spacing="8">
+                                <Border Classes="skeleton" Height="16" Width="200" HorizontalAlignment="Left"/>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Border Classes="skeleton" Height="12" Width="70"/>
+                                    <Border Classes="skeleton" Height="12" Width="90"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <Border Classes="skeleton" Width="28" Height="28" Grid.Column="1"/>
+                        </Grid>
+                        <Border Classes="skeleton" Height="40" HorizontalAlignment="Stretch"/>
+                        <Border Classes="skeleton" Height="40" HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- Content -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                          IsVisible="{Binding !IsLoading}">
+                <ScrollViewer.Transitions>
+                    <Transitions>
+                        <DoubleTransition Property="Opacity" Duration="0:0:0.2"/>
+                    </Transitions>
+                </ScrollViewer.Transitions>
+                <StackPanel Spacing="20">
+
+                    <!-- Empty State -->
+                    <Border Classes="card bordered"
+                            IsVisible="{Binding !HasKeyPairs}">
+                        <StackPanel HorizontalAlignment="Center" Spacing="12">
+                            <Border Background="{DynamicResource BackgroundSecondaryBrush}"
+                                    CornerRadius="{StaticResource RadiusRound}"
+                                    Padding="16"
+                                    HorizontalAlignment="Center">
+                                <heroIcons:HeroIcon Type="Key"
+                                                    Width="32" Height="32"
+                                                    Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                            </Border>
+                            <TextBlock Text="{l:Translate Pem.EmptyState.Title}"
+                                       Foreground="{DynamicResource ForegroundBrush}"
+                                       HorizontalAlignment="Center"
+                                       FontSize="{StaticResource FontSizeLarge}"
+                                       FontWeight="Medium"/>
+                            <TextBlock Text="{l:Translate Pem.EmptyState.Subtitle}"
+                                       Foreground="{DynamicResource ForegroundMutedBrush}"
+                                       HorizontalAlignment="Center"
+                                       FontSize="{StaticResource FontSizeNormal}"
+                                       TextWrapping="Wrap"
+                                       MaxWidth="400"
+                                       TextAlignment="Center"/>
+                            <Button Cursor="Hand"
+                                    Command="{Binding OpenNewPemFormCommand}"
+                                    Classes="primary"
+                                    Margin="0,8,0,0"
+                                    HorizontalAlignment="Center">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <heroIcons:HeroIcon Type="Plus" Width="16" Height="16" Foreground="{Binding $parent[Button].Foreground}"/>
+                                    <TextBlock Text="{l:Translate Pem.NewButton.Label}"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Key Pairs History -->
+                    <StackPanel IsVisible="{Binding HasKeyPairs}" Spacing="10">
+                        <ItemsControl ItemsSource="{Binding KeyPairs}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:PemKeyGroupViewModel">
+                                    <!-- Group Card -->
+                                    <Border Classes="card bordered"
+                                            Margin="0,0,0,16">
+                                        <StackPanel>
+                                            <!-- Group Header -->
+                                            <Border BorderBrush="{DynamicResource BorderBrush}"
+                                                    BorderThickness="0,0,0,1"
+                                                    Padding="0,0,0,12">
+                                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                                    <!-- Key Info -->
+                                                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
+                                                        <StackPanel VerticalAlignment="Center">
+                                                            <TextBlock Text="{Binding Name}"
+                                                                       FontWeight="Medium" FontSize="{StaticResource FontSizeNormal}"
+                                                                       Foreground="{DynamicResource ForegroundBrush}"/>
+                                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                                <TextBlock Text="{Binding Algorithm}"
+                                                                           FontSize="{StaticResource FontSizeSmall}"
+                                                                           Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                                                                <TextBlock Text="&#x2022;"
+                                                                           FontSize="{StaticResource FontSizeSmall}"
+                                                                           Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                                                                <TextBlock Text="{Binding CreatedDateDisplay}"
+                                                                           FontSize="{StaticResource FontSizeSmall}"
+                                                                           Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                                                            </StackPanel>
+                                                        </StackPanel>
+                                                    </StackPanel>
+
+                                                    <!-- Header Actions -->
+                                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4">
+                                                        <!-- Delete Key Pair -->
+                                                        <Button Classes="icon"
+                                                                Cursor="Hand"
+                                                                ToolTip.Tip="{l:Translate Common.Button.Delete}"
+                                                                Command="{Binding ParentViewModel.DeleteKeyPairCommand}"
+                                                                CommandParameter="{Binding Id}">
+                                                            <heroIcons:HeroIcon Type="Trash" Width="16" Height="16"
+                                                                                Foreground="{DynamicResource DangerBrush}"/>
+                                                        </Button>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Border>
+
+                                            <!-- Private Key Preview Panel (expanded) -->
+                                            <Border Background="{DynamicResource DangerBackgroundBrush}"
+                                                    BorderBrush="{DynamicResource DangerBorderBrush}"
+                                                    BorderThickness="0,0,0,1"
+                                                    Padding="16"
+                                                    IsVisible="{Binding ShowPrivateKeyPanel}">
+                                                <StackPanel Spacing="8">
+                                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                                        <heroIcons:HeroIcon Type="ExclamationTriangle"
+                                                                            Width="16" Height="16"
+                                                                            Foreground="{DynamicResource DangerBrush}"/>
+                                                        <TextBlock Text="{l:Translate Pem.PrivateKeyWarning}"
+                                                                   FontSize="{StaticResource FontSizeSmall}"
+                                                                   FontWeight="SemiBold"
+                                                                   Foreground="{DynamicResource DangerBrush}"/>
+                                                    </StackPanel>
+                                                    <Border Background="{DynamicResource BackgroundBrush}"
+                                                            CornerRadius="{StaticResource RadiusMedium}"
+                                                            Padding="12">
+                                                        <TextBlock Text="{Binding PrivateKey}"
+                                                                   FontFamily="Consolas"
+                                                                   FontSize="{StaticResource FontSizeXSmall}"
+                                                                   Foreground="{DynamicResource ForegroundSecondaryBrush}"
+                                                                   TextWrapping="Wrap"/>
+                                                    </Border>
+                                                </StackPanel>
+                                            </Border>
+
+                                            <!-- Loading indicator -->
+                                            <Border Padding="16"
+                                                    IsVisible="{Binding IsLoadingPrivateKey}">
+                                                <TextBlock Text="{l:Translate Pem.LoadingPrivateKey}"
+                                                           FontSize="{StaticResource FontSizeBody}"
+                                                           Foreground="{DynamicResource ForegroundMutedBrush}"
+                                                           HorizontalAlignment="Center"/>
+                                            </Border>
+
+                                            <!-- Keys Table -->
+                                            <Border Padding="0">
+                                                <StackPanel>
+                                                    <!-- Table Header -->
+                                                    <Grid ColumnDefinitions="120,*,100"
+                                                          Background="{DynamicResource BackgroundSecondaryBrush}">
+                                                        <TextBlock Grid.Column="0" Text="{l:Translate Pem.Table.TypeHeader}" Padding="16,10"
+                                                                   FontSize="{StaticResource FontSizeSmall}" FontWeight="SemiBold"
+                                                                   Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                                                        <TextBlock Grid.Column="1" Text="{l:Translate Pem.Table.ContentHeader}" Padding="8,10"
+                                                                   FontSize="{StaticResource FontSizeSmall}" FontWeight="SemiBold"
+                                                                   Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                                                        <TextBlock Grid.Column="2" Text="{l:Translate Pem.Table.ActionsHeader}" Padding="8,10"
+                                                                   FontSize="{StaticResource FontSizeSmall}" FontWeight="SemiBold"
+                                                                   Foreground="{DynamicResource ForegroundMutedBrush}"
+                                                                   HorizontalAlignment="Right"/>
+                                                    </Grid>
+
+                                                    <!-- Private Key Row (only if HasPrivateKey) -->
+                                                    <Border BorderBrush="{DynamicResource BorderBrush}"
+                                                            BorderThickness="0,1,0,0"
+                                                            IsVisible="{Binding HasPrivateKey}">
+                                                        <Grid ColumnDefinitions="120,*,100"
+                                                              Background="Transparent">
+                                                            <Grid.Styles>
+                                                                <Style Selector="Grid:pointerover">
+                                                                    <Setter Property="Background" Value="{DynamicResource BackgroundSecondaryBrush}"/>
+                                                                </Style>
+                                                            </Grid.Styles>
+
+                                                            <!-- Type Badge -->
+                                                            <Border Grid.Column="0" Margin="16,12,8,12" VerticalAlignment="Center"
+                                                                    HorizontalAlignment="Left"
+                                                                    Background="{DynamicResource ProductionBadgeBrush}"
+                                                                    CornerRadius="{StaticResource RadiusSmall}"
+                                                                    Padding="8,4">
+                                                                <TextBlock Text="{l:Translate Pem.Badge.Private}"
+                                                                           FontSize="{StaticResource FontSizeXSmall}"
+                                                                           FontWeight="Bold"
+                                                                           Foreground="{DynamicResource SuccessBrush}"/>
+                                                            </Border>
+
+                                                            <!-- Content -->
+                                                            <Border Grid.Column="1" Margin="8,12" VerticalAlignment="Center"
+                                                                    HorizontalAlignment="Left">
+                                                                <Border Background="{DynamicResource BackgroundSecondaryBrush}"
+                                                                        CornerRadius="{StaticResource RadiusSmall}"
+                                                                        Padding="6,3">
+                                                                    <TextBlock Text="{Binding PrivateKeyDisplay}"
+                                                                               FontFamily="Consolas"
+                                                                               FontSize="{StaticResource FontSizeSmall}"
+                                                                               Foreground="{DynamicResource ForegroundSecondaryBrush}"
+                                                                               TextTrimming="CharacterEllipsis"
+                                                                               MaxWidth="400"/>
+                                                                </Border>
+                                                            </Border>
+
+                                                            <!-- Actions -->
+                                                            <StackPanel Grid.Column="2" Orientation="Horizontal"
+                                                                        Spacing="2" Margin="8,8"
+                                                                        HorizontalAlignment="Right">
+                                                                <!-- Show/Hide -->
+                                                                <Button Classes="icon"
+                                                                        Cursor="Hand"
+                                                                        ToolTip.Tip="{l:Translate Common.Tooltip.ShowHide}"
+                                                                        Command="{Binding ParentViewModel.ToggleShowPrivateKeyCommand}"
+                                                                        CommandParameter="{Binding}">
+                                                                    <Panel>
+                                                                        <heroIcons:HeroIcon Type="Eye" Width="14" Height="14" Foreground="{DynamicResource ForegroundSecondaryBrush}"
+                                                                                            IsVisible="{Binding !ShowPrivateKey}"/>
+                                                                        <heroIcons:HeroIcon Type="EyeSlash" Width="14" Height="14" Foreground="{DynamicResource ForegroundSecondaryBrush}"
+                                                                                            IsVisible="{Binding ShowPrivateKey}"/>
+                                                                    </Panel>
+                                                                </Button>
+                                                                <!-- Copy -->
+                                                                <Button Classes="icon"
+                                                                        Cursor="Hand"
+                                                                        ToolTip.Tip="{l:Translate Common.Button.Copy}"
+                                                                        Command="{Binding ParentViewModel.CopyPrivateKeyCommand}"
+                                                                        CommandParameter="{Binding}">
+                                                                    <Panel>
+                                                                        <heroIcons:HeroIcon Type="ClipboardDocument" Width="14" Height="14" Foreground="{DynamicResource ForegroundSecondaryBrush}"
+                                                                                            IsVisible="{Binding !IsPrivateKeyCopied}"/>
+                                                                        <heroIcons:HeroIcon Type="Check" Width="14" Height="14"
+                                                                                            Foreground="{DynamicResource PEMBrush}"
+                                                                                            IsVisible="{Binding IsPrivateKeyCopied}"/>
+                                                                    </Panel>
+                                                                </Button>
+                                                                <!-- Download -->
+                                                                <Button Classes="icon"
+                                                                        Cursor="Hand"
+                                                                        ToolTip.Tip="{l:Translate Common.Button.Download}"
+                                                                        Command="{Binding ParentViewModel.DownloadPrivateKeyCommand}"
+                                                                        CommandParameter="{Binding}">
+                                                                    <heroIcons:HeroIcon Type="ArrowDownTray" Width="14" Height="14" Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                                                                </Button>
+                                                            </StackPanel>
+                                                        </Grid>
+                                                    </Border>
+
+                                                    <!-- Public Key Row -->
+                                                    <Border BorderBrush="{DynamicResource BorderBrush}"
+                                                            BorderThickness="0,1,0,0">
+                                                        <Grid ColumnDefinitions="120,*,100"
+                                                              Background="Transparent">
+                                                            <Grid.Styles>
+                                                                <Style Selector="Grid:pointerover">
+                                                                    <Setter Property="Background" Value="{DynamicResource BackgroundSecondaryBrush}"/>
+                                                                </Style>
+                                                            </Grid.Styles>
+
+                                                            <!-- Type Badge -->
+                                                            <Border Grid.Column="0" Margin="16,12,8,12" VerticalAlignment="Center"
+                                                                    HorizontalAlignment="Left"
+                                                                    Background="{DynamicResource PrimaryBrush}"
+                                                                    CornerRadius="{StaticResource RadiusSmall}"
+                                                                    Padding="8,4">
+                                                                <TextBlock Text="{l:Translate Pem.Badge.Public}"
+                                                                           FontSize="{StaticResource FontSizeXSmall}"
+                                                                           FontWeight="Bold"
+                                                                           Foreground="{DynamicResource PrimaryForegroundBrush}"/>
+                                                            </Border>
+
+                                                            <!-- Content -->
+                                                            <Border Grid.Column="1" Margin="8,12" VerticalAlignment="Center"
+                                                                    HorizontalAlignment="Left">
+                                                                <Border Background="{DynamicResource BackgroundSecondaryBrush}"
+                                                                        CornerRadius="{StaticResource RadiusSmall}"
+                                                                        Padding="6,3">
+                                                                    <TextBlock Text="{Binding PublicKeyDisplay}"
+                                                                               FontFamily="Consolas"
+                                                                               FontSize="{StaticResource FontSizeSmall}"
+                                                                               Foreground="{DynamicResource ForegroundSecondaryBrush}"
+                                                                               TextTrimming="CharacterEllipsis"
+                                                                               MaxWidth="400"/>
+                                                                </Border>
+                                                            </Border>
+
+                                                            <!-- Actions -->
+                                                            <StackPanel Grid.Column="2" Orientation="Horizontal"
+                                                                        Spacing="2" Margin="8,8"
+                                                                        HorizontalAlignment="Right">
+                                                                <!-- Show/Hide -->
+                                                                <Button Classes="icon"
+                                                                        Cursor="Hand"
+                                                                        ToolTip.Tip="{l:Translate Common.Tooltip.ShowHide}"
+                                                                        Command="{Binding ParentViewModel.ToggleShowPublicKeyCommand}"
+                                                                        CommandParameter="{Binding}">
+                                                                    <Panel>
+                                                                        <heroIcons:HeroIcon Type="Eye" Width="14" Height="14" Foreground="{DynamicResource ForegroundSecondaryBrush}"
+                                                                                            IsVisible="{Binding !ShowPublicKey}"/>
+                                                                        <heroIcons:HeroIcon Type="EyeSlash" Width="14" Height="14" Foreground="{DynamicResource ForegroundSecondaryBrush}"
+                                                                                            IsVisible="{Binding ShowPublicKey}"/>
+                                                                    </Panel>
+                                                                </Button>
+                                                                <!-- Copy -->
+                                                                <Button Classes="icon"
+                                                                        Cursor="Hand"
+                                                                        ToolTip.Tip="{l:Translate Common.Button.Copy}"
+                                                                        Command="{Binding ParentViewModel.CopyPublicKeyCommand}"
+                                                                        CommandParameter="{Binding}">
+                                                                    <Panel>
+                                                                        <heroIcons:HeroIcon Type="ClipboardDocument" Width="14" Height="14" Foreground="{DynamicResource ForegroundSecondaryBrush}"
+                                                                                            IsVisible="{Binding !IsPublicKeyCopied}"/>
+                                                                        <heroIcons:HeroIcon Type="Check" Width="14" Height="14"
+                                                                                            Foreground="{DynamicResource PEMBrush}"
+                                                                                            IsVisible="{Binding IsPublicKeyCopied}"/>
+                                                                    </Panel>
+                                                                </Button>
+                                                                <!-- Download -->
+                                                                <Button Classes="icon"
+                                                                        Cursor="Hand"
+                                                                        ToolTip.Tip="{l:Translate Common.Button.Download}"
+                                                                        Command="{Binding ParentViewModel.DownloadPublicKeyCommand}"
+                                                                        CommandParameter="{Binding}">
+                                                                    <heroIcons:HeroIcon Type="ArrowDownTray" Width="14" Height="14" Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                                                                </Button>
+                                                            </StackPanel>
+                                                        </Grid>
+                                                    </Border>
+                                                </StackPanel>
+                                            </Border>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Status Bar -->
+            <Border Grid.Row="2"
+                    Background="{DynamicResource BackgroundSecondaryBrush}"
+                    CornerRadius="{StaticResource RadiusLarge}"
+                    Padding="16,12"
+                    Margin="0,16,0,0"
+                    IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                <Grid ColumnDefinitions="Auto,*">
+                    <Panel Width="16" Height="16" Margin="0,0,12,0">
+                        <heroIcons:HeroIcon Type="CheckCircle" Width="16" Height="16"
+                                            Foreground="{DynamicResource SuccessBrush}"
+                                            IsVisible="{Binding !IsError}"/>
+                        <heroIcons:HeroIcon Type="ExclamationCircle" Width="16" Height="16"
+                                            Foreground="{DynamicResource DangerBrush}"
+                                            IsVisible="{Binding IsError}"/>
+                    </Panel>
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding StatusMessage}"
+                               FontSize="{StaticResource FontSizeBody}"
+                               Foreground="{DynamicResource ForegroundSecondaryBrush}"
+                               VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- Form View (shown when form is open) -->
+        <Grid Margin="30" RowDefinitions="Auto,*,Auto"
+              IsVisible="{Binding IsFormOpen}">
+
+            <!-- Form Header with close button -->
+            <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,20">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="15">
+                    <Border Background="{DynamicResource CardBrush}"
+                            CornerRadius="{StaticResource RadiusLarge}"
+                            Padding="12"
+                            Opacity="0.9">
+                        <heroIcons:HeroIcon Width="24" Height="24"
+                                            Type="DocumentText"
+                                            Kind="Outline"
+                                            Foreground="{DynamicResource ForegroundBrush}"/>
+                    </Border>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="{l:Translate Pem.Form.Header}"
+                                   FontSize="{StaticResource FontSizePageTitle}"
+                                   FontWeight="Bold"
+                                   Foreground="{DynamicResource ForegroundBrush}"/>
+                        <TextBlock Text="{l:Translate Pem.Form.Subtitle}"
+                                   FontSize="{StaticResource FontSizeNormal}"
+                                   Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Close Button (X) -->
+                <Button Grid.Column="1"
+                        Cursor="Hand"
+                        Command="{Binding CloseFormCommand}"
+                        Classes="icon"
+                        VerticalAlignment="Center"
+                        ToolTip.Tip="{l:Translate Common.Button.Close}">
+                    <heroIcons:HeroIcon Type="XMark" Width="24" Height="24" Foreground="{DynamicResource ForegroundSecondaryBrush}"/>
+                </Button>
+            </Grid>
+
+            <!-- Form Content -->
+            <ScrollViewer Grid.Row="1"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled"
+                          Padding="0,20,0,0">
+                <ContentControl Content="{Binding FormViewModel}"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch">
+                    <ContentControl.ContentTemplate>
+                        <DataTemplate DataType="{x:Type vm:PemFormViewModel}">
+                            <local:PemFormView HorizontalAlignment="Stretch"/>
+                        </DataTemplate>
+                    </ContentControl.ContentTemplate>
+                </ContentControl>
+            </ScrollViewer>
+
+            <!-- Fixed Footer with Action Buttons -->
+            <Border Grid.Row="2"
+                    BorderBrush="{DynamicResource BorderBrush}"
+                    BorderThickness="0,0,0,0"
+                    Padding="20,15">
+                <Grid ColumnDefinitions="*,Auto">
+                    <!-- Status Message -->
+                    <Border Background="{DynamicResource BackgroundSecondaryBrush}"
+                            CornerRadius="{StaticResource RadiusSmall}"
+                            Padding="10,8"
+                            IsVisible="{Binding FormViewModel.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                            VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Panel Width="16" Height="16">
+                                <heroIcons:HeroIcon Type="CheckCircle" Width="16" Height="16"
+                                                    Foreground="{DynamicResource SuccessBrush}"
+                                                    IsVisible="{Binding FormViewModel.IsError, Converter={x:Static BoolConverters.Not}}"/>
+                                <heroIcons:HeroIcon Type="ExclamationCircle" Width="16" Height="16"
+                                                    Foreground="{DynamicResource DangerBrush}"
+                                                    IsVisible="{Binding FormViewModel.IsError}"/>
+                            </Panel>
+                            <TextBlock Text="{Binding FormViewModel.StatusMessage}"
+                                       Foreground="{DynamicResource ForegroundMutedBrush}"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Action Buttons -->
+                    <StackPanel Grid.Column="1"
+                                Orientation="Horizontal"
+                                Spacing="10">
+                        <Button Cursor="Hand"
+                                Command="{Binding FormViewModel.CancelCommand}"
+                                Classes="ghost">
+                            <TextBlock Text="{l:Translate Common.Button.Cancel}"/>
+                        </Button>
+                        <!-- Generate button (visible only in Generate tab) -->
+                        <Button Cursor="Hand"
+                                Command="{Binding FormViewModel.GenerateKeyPairCommand}"
+                                IsEnabled="{Binding FormViewModel.IsGenerating, Converter={x:Static BoolConverters.Not}}"
+                                IsVisible="{Binding FormViewModel.IsGenerateMode}"
+                                Classes="primary">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <heroIcons:HeroIcon Type="Key" Width="16" Height="16" Foreground="{Binding $parent[Button].Foreground}"
+                                                    IsVisible="{Binding FormViewModel.IsGenerating, Converter={x:Static BoolConverters.Not}}"/>
+                                <heroIcons:HeroIcon Type="ArrowPath" Width="16" Height="16" Foreground="{Binding $parent[Button].Foreground}"
+                                                    IsVisible="{Binding FormViewModel.IsGenerating}"/>
+                                <TextBlock Text="{l:Translate Pem.GenerateButton.Label}"
+                                           IsVisible="{Binding FormViewModel.IsGenerating, Converter={x:Static BoolConverters.Not}}"/>
+                                <TextBlock Text="{l:Translate Pem.GenerateButton.Loading}"
+                                           IsVisible="{Binding FormViewModel.IsGenerating}"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Panel>
+</UserControl>
