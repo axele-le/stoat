@@ -13,8 +13,7 @@
   <img src="https://img.shields.io/github/repo-size/axele-le/stoat?style=flat-square&color=green" alt="Repo Size" />
   <img src="https://img.shields.io/badge/.NET-8.0-512BD4?style=flat-square&logo=dotnet" alt=".NET 8" />
   <img src="https://img.shields.io/badge/Avalonia-11.3-8b44ac?style=flat-square" alt="Avalonia" />
-  <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux
-         -0078D6?style=flat-square" alt="Platform" />
+  <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-0078D6?style=flat-square" alt="Platform" />
   <img src="https://img.shields.io/badge/version-0.8.0-orange?style=flat-square" alt="Version" />
 </p>
 
