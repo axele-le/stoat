@@ -27,18 +27,13 @@ public partial class SettingsViewModel : ViewModelBase
     private readonly ILockService _lockService;
     private readonly IConfirmationService _confirmationService;
     private readonly ILocalizationService _localizationService;
+    private readonly IToastService _toastService;
 
     private bool _isLoadingSettings; // prevents auto-save during load
     private CancellationTokenSource? _saveDebounce;
 
     [ObservableProperty]
     private ObservableCollection<ProfileItemViewModel> _profiles = new();
-
-    [ObservableProperty]
-    private string? _statusMessage;
-
-    [ObservableProperty]
-    private bool _isError;
 
     // Create profile
     [ObservableProperty]
@@ -266,20 +261,22 @@ public partial class SettingsViewModel : ViewModelBase
         IClientSettingsService clientSettingsService,
         ILockService lockService,
         IConfirmationService confirmationService,
-        ILocalizationService localizationService)
+        ILocalizationService localizationService,
+        IToastService toastService)
     {
         _profileService = profileService;
         _clientSettingsService = clientSettingsService;
         _lockService = lockService;
         _confirmationService = confirmationService;
         _localizationService = localizationService;
+        _toastService = toastService;
         _profileService.ActiveProfileChanged += OnActiveProfileChanged;
         InitializeLocalization(localizationService, OnLanguageChanged);
     }
 
     private void OnLanguageChanged()
     {
-        OnPropertyChanged(nameof(StatusMessage));
+        // Toast messages are already dispatched, no property to refresh
     }
 
     public override async void OnNavigatedTo()
@@ -321,12 +318,10 @@ public partial class SettingsViewModel : ViewModelBase
                 });
             }
 
-            StatusMessage = null;
         }
         catch (Exception ex)
         {
-            StatusMessage = _localizationService.Format("Common.Error.WithMessage", ex.Message);
-            IsError = true;
+            _toastService.Error(_localizationService.Format("Common.Error.WithMessage", ex.Message));
         }
     }
 
@@ -335,8 +330,7 @@ public partial class SettingsViewModel : ViewModelBase
     {
         if (string.IsNullOrWhiteSpace(NewProfileName))
         {
-            StatusMessage = _localizationService.Format("Settings.Profile.Create.EmptyNameError");
-            IsError = true;
+            _toastService.Warning(_localizationService.Format("Settings.Profile.Create.EmptyNameError"));
             return;
         }
 
@@ -359,13 +353,12 @@ public partial class SettingsViewModel : ViewModelBase
             });
 
             NewProfileName = string.Empty;
-            StatusMessage =  _localizationService.Format("Settings.Profile.Create.Success", profile.Name);
-            IsError = false;
+
+            _toastService.Success(_localizationService.Format("Settings.Profile.Create.Success", profile.Name));
         }
         catch (Exception ex)
         {
-            StatusMessage = _localizationService.Format("Common.Error.WithMessage", ex.Message);
-            IsError = true;
+            _toastService.Error(_localizationService.Format("Common.Error.WithMessage", ex.Message));
         }
     }
 
@@ -383,13 +376,11 @@ public partial class SettingsViewModel : ViewModelBase
                 p.IsActive = p.Id == profile.Id;
             }
 
-            StatusMessage = _localizationService.Format("Settings.Profile.Success.Activated", profile.Name);
-            IsError = false;
+            _toastService.Success(_localizationService.Format("Settings.Profile.SetActive.Success", profile.Name));
         }
         catch (Exception ex)
         {
-            StatusMessage = _localizationService.Format("Common.Error.WithMessage", ex.Message);
-            IsError = true;
+            _toastService.Error(_localizationService.Format("Common.Error.WithMessage", ex.Message));
         }
     }
 
@@ -400,8 +391,7 @@ public partial class SettingsViewModel : ViewModelBase
 
         if (Profiles.Count <= 1)
         {
-            StatusMessage = _localizationService.Format("Settings.Profile.Error.CannotDeleteOnly");
-            IsError = true;
+            _toastService.Error(_localizationService.Format("Settings.Profile.Error.CannotDeleteOnly"));
             return;
         }
 
@@ -413,13 +403,11 @@ public partial class SettingsViewModel : ViewModelBase
             await _profileService.DeleteProfileAsync(profile.Id);
             Profiles.Remove(profile);
 
-            StatusMessage = _localizationService.Format("Settings.Profile.Success.Deleted", profile.Name);
-            IsError = false;
+            _toastService.Success(_localizationService.Format("Settings.Profile.Delete.Success", profile.Name));
         }
         catch (Exception ex)
         {
-            StatusMessage = _localizationService.Format("Common.Error.WithMessage", ex.Message);
-            IsError = true;
+            _toastService.Error(_localizationService.Format("Common.Error.WithMessage", ex.Message));
         }
     }
 
@@ -453,8 +441,7 @@ public partial class SettingsViewModel : ViewModelBase
             }
             catch (Exception ex)
             {
-                StatusMessage = _localizationService.Format("Settings.Credentials.Error.Loading", ex.Message);
-                IsError = true;
+                _toastService.Error(_localizationService.Format("Settings.Credentials.Error.Loading", ex.Message));
             }
         }
     }
@@ -490,13 +477,12 @@ public partial class SettingsViewModel : ViewModelBase
             var newSalt = Guid.NewGuid().ToString("N")[..16];
             await _profileService.UpdateProfileCredentialsAsync(profile.Id, null, newSalt);
             profile.Salt = newSalt;
-            StatusMessage = _localizationService.Format("Settings.Credentials.Success.SaltRegenerated");
-            IsError = false;
+
+            _toastService.Success(_localizationService.Format("Settings.Credentials.Success.SaltRegenerated"));
         }
         catch (Exception ex)
         {
-            StatusMessage = _localizationService.Format("Common.Error.WithMessage", ex.Message);
-            IsError = true;
+            _toastService.Error(_localizationService.Format("Common.Error.WithMessage", ex.Message));
         }
     }
 
@@ -513,13 +499,12 @@ public partial class SettingsViewModel : ViewModelBase
             var newSecret = Guid.NewGuid().ToString("N");
             await _profileService.UpdateProfileCredentialsAsync(profile.Id, newSecret, null);
             profile.Secret = newSecret;
-            StatusMessage = _localizationService.Format("Settings.Credentials.Success.SecretRegenerated");
-            IsError = false;
+
+            _toastService.Success(_localizationService.Format("Settings.Credentials.Success.SecretRegenerated"));
         }
         catch (Exception ex)
         {
-            StatusMessage = _localizationService.Format("Common.Error.WithMessage", ex.Message);
-            IsError = true;
+            _toastService.Error(_localizationService.Format("Common.Error.WithMessage", ex.Message));
         }
     }
 
@@ -530,21 +515,18 @@ public partial class SettingsViewModel : ViewModelBase
 
         if (string.IsNullOrWhiteSpace(profile.Salt))
         {
-            StatusMessage = _localizationService.Format("Settings.Credentials.Error.SaltEmpty");
-            IsError = true;
+            _toastService.Error(_localizationService.Format("Settings.Credentials.Error.SaltEmpty"));
             return;
         }
 
         try
         {
             await _profileService.UpdateProfileCredentialsAsync(profile.Id, null, profile.Salt);
-            StatusMessage = _localizationService.Format("Settings.Credentials.Success.SaltSaved");
-            IsError = false;
+            _toastService.Success(_localizationService.Format("Settings.Credentials.Success.SaltSaved"));
         }
         catch (Exception ex)
         {
-            StatusMessage = _localizationService.Format("Common.Error.WithMessage", ex.Message);
-            IsError = true;
+            _toastService.Error(_localizationService.Format("Common.Error.WithMessage", ex.Message));
         }
     }
 
@@ -555,21 +537,18 @@ public partial class SettingsViewModel : ViewModelBase
 
         if (string.IsNullOrWhiteSpace(profile.Secret))
         {
-            StatusMessage = _localizationService.Format("Settings.Credentials.Error.SecretEmpty");
-            IsError = true;
+            _toastService.Error(_localizationService.Format("Settings.Credentials.Error.SecretEmpty"));
             return;
         }
 
         try
         {
             await _profileService.UpdateProfileCredentialsAsync(profile.Id, profile.Secret, null);
-            StatusMessage = _localizationService.Format("Settings.Credentials.Success.SecretSaved");
-            IsError = false;
+            _toastService.Success(_localizationService.Format("Settings.Credentials.Success.SecretSaved"));
         }
         catch (Exception ex)
         {
-            StatusMessage = _localizationService.Format("Common.Error.WithMessage", ex.Message);
-            IsError = true;
+            _toastService.Error(_localizationService.Format("Common.Error.WithMessage", ex.Message));
         }
     }
 
@@ -599,8 +578,7 @@ public partial class SettingsViewModel : ViewModelBase
         var newName = profile.EditingName?.Trim();
         if (string.IsNullOrWhiteSpace(newName))
         {
-            StatusMessage = _localizationService.Format("Settings.Profile.Error.NameEmpty");
-            IsError = true;
+            _toastService.Error(_localizationService.Format("Settings.Profile.Error.NameEmpty"));
             profile.IsEditing = false;
             return;
         }
@@ -614,15 +592,15 @@ public partial class SettingsViewModel : ViewModelBase
         try
         {
             await _profileService.UpdateProfileAsync(profile.Id, newName, profile.Description);
+            
             profile.Name = newName;
             profile.IsEditing = false;
-            StatusMessage = _localizationService.Format("Settings.Profile.Success.Renamed", newName);
-            IsError = false;
+
+            _toastService.Success(_localizationService.Format("Settings.Profile.Success.Renamed", newName));
         }
         catch (Exception ex)
         {
-            StatusMessage = _localizationService.Format("Common.Error.WithMessage", ex.Message);
-            IsError = true;
+            _toastService.Error(_localizationService.Format("Common.Error.WithMessage", ex.Message));
             profile.IsEditing = false;
         }
     }
@@ -686,8 +664,7 @@ public partial class SettingsViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            StatusMessage = _localizationService.Format("Common.Error.WithMessage", ex.Message);
-            IsError = true;
+            _toastService.Error(_localizationService.Format("Common.Error.WithMessage", ex.Message));
         }
         finally
         {
@@ -706,8 +683,14 @@ public partial class SettingsViewModel : ViewModelBase
             OnPropertyChanged(nameof(CanExport));
         }
 
-        IsError = !success;
-        StatusMessage = message;
+        if (!success)
+        {
+            _toastService.Error(message);
+        }
+        else
+        {
+            _toastService.Success(message);
+        }
     }
 
     [RelayCommand]
@@ -725,8 +708,7 @@ public partial class SettingsViewModel : ViewModelBase
 
             if (_pendingImportPackage == null)
             {
-                StatusMessage = _localizationService.Format("Settings.Import.Error.InvalidFile");
-                IsError = true;
+                _toastService.Error(_localizationService.Format("Settings.Import.Error.InvalidFile"));
                 return;
             }
 
@@ -737,15 +719,15 @@ public partial class SettingsViewModel : ViewModelBase
             ImportPreviewInfo = _localizationService.Format("Settings.Import.Preview.InfoFormat", date, machine, format);
 
             OnPropertyChanged(nameof(HasImportFile));
-            StatusMessage = null;
         }
         catch (JsonException)
         {
-            StatusMessage = _localizationService.Format("Settings.Import.Error.NotExportFile");
-            IsError = true;
+            _toastService.Error(_localizationService.Format("Settings.Import.Error.NotExportFile"));
+
             _pendingImportPackage = null;
             ImportFileName = null;
             ImportPreviewInfo = null;
+            
             OnPropertyChanged(nameof(HasImportFile));
         }
     }
@@ -774,8 +756,7 @@ public partial class SettingsViewModel : ViewModelBase
             if (result.ReplacedCount > 0)
                 message += $", " + _localizationService.Format("Settings.Import.Result.Replaced", result.ReplacedCount);
 
-            StatusMessage = message;
-            IsError = false;
+            _toastService.Success(message);
 
             // Reset import state
             _pendingImportPackage = null;
@@ -786,18 +767,16 @@ public partial class SettingsViewModel : ViewModelBase
 
             // Refresh profile list
             await LoadProfilesAsync();
-            StatusMessage = message; // Restore after LoadProfilesAsync clears it
-            IsError = false;
+
+            _toastService.Success(message);
         }
         catch (InvalidExportPasswordException)
         {
-            StatusMessage = _localizationService.Format("Settings.Import.Error.BadPasswordOrCorrupted");
-            IsError = true;
+            _toastService.Error(_localizationService.Format("Settings.Import.Error.BadPasswordOrCorrupted"));
         }
         catch (Exception ex)
         {
-            StatusMessage = _localizationService.Format("Settings.Import.Error.ImportFailed", ex.Message);
-            IsError = true;
+            _toastService.Error(_localizationService.Format("Settings.Import.Error.ImportFailed", ex.Message));
         }
         finally
         {
@@ -992,15 +971,13 @@ public partial class SettingsViewModel : ViewModelBase
     {
         if (string.IsNullOrEmpty(MasterPassword) || MasterPassword.Length < 8)
         {
-            StatusMessage = _localizationService.Format("Settings.MasterPassword.Error.TooShort");
-            IsError = true;
+            _toastService.Error(_localizationService.Format("Settings.MasterPassword.Error.TooShort"));
             return;
         }
 
         if (MasterPassword != MasterPasswordConfirm)
         {
-            StatusMessage = _localizationService.Format("Settings.MasterPassword.Error.Mismatch");
-            IsError = true;
+            _toastService.Error(_localizationService.Format("Settings.MasterPassword.Error.Mismatch"));
             return;
         }
 
@@ -1011,16 +988,15 @@ public partial class SettingsViewModel : ViewModelBase
             IsSettingMasterPassword = false;
             MasterPassword = string.Empty;
             MasterPasswordConfirm = string.Empty;
-            StatusMessage = _localizationService.Format("Settings.MasterPassword.Success.Setup");
-            IsError = false;
+
+            _toastService.Success(_localizationService.Format("Settings.MasterPassword.Success.Setup"));
 
             RecoveryKeyDisplay = recoveryKey;
             IsRecoveryKeyModalVisible = true;
         }
         catch (Exception ex)
         {
-            StatusMessage = _localizationService.Format("Common.Error.WithMessage", ex.Message);
-            IsError = true;
+            _toastService.Error(_localizationService.Format("Common.Error.WithMessage", ex.Message));
         }
     }
 
@@ -1029,22 +1005,19 @@ public partial class SettingsViewModel : ViewModelBase
     {
         if (string.IsNullOrEmpty(CurrentMasterPassword))
         {
-            StatusMessage = _localizationService.Format("Settings.MasterPassword.Error.CurrentRequired");
-            IsError = true;
+            _toastService.Error(_localizationService.Format("Settings.MasterPassword.Error.CurrentRequired"));
             return;
         }
 
         if (string.IsNullOrEmpty(MasterPassword) || MasterPassword.Length < 8)
         {
-            StatusMessage = _localizationService.Format("Settings.MasterPassword.Error.NewTooShort");
-            IsError = true;
+            _toastService.Error(_localizationService.Format("Settings.MasterPassword.Error.NewTooShort"));
             return;
         }
 
         if (MasterPassword != MasterPasswordConfirm)
         {
-            StatusMessage = _localizationService.Format("Settings.MasterPassword.Error.NewMismatch");
-            IsError = true;
+            _toastService.Error(_localizationService.Format("Settings.MasterPassword.Error.NewMismatch"));
             return;
         }
 
@@ -1053,8 +1026,7 @@ public partial class SettingsViewModel : ViewModelBase
             var recoveryKey = await _lockService.ChangeMasterPasswordWithRecoveryAsync(CurrentMasterPassword, MasterPassword);
             if (recoveryKey == null)
             {
-                StatusMessage = _localizationService.Format("Settings.MasterPassword.Error.CurrentIncorrect");
-                IsError = true;
+                _toastService.Error(_localizationService.Format("Settings.MasterPassword.Error.CurrentIncorrect"));
                 return;
             }
 
@@ -1062,16 +1034,15 @@ public partial class SettingsViewModel : ViewModelBase
             CurrentMasterPassword = string.Empty;
             MasterPassword = string.Empty;
             MasterPasswordConfirm = string.Empty;
-            StatusMessage = _localizationService.Format("Settings.MasterPassword.Success.Changed");
-            IsError = false;
+
+            _toastService.Success(_localizationService.Format("Settings.MasterPassword.Success.Changed"));
 
             RecoveryKeyDisplay = recoveryKey;
             IsRecoveryKeyModalVisible = true;
         }
         catch (Exception ex)
         {
-            StatusMessage = _localizationService.Format("Common.Error.WithMessage", ex.Message);
-            IsError = true;
+            _toastService.Error(_localizationService.Format("Common.Error.WithMessage", ex.Message));
         }
     }
 
@@ -1084,8 +1055,8 @@ public partial class SettingsViewModel : ViewModelBase
             CurrentMasterPassword = string.Empty;
             IsChangingMasterPassword = true;
             IsSettingMasterPassword = false;
-            StatusMessage = _localizationService.Format("Settings.MasterPassword.Error.RemoveRequiresPassword");
-            IsError = false;
+
+            _toastService.Error(_localizationService.Format("Settings.MasterPassword.Error.RemoveRequiresPassword"));
             return;
         }
 
@@ -1094,8 +1065,7 @@ public partial class SettingsViewModel : ViewModelBase
             var success = await _lockService.RemoveMasterPasswordAsync(CurrentMasterPassword);
             if (!success)
             {
-                StatusMessage = _localizationService.Format("Settings.MasterPassword.Error.IncorrectPassword");
-                IsError = true;
+                _toastService.Error(_localizationService.Format("Settings.MasterPassword.Error.IncorrectPassword"));
                 return;
             }
 
@@ -1105,8 +1075,9 @@ public partial class SettingsViewModel : ViewModelBase
             CurrentMasterPassword = string.Empty;
             MasterPassword = string.Empty;
             MasterPasswordConfirm = string.Empty;
-            StatusMessage = _localizationService.Format("Settings.MasterPassword.Success.Removed");
-            IsError = false;
+
+            _toastService.Success(_localizationService.Format("Settings.MasterPassword.Success.Removed"));
+            
             AutoLockSettingsChanged?.Invoke(this, new AutoLockSettingsEventArgs
             {
                 Enabled = false,
@@ -1115,8 +1086,7 @@ public partial class SettingsViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            StatusMessage = _localizationService.Format("Common.Error.WithMessage", ex.Message);
-            IsError = true;
+            _toastService.Error(_localizationService.Format("Common.Error.WithMessage", ex.Message));
         }
     }
 
@@ -1131,11 +1101,5 @@ public partial class SettingsViewModel : ViewModelBase
         if (password.Any(char.IsDigit) && password.Any(c => !char.IsLetterOrDigit(c))) score++;
 
         return score;
-    }
-
-    public void SetStatusMessage(bool success, string message)
-    {
-        IsError = !success;
-        StatusMessage = message;
     }
 }

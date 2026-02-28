@@ -18,6 +18,7 @@ public partial class CsrViewModel : ViewModelBase
     private readonly ICsrImportService _csrImportService;
     private readonly IConfirmationService _confirmationService;
     private readonly ILocalizationService _localizationService;
+    private readonly IToastService _toastService;
 
     /// <summary>
     /// Collection of CSRs grouped by private key.
@@ -48,18 +49,6 @@ public partial class CsrViewModel : ViewModelBase
     private CsrFormViewModel? _formViewModel;
 
     /// <summary>
-    /// Status message to display to the user.
-    /// </summary>
-    [ObservableProperty]
-    private string? _statusMessage;
-
-    /// <summary>
-    /// Whether the status message indicates an error.
-    /// </summary>
-    [ObservableProperty]
-    private bool _isError;
-
-    /// <summary>
     /// Currently expanded CSR item (for showing details).
     /// </summary>
     [ObservableProperty]
@@ -84,13 +73,14 @@ public partial class CsrViewModel : ViewModelBase
     public event Action<string, string, string>? SaveFileRequested;
     public event Action<string>? CopyToClipboardRequested;
 
-    public CsrViewModel(ICsrService csrService, ICsrStorageService csrStorageService, ICsrImportService csrImportService, IConfirmationService confirmationService, ILocalizationService localizationService)
+    public CsrViewModel(ICsrService csrService, ICsrStorageService csrStorageService, ICsrImportService csrImportService, IConfirmationService confirmationService, ILocalizationService localizationService, IToastService toastService)
     {
         _csrService = csrService;
         _csrStorageService = csrStorageService;
         _csrImportService = csrImportService;
         _confirmationService = confirmationService;
         _localizationService = localizationService;
+        _toastService = toastService;
 
         // Subscribe to collection events
         _csrStorageService.CsrCreated += OnCsrCreated;
@@ -142,7 +132,7 @@ public partial class CsrViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            SetStatus(_localizationService.Format("Common.Error.LoadingFailed", ex.Message), isError: true);
+            _toastService.Error(_localizationService.Format("Common.Error.LoadingFailed", ex.Message));
         }
     }
 
@@ -232,7 +222,7 @@ public partial class CsrViewModel : ViewModelBase
     [RelayCommand]
     private void OpenNewCsrForm()
     {
-        FormViewModel = new CsrFormViewModel(_csrService, _csrStorageService, _localizationService);
+        FormViewModel = new CsrFormViewModel(_csrService, _csrStorageService, _localizationService, _toastService);
         FormViewModel.CloseRequested += () =>
         {
             IsFormOpen = false;
@@ -287,7 +277,7 @@ public partial class CsrViewModel : ViewModelBase
     [RelayCommand]
     private void OpenImportForm()
     {
-        ImportFormViewModel = new CsrImportFormViewModel(_csrImportService, _csrStorageService, _localizationService);
+        ImportFormViewModel = new CsrImportFormViewModel(_csrImportService, _csrStorageService, _localizationService, _toastService);
         ImportFormViewModel.CloseRequested += () =>
         {
             IsImportFormOpen = false;
@@ -297,7 +287,7 @@ public partial class CsrViewModel : ViewModelBase
         {
             IsImportFormOpen = false;
             ImportFormViewModel = null;
-            SetStatus(_localizationService.Format("Csr.Success.Imported"));
+            _toastService.Success(_localizationService.Format("Csr.Success.Imported"));
         };
         IsImportFormOpen = true;
     }
@@ -318,11 +308,11 @@ public partial class CsrViewModel : ViewModelBase
         try
         {
             await _csrStorageService.DeleteCsrAsync(id);
-            SetStatus(_localizationService.Format("Csr.Success.Deleted"));
+            _toastService.Success(_localizationService.Format("Csr.Success.Deleted"));
         }
         catch (Exception ex)
         {
-            SetStatus(_localizationService.Format("Common.Error.DeletionFailed", ex.Message), isError: true);
+            _toastService.Error(_localizationService.Format("Common.Error.DeletionFailed", ex.Message));
         }
     }
 
@@ -354,11 +344,11 @@ public partial class CsrViewModel : ViewModelBase
         {
             await _csrStorageService.UpdateKeyGroupNameAsync(group.GroupId, group.GroupName);
             group.IsEditingName = false;
-            SetStatus(_localizationService.Format("Csr.Group.Success.NameUpdated"));
+            _toastService.Success(_localizationService.Format("Csr.Group.Success.NameUpdated"));
         }
         catch (Exception ex)
         {
-            SetStatus(_localizationService.Format("Common.Error.WithMessage", ex.Message), isError: true);
+            _toastService.Error(_localizationService.Format("Common.Error.WithMessage", ex.Message));
         }
     }
 
@@ -396,7 +386,7 @@ public partial class CsrViewModel : ViewModelBase
             }
             catch (Exception ex)
             {
-                SetStatus(_localizationService.Format("Common.Error.WithMessage", ex.Message), isError: true);
+                _toastService.Error(_localizationService.Format("Common.Error.WithMessage", ex.Message));
             }
             finally
             {
@@ -422,14 +412,14 @@ public partial class CsrViewModel : ViewModelBase
 
             CopyToClipboardRequested?.Invoke(privateKey);
             group.IsCopied = true;
-            SetStatus(_localizationService.Format("Csr.Success.PrivateKeyCopied"));
+            _toastService.Success(_localizationService.Format("Csr.Success.PrivateKeyCopied"));
 
             // Reset copied state after 2 seconds
             _ = Task.Delay(2000).ContinueWith(_ => group.IsCopied = false);
         }
         catch (Exception ex)
         {
-            SetStatus(_localizationService.Format("Common.Error.WithMessage", ex.Message), isError: true);
+            _toastService.Error(_localizationService.Format("Common.Error.WithMessage", ex.Message));
         }
     }
 
@@ -453,7 +443,7 @@ public partial class CsrViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            SetStatus(_localizationService.Format("Common.Error.WithMessage", ex.Message), isError: true);
+            _toastService.Error(_localizationService.Format("Common.Error.WithMessage", ex.Message));
         }
     }
 
@@ -465,7 +455,7 @@ public partial class CsrViewModel : ViewModelBase
     private void CopyCsr(CsrItemViewModel item)
     {
         CopyToClipboardRequested?.Invoke(item.CsrPem);
-        SetStatus(_localizationService.Format("Csr.Success.CsrCopied"));
+        _toastService.Success(_localizationService.Format("Csr.Success.CsrCopied"));
     }
 
     [RelayCommand]
@@ -487,13 +477,11 @@ public partial class CsrViewModel : ViewModelBase
 
     public void SetFileSaveResult(bool success, string? message = null)
     {
-        SetStatus(message ?? (success ? _localizationService.Format("Common.Success.FileSaved") : _localizationService.Format("Common.Error.SaveCancelled")), isError: !success);
-    }
-
-    private void SetStatus(string message, bool isError = false)
-    {
-        StatusMessage = message;
-        IsError = isError;
+        var msg = message ?? (success ? _localizationService.Format("Common.Success.FileSaved") : _localizationService.Format("Common.Error.SaveCancelled"));
+        if (success)
+            _toastService.Success(msg);
+        else
+            _toastService.Error(msg);
     }
 
     private static string SanitizeFileName(string name)

@@ -14,6 +14,7 @@ public partial class CsrImportFormViewModel : ObservableObject
     private readonly ICsrImportService _importService;
     private readonly ICsrStorageService _storageService;
     private readonly ILocalizationService _localizationService;
+    private readonly IToastService _toastService;
 
     // Import mode
     [ObservableProperty]
@@ -79,12 +80,6 @@ public partial class CsrImportFormViewModel : ObservableObject
     private bool _isImporting;
 
     [ObservableProperty]
-    private string? _statusMessage;
-
-    [ObservableProperty]
-    private bool _isError;
-
-    [ObservableProperty]
     private bool _canImport;
 
     // Parsed results (internal)
@@ -97,11 +92,12 @@ public partial class CsrImportFormViewModel : ObservableObject
     public event Action? SelectCsrFileRequested;
     public event Action? SelectKeyFileRequested;
 
-    public CsrImportFormViewModel(ICsrImportService importService, ICsrStorageService storageService, ILocalizationService localizationService)
+    public CsrImportFormViewModel(ICsrImportService importService, ICsrStorageService storageService, ILocalizationService localizationService, IToastService toastService)
     {
         _importService = importService;
         _storageService = storageService;
         _localizationService = localizationService;
+        _toastService = toastService;
     }
 
     partial void OnImportCsrOnlyChanged(bool value)
@@ -148,8 +144,7 @@ public partial class CsrImportFormViewModel : ObservableObject
 
         if (!_csrResult.Success)
         {
-            StatusMessage = _csrResult.Error;
-            IsError = true;
+            _toastService.Error(_csrResult.Error ?? string.Empty);
             ShowPreview = false;
             HasCsrFile = false;
             CsrFileName = null;
@@ -157,8 +152,6 @@ public partial class CsrImportFormViewModel : ObservableObject
         }
         else
         {
-            StatusMessage = null;
-            IsError = false;
 
             // Auto-fill name from CN if empty
             if (string.IsNullOrEmpty(ImportName) && _csrResult.ParsedData != null)
@@ -181,16 +174,10 @@ public partial class CsrImportFormViewModel : ObservableObject
 
         if (!_keyResult.Success)
         {
-            StatusMessage = _keyResult.Error;
-            IsError = true;
+            _toastService.Error(_keyResult.Error ?? string.Empty);
             HasKeyFile = false;
             KeyFileName = null;
             _keyResult = null;
-        }
-        else
-        {
-            StatusMessage = null;
-            IsError = false;
         }
 
         ValidateAndPreview();
@@ -275,7 +262,6 @@ public partial class CsrImportFormViewModel : ObservableObject
         if (_csrResult is not { Success: true } || !CanImport) return;
 
         IsImporting = true;
-        StatusMessage = null;
 
         try
         {
@@ -303,8 +289,7 @@ public partial class CsrImportFormViewModel : ObservableObject
         catch (Exception ex)
         {
             IsImporting = false;
-            StatusMessage = _localizationService?.Format("CsrImport.Error.ImportFailed", ex.Message);
-            IsError = true;
+            _toastService.Error(_localizationService?.Format("CsrImport.Error.ImportFailed", ex.Message) ?? string.Empty);
         }
     }
 

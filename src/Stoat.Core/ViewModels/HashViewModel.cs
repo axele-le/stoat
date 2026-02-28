@@ -10,18 +10,13 @@ public partial class HashViewModel : ViewModelBase
 {
     private readonly IHashService _hashService;
     private readonly ILocalizationService _localizationService;
+    private readonly IToastService _toastService;
 
     [ObservableProperty]
     private string _inputText = string.Empty;
 
     [ObservableProperty]
     private string _outputHash = string.Empty;
-
-    [ObservableProperty]
-    private string? _statusMessage;
-
-    [ObservableProperty]
-    private bool _isError;
 
     [ObservableProperty]
     private HashAlgorithmType _selectedAlgorithm = HashAlgorithmType.SHA256;
@@ -56,10 +51,11 @@ public partial class HashViewModel : ViewModelBase
 
     public ObservableCollection<HashAlgorithmType> AlgorithmOptions { get; } = new(Enum.GetValues<HashAlgorithmType>());
 
-    public HashViewModel(IHashService hashService, ILocalizationService localizationService)
+    public HashViewModel(IHashService hashService, ILocalizationService localizationService, IToastService toastService)
     {
         _hashService = hashService;
         _localizationService = localizationService;
+        _toastService = toastService;
     }
 
     partial void OnInputTextChanged(string value) => UpdateCanHash();
@@ -87,21 +83,18 @@ public partial class HashViewModel : ViewModelBase
     {
         if (string.IsNullOrWhiteSpace(InputText))
         {
-            IsError = true;
-            StatusMessage = _localizationService.Format("Hash.Error.NoText");
+            _toastService.Warning(_localizationService.Format("Hash.Error.NoText"));
             return;
         }
 
         try
         {
             OutputHash = _hashService.HashText(InputText, SelectedAlgorithm);
-            IsError = false;
-            StatusMessage = _localizationService.Format("Hash.Success.Computed", SelectedAlgorithm);
+            _toastService.Success(_localizationService.Format("Hash.Success.Computed", SelectedAlgorithm));
         }
         catch (Exception ex)
         {
-            IsError = true;
-            StatusMessage = ex.Message;
+            _toastService.Error(ex.Message);
         }
     }
 
@@ -109,8 +102,7 @@ public partial class HashViewModel : ViewModelBase
     {
         if (string.IsNullOrWhiteSpace(SelectedFilePath))
         {
-            IsError = true;
-            StatusMessage = _localizationService.Format("Hash.Error.NoFile");
+            _toastService.Warning(_localizationService.Format("Hash.Error.NoFile"));
             return;
         }
 
@@ -121,13 +113,11 @@ public partial class HashViewModel : ViewModelBase
         {
             var progress = new Progress<double>(p => HashProgress = p);
             OutputHash = await _hashService.HashFileAsync(SelectedFilePath, SelectedAlgorithm, progress);
-            IsError = false;
-            StatusMessage = _localizationService.Format("Hash.Success.Computed", SelectedAlgorithm);
+            _toastService.Success(_localizationService.Format("Hash.Success.Computed", SelectedAlgorithm));
         }
         catch (Exception ex)
         {
-            IsError = true;
-            StatusMessage = ex.Message;
+            _toastService.Error(ex.Message);
         }
         finally
         {
@@ -140,20 +130,17 @@ public partial class HashViewModel : ViewModelBase
     {
         if (string.IsNullOrWhiteSpace(OutputHash) || string.IsNullOrWhiteSpace(VerifyHash))
         {
-            IsError = true;
-            StatusMessage = _localizationService.Format("Hash.Verify.Error.Missing");
+            _toastService.Warning(_localizationService.Format("Hash.Verify.Error.Missing"));
             return;
         }
 
         if (string.Equals(OutputHash, VerifyHash.Trim(), StringComparison.OrdinalIgnoreCase))
         {
-            IsError = false;
-            StatusMessage = _localizationService.Format("Hash.Verify.Success.Match");
+            _toastService.Success(_localizationService.Format("Hash.Verify.Success.Match"));
         }
         else
         {
-            IsError = true;
-            StatusMessage = _localizationService.Format("Hash.Verify.Error.Mismatch");
+            _toastService.Error(_localizationService.Format("Hash.Verify.Error.Mismatch"));
         }
     }
 
@@ -163,8 +150,7 @@ public partial class HashViewModel : ViewModelBase
         if (!string.IsNullOrEmpty(OutputHash))
         {
             ClipboardCopyRequested?.Invoke(OutputHash);
-            StatusMessage = _localizationService.Format("Hash.Success.Copied");
-            IsError = false;
+            _toastService.Success(_localizationService.Format("Hash.Success.Copied"));
         }
     }
 
@@ -174,8 +160,6 @@ public partial class HashViewModel : ViewModelBase
         InputText = string.Empty;
         OutputHash = string.Empty;
         VerifyHash = string.Empty;
-        StatusMessage = null;
-        IsError = false;
         SelectedFilePath = null;
         SelectedFileName = null;
     }

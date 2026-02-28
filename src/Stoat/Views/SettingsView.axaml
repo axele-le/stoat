@@ -1132,7 +1132,7 @@
         </ScrollViewer>
 
         <!-- Status Bar -->
-        <Border Grid.Row="3"
+        <!-- <Border Grid.Row="3"
                 Background="{DynamicResource CardBrush}"
                 CornerRadius="{StaticResource RadiusLarge}"
                 Padding="15,12"
@@ -1150,7 +1150,7 @@
                            Foreground="{DynamicResource ForegroundSecondaryBrush}"
                            VerticalAlignment="Center"/>
             </Grid>
-        </Border>
+        </Border> -->
 
         <!-- Recovery Key Modal Overlay -->
         <Border Grid.Row="0" Grid.RowSpan="4"

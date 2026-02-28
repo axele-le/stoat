@@ -10,12 +10,14 @@ namespace Stoat.Views;
 public partial class PemFormView : UserControl
 {
     private readonly ILocalizationService? _localizationService;
+    private readonly IToastService? _toastService;
     
     public PemFormView()
     {
         InitializeComponent();
 
         _localizationService = App.Services?.GetService<ILocalizationService>();
+        _toastService = App.Services?.GetService<IToastService>();
     }
 
     protected override void OnLoaded(Avalonia.Interactivity.RoutedEventArgs e)
@@ -78,8 +80,7 @@ public partial class PemFormView : UserControl
                 {
                     if (DataContext is PemFormViewModel vm)
                     {
-                        vm.StatusMessage = _localizationService?.Format("Pem.Import.Error.Failed", ex.Message);
-                        vm.IsError = true;
+                        _toastService?.Error(_localizationService?.Format("Pem.Import.Error.Failed", ex.Message) ?? string.Empty);
                     }
                 }
             }
@@ -121,8 +122,7 @@ public partial class PemFormView : UserControl
             {
                 if (DataContext is PemFormViewModel vm)
                 {
-                    vm.StatusMessage = _localizationService?.Format("Pem.Import.Error.Failed", ex.Message);
-                    vm.IsError = true;
+                    _toastService?.Error(_localizationService?.Format("Pem.Import.Error.Failed", ex.Message) ?? string.Empty);
                 }
             }
         }

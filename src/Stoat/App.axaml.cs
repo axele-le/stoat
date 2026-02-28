@@ -153,5 +153,9 @@ public partial class App : Application
         // Confirmation dialog service (UI layer — drives overlay)
         services.AddSingleton<ConfirmationService>();
         services.AddSingleton<IConfirmationService>(sp => sp.GetRequiredService<ConfirmationService>());
+
+        // Toast notification service (UI layer — drives toast overlay)
+        services.AddSingleton<ToastService>();
+        services.AddSingleton<IToastService>(sp => sp.GetRequiredService<ToastService>());
     }
 }

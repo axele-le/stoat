@@ -16,6 +16,7 @@ public partial class CsrFormViewModel : ObservableObject
     private readonly ICsrService _csrService;
     private readonly ICsrStorageService _csrStorageService;
     private readonly ILocalizationService _localizationService;
+    private readonly IToastService _toastService;
 
     // Key source selection
     [ObservableProperty]
@@ -147,12 +148,6 @@ public partial class CsrFormViewModel : ObservableObject
     [NotifyCanExecuteChangedFor(nameof(GenerateCsrCommand))]
     private bool _isGenerating;
 
-    [ObservableProperty]
-    private string? _statusMessage;
-
-    [ObservableProperty]
-    private bool _isError;
-
     // Available options
     public CsrKeyAlgorithm[] AvailableKeyAlgorithms { get; } = Enum.GetValues<CsrKeyAlgorithm>();
     public CsrPresetType[] AvailablePresets { get; } = Enum.GetValues<CsrPresetType>();
@@ -168,11 +163,12 @@ public partial class CsrFormViewModel : ObservableObject
     /// </summary>
     public event Action? GenerationSucceeded;
 
-    public CsrFormViewModel(ICsrService csrService, ICsrStorageService csrStorageService, ILocalizationService localizationService)
+    public CsrFormViewModel(ICsrService csrService, ICsrStorageService csrStorageService, ILocalizationService localizationService, IToastService toastService)
     {
         _csrService = csrService;
         _csrStorageService = csrStorageService;
         _localizationService = localizationService;
+        _toastService = toastService;
 
         // Initialize with compatible signature algorithms
         UpdateCompatibleSignatureAlgorithms();
@@ -247,7 +243,7 @@ public partial class CsrFormViewModel : ObservableObject
 
         IsCA = defaults.IsCA;
 
-        SetStatus(_localizationService?.Format("Csr.Form.Success.PresetApplied", GetPresetDisplayName(preset)) ?? string.Empty, isError: false);
+        _toastService.Success(_localizationService?.Format("Csr.Form.Success.PresetApplied", GetPresetDisplayName(preset)) ?? string.Empty);
     }
 
     [RelayCommand]
@@ -267,25 +263,23 @@ public partial class CsrFormViewModel : ObservableObject
     {
         if (string.IsNullOrWhiteSpace(Name))
         {
-            SetStatus(_localizationService?.Format("Csr.Form.Error.NoIdentifier") ?? string.Empty, isError: true);
+            _toastService.Warning(_localizationService?.Format("Csr.Form.Error.NoIdentifier") ?? string.Empty);
             return;
         }
 
         if (string.IsNullOrWhiteSpace(CommonName))
         {
-            SetStatus(_localizationService?.Format("Csr.Form.Error.NoCN") ?? string.Empty, isError: true);
+            _toastService.Warning(_localizationService?.Format("Csr.Form.Error.NoCN") ?? string.Empty);
             return;
         }
 
         if (UseExistingKey && SelectedExistingKey == null)
         {
-            SetStatus(_localizationService?.Format("Csr.Form.Error.NoExistingKey") ?? string.Empty, isError: true);
+            _toastService.Warning(_localizationService?.Format("Csr.Form.Error.NoExistingKey") ?? string.Empty);
             return;
         }
 
         IsGenerating = true;
-        IsError = false;
-        StatusMessage = _localizationService?.Format("Csr.Form.Status.Generating") ?? string.Empty;
 
         try
         {
@@ -320,7 +314,7 @@ public partial class CsrFormViewModel : ObservableObject
                 publicKeyPem,
                 csrData);
 
-            SetStatus(_localizationService?.Format("Csr.Form.Success.Generated") ?? string.Empty, isError: false);
+            _toastService.Success(_localizationService?.Format("Csr.Form.Success.Generated") ?? string.Empty);
             GenerationSucceeded?.Invoke();
 
             // Clear form
@@ -328,7 +322,7 @@ public partial class CsrFormViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            SetStatus(_localizationService?.Format("Common.Error.WithMessage", ex.Message) ?? string.Empty, isError: true);
+            _toastService.Error(_localizationService?.Format("Common.Error.WithMessage", ex.Message) ?? string.Empty);
         }
         finally
         {
@@ -447,12 +441,6 @@ public partial class CsrFormViewModel : ObservableObject
             ExistingKeys.Add(key);
         }
         OnPropertyChanged(nameof(HasExistingKeys));
-    }
-
-    private void SetStatus(string message, bool isError)
-    {
-        StatusMessage = message;
-        IsError = isError;
     }
 
     private static string GetPresetDisplayName(CsrPresetType preset)

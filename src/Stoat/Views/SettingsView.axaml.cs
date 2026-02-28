@@ -16,6 +16,7 @@ public partial class SettingsView : UserControl
     private SettingsViewModel? _viewModel;
     private IClipboardService? _clipboardService;
     private ILocalizationService? _localizationService;
+    private IToastService? _toastService;
 
     public SettingsView()
     {
@@ -24,6 +25,7 @@ public partial class SettingsView : UserControl
         _viewModel = App.Services?.GetRequiredService<SettingsViewModel>();
         _clipboardService = App.Services?.GetService<IClipboardService>();
         _localizationService = App.Services?.GetService<ILocalizationService>();
+        _toastService = App.Services?.GetService<IToastService>();
 
         DataContext = _viewModel;
 
@@ -191,7 +193,7 @@ public partial class SettingsView : UserControl
         }
         catch (Exception ex)
         {
-            _viewModel?.SetStatusMessage(false, _localizationService?.Format("Common.Error.OpenFile", ex.Message) ?? string.Empty);
+            _toastService?.Error(_localizationService?.Format("Common.Error.OpenFile", ex.Message) ?? string.Empty);
         }
     }
 }

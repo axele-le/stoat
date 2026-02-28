@@ -14,5 +14,6 @@
         <StyleInclude Source="avares://Stoat/Styles/CardStyles.axaml"/>
         <StyleInclude Source="avares://Stoat/Styles/TextBlockStyles.axaml"/>
         <StyleInclude Source="avares://Stoat/Styles/SkeletonStyles.axaml"/>
+        <StyleInclude Source="avares://Stoat/Styles/ToastStyles.axaml"/>
     </Application.Styles>
 </Application>

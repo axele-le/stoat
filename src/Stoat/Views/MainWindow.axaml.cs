@@ -9,7 +9,6 @@ using Stoat.Services;
 using Stoat.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
-using System.Threading;
 
 namespace Stoat.Views;
 
@@ -22,7 +21,8 @@ public partial class MainWindow : Window
     private ILockService? _lockService;
     private IClientSettingsService? _clientSettingsService;
     private ConfirmationService? _confirmationService;
-    private Timer? _notificationTimer;
+    private ToastService? _toastService;
+    private ILocalizationService? _localizationService;
 
     private static readonly WindowIcon IconDark = new(Avalonia.Platform.AssetLoader.Open(new Uri("avares://Stoat/Assets/Images/stoat-white.ico")));
     private static readonly WindowIcon IconLight = new(Avalonia.Platform.AssetLoader.Open(new Uri("avares://Stoat/Assets/Images/stoat.ico")));
@@ -66,14 +66,22 @@ public partial class MainWindow : Window
             await SetupAutoLockAsync();
         }
 
-        // Subscribe to clipboard cleared notification
         var clipboardService = App.Services?.GetService<IClipboardService>();
         if (clipboardService != null)
         {
             clipboardService.ClipboardCleared += OnClipboardCleared;
         }
 
-        // Wire confirmation dialog overlay
+        _toastService = App.Services?.GetService<ToastService>();
+        if (_toastService != null)
+        {
+            var toastContainer = this.FindControl<ItemsControl>("ToastContainer");
+            if (toastContainer != null)
+            {
+                toastContainer.ItemsSource = _toastService.Toasts;
+            }
+        }
+
         _confirmationService = App.Services?.GetService<ConfirmationService>();
         if (_confirmationService != null)
         {
@@ -85,7 +93,8 @@ public partial class MainWindow : Window
             if (cancelBtn != null) cancelBtn.Click += (_, _) => _confirmationService.OnCancelled();
         }
 
-        // Wire activity tracking events
+        _localizationService = App.Services?.GetService<ILocalizationService>();
+
         PointerMoved += OnUserActivity;
         KeyDown += OnUserActivity;
         PointerPressed += OnUserActivity;
@@ -120,22 +129,8 @@ public partial class MainWindow : Window
 
     private void OnClipboardCleared(object? sender, EventArgs e)
     {
-        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-        {
-            var notification = this.FindControl<Border>("ClipboardNotification");
-            if (notification == null) return;
-
-            notification.IsVisible = true;
-
-            _notificationTimer?.Dispose();
-            _notificationTimer = new Timer(_ =>
-            {
-                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-                {
-                    notification.IsVisible = false;
-                });
-            }, null, 2000, Timeout.Infinite);
-        });
+        var message = _localizationService?.Format("MainWindow.Notification.ClipboardCleared") ?? string.Empty;
+        _toastService?.Success(message);
     }
 
     private void OnConfirmationPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)

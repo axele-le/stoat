@@ -13,6 +13,7 @@ public partial class EncryptionViewModel : ViewModelBase
     private readonly IProfileService _profileService;
     private readonly IConfirmationService _confirmationService;
     private readonly ILocalizationService _localizationService;
+    private readonly IToastService _toastService;
     private bool _isLoadingSettings;
     private bool _isApplyingPreset;
 
@@ -25,12 +26,6 @@ public partial class EncryptionViewModel : ViewModelBase
 
     [ObservableProperty]
     private string _outputText = string.Empty;
-
-    [ObservableProperty]
-    private string? _statusMessage;
-
-    [ObservableProperty]
-    private bool _isError;
 
     [ObservableProperty]
     private string _activeProfileName = string.Empty;
@@ -159,12 +154,14 @@ public partial class EncryptionViewModel : ViewModelBase
         IEncryptionService encryptionService,
         IProfileService profileService,
         IConfirmationService confirmationService,
-        ILocalizationService localizationService)
+        ILocalizationService localizationService,
+        IToastService toastService)
     {
         _encryptionService = encryptionService;
         _profileService = profileService;
         _confirmationService = confirmationService;
         _localizationService = localizationService;
+        _toastService = toastService;
 
         _profileService.ActiveProfileChanged += OnActiveProfileChanged;
         UpdateActiveProfileDisplay();
@@ -407,10 +404,9 @@ public partial class EncryptionViewModel : ViewModelBase
     {
         if (!HasActiveProfile)
         {
-            IsError = true;
-            StatusMessage = IsEncryptMode
+            _toastService.Warning(IsEncryptMode
                 ? _localizationService.Format("Encryption.Error.NoProfileToEncrypt")
-                : _localizationService.Format("Encryption.Error.NoProfileToDecrypt");
+                : _localizationService.Format("Encryption.Error.NoProfileToDecrypt"));
             return;
         }
 
@@ -424,10 +420,9 @@ public partial class EncryptionViewModel : ViewModelBase
     {
         if (string.IsNullOrWhiteSpace(InputText))
         {
-            IsError = true;
-            StatusMessage = IsEncryptMode
+            _toastService.Warning(IsEncryptMode
                 ? _localizationService.Format("Encryption.Error.NoTextToEncrypt")
-                : _localizationService.Format("Encryption.Error.NoTextToDecrypt");
+                : _localizationService.Format("Encryption.Error.NoTextToDecrypt"));
             return;
         }
 
@@ -438,13 +433,11 @@ public partial class EncryptionViewModel : ViewModelBase
             if (_encryptionService.TryEncrypt(InputText, out var encrypted, out var error, settings))
             {
                 OutputText = encrypted ?? string.Empty;
-                IsError = false;
-                StatusMessage = _localizationService.Format("Encryption.Success.TextEncrypted", ActiveProfileName);
+                _toastService.Success(_localizationService.Format("Encryption.Success.TextEncrypted", ActiveProfileName));
             }
             else
             {
-                IsError = true;
-                StatusMessage = error ?? _localizationService.Format("Encryption.Error.EncryptionFailed");
+                _toastService.Error(error ?? _localizationService.Format("Encryption.Error.EncryptionFailed"));
             }
         }
         else
@@ -452,13 +445,11 @@ public partial class EncryptionViewModel : ViewModelBase
             if (_encryptionService.TryDecrypt(InputText, out var decrypted, out var error, settings))
             {
                 OutputText = decrypted ?? string.Empty;
-                IsError = false;
-                StatusMessage = _localizationService.Format("Encryption.Success.TextDecrypted", ActiveProfileName);
+                _toastService.Success(_localizationService.Format("Encryption.Success.TextDecrypted", ActiveProfileName));
             }
             else
             {
-                IsError = true;
-                StatusMessage = error ?? _localizationService.Format("Encryption.Error.DecryptionFailed");
+                _toastService.Error(error ?? _localizationService.Format("Encryption.Error.DecryptionFailed"));
             }
         }
     }
@@ -467,10 +458,9 @@ public partial class EncryptionViewModel : ViewModelBase
     {
         if (string.IsNullOrWhiteSpace(SelectedFilePath))
         {
-            IsError = true;
-            StatusMessage = IsEncryptMode
+            _toastService.Warning(IsEncryptMode
                 ? _localizationService.Format("Encryption.Error.NoFileToEncrypt")
-                : _localizationService.Format("Encryption.Error.NoFileToDecrypt");
+                : _localizationService.Format("Encryption.Error.NoFileToDecrypt"));
             return;
         }
 
@@ -491,13 +481,11 @@ public partial class EncryptionViewModel : ViewModelBase
             if (success)
             {
                 OutputFilePath = resultPath;
-                IsError = false;
-                StatusMessage = _localizationService.Format("Encryption.Success.FileEncrypted", System.IO.Path.GetFileName(resultPath) ?? string.Empty);
+                _toastService.Success(_localizationService.Format("Encryption.Success.FileEncrypted", System.IO.Path.GetFileName(resultPath) ?? string.Empty));
             }
             else
             {
-                IsError = true;
-                StatusMessage = error ?? _localizationService.Format("Encryption.Error.FileEncryptionFailed");
+                _toastService.Error(error ?? _localizationService.Format("Encryption.Error.FileEncryptionFailed"));
             }
         }
         else
@@ -510,13 +498,11 @@ public partial class EncryptionViewModel : ViewModelBase
             if (success)
             {
                 OutputFilePath = resultPath;
-                IsError = false;
-                StatusMessage = _localizationService.Format("Encryption.Success.FileDecrypted", System.IO.Path.GetFileName(resultPath) ?? string.Empty);
+                _toastService.Success(_localizationService.Format("Encryption.Success.FileDecrypted", System.IO.Path.GetFileName(resultPath) ?? string.Empty));
             }
             else
             {
-                IsError = true;
-                StatusMessage = error ?? _localizationService.Format("Encryption.Error.FileDecryptionFailed");
+                _toastService.Error(error ?? _localizationService.Format("Encryption.Error.FileDecryptionFailed"));
             }
         }
     }
@@ -527,10 +513,9 @@ public partial class EncryptionViewModel : ViewModelBase
         if (!string.IsNullOrEmpty(OutputText))
         {
             ClipboardCopyRequested?.Invoke(OutputText);
-            StatusMessage = IsEncryptMode
+            _toastService.Success(IsEncryptMode
                 ? _localizationService.Format("Encryption.Success.CopiedEncrypted")
-                : _localizationService.Format("Encryption.Success.CopiedDecrypted");
-            IsError = false;
+                : _localizationService.Format("Encryption.Success.CopiedDecrypted"));
         }
     }
 
@@ -539,8 +524,6 @@ public partial class EncryptionViewModel : ViewModelBase
     {
         InputText = string.Empty;
         OutputText = string.Empty;
-        StatusMessage = null;
-        IsError = false;
         SelectedFilePath = null;
         SelectedFileName = null;
         OutputFilePath = null;

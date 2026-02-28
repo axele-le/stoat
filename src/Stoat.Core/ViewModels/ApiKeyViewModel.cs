@@ -11,6 +11,7 @@ public partial class ApiKeyViewModel : ViewModelBase
     private readonly IApiKeyStorageService _apiKeyStorageService;
     private readonly IConfirmationService _confirmationService;
     private readonly ILocalizationService _localizationService;
+    private readonly IToastService _toastService;
 
     /// <summary>
     /// Collection of saved API keys.
@@ -35,23 +36,12 @@ public partial class ApiKeyViewModel : ViewModelBase
     [ObservableProperty]
     private ApiKeyFormViewModel? _formViewModel;
 
-    /// <summary>
-    /// Status message to display to the user.
-    /// </summary>
-    [ObservableProperty]
-    private string? _statusMessage;
-
-    /// <summary>
-    /// Whether the status message indicates an error.
-    /// </summary>
-    [ObservableProperty]
-    private bool _isError;
-
-    public ApiKeyViewModel(IApiKeyStorageService apiKeyStorageService, IConfirmationService confirmationService, ILocalizationService localizationService)
+    public ApiKeyViewModel(IApiKeyStorageService apiKeyStorageService, IConfirmationService confirmationService, ILocalizationService localizationService, IToastService toastService)
     {
         _apiKeyStorageService = apiKeyStorageService;
         _confirmationService = confirmationService;
         _localizationService = localizationService;
+        _toastService = toastService;
 
         // Subscribe to collection events
         _apiKeyStorageService.KeyCreated += OnKeyCreated;
@@ -80,7 +70,7 @@ public partial class ApiKeyViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            SetStatus(_localizationService.Format("Common.Error.LoadingFailed", ex.Message), isError: true);
+            _toastService.Error(_localizationService.Format("Common.Error.LoadingFailed", ex.Message));
         }
     }
 
@@ -122,7 +112,7 @@ public partial class ApiKeyViewModel : ViewModelBase
     [RelayCommand]
     private void OpenNewApiKeyForm()
     {
-        FormViewModel = new ApiKeyFormViewModel(_apiKeyStorageService, _localizationService);
+        FormViewModel = new ApiKeyFormViewModel(_apiKeyStorageService, _localizationService, _toastService);
         FormViewModel.CloseRequested += () =>
         {
             IsFormOpen = false;
@@ -132,7 +122,7 @@ public partial class ApiKeyViewModel : ViewModelBase
         {
             IsFormOpen = false;
             FormViewModel = null;
-            SetStatus(_localizationService.Format("ApiKey.Success.Generated"));
+            _toastService.Success(_localizationService.Format("ApiKey.Success.Generated"));
         };
 
         IsFormOpen = true;
@@ -154,11 +144,11 @@ public partial class ApiKeyViewModel : ViewModelBase
         try
         {
             await _apiKeyStorageService.DeleteKeyAsync(id);
-            SetStatus(_localizationService.Format("ApiKey.Success.Deleted"));
+            _toastService.Success(_localizationService.Format("ApiKey.Success.Deleted"));
         }
         catch (Exception ex)
         {
-            SetStatus(_localizationService.Format("Common.Error.DeletionFailed", ex.Message), isError: true);
+            _toastService.Error(_localizationService.Format("Common.Error.DeletionFailed", ex.Message));
         }
     }
 
@@ -169,18 +159,12 @@ public partial class ApiKeyViewModel : ViewModelBase
         {
             var decryptedValue = await _apiKeyStorageService.GetDecryptedValueAsync(id);
             CopyToClipboardRequested?.Invoke(decryptedValue);
-            SetStatus(_localizationService.Format("ApiKey.Success.Copied"));
+            _toastService.Success(_localizationService.Format("ApiKey.Success.Copied"));
         }
         catch (Exception ex)
         {
-            SetStatus(_localizationService.Format("Common.Error.WithMessage", ex.Message), isError: true);
+            _toastService.Error(_localizationService.Format("Common.Error.WithMessage", ex.Message));
         }
-    }
-
-    private void SetStatus(string message, bool isError = false)
-    {
-        StatusMessage = message;
-        IsError = isError;
     }
 
     // Events for View to handle platform-specific operations

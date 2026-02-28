@@ -412,7 +412,7 @@
             </ScrollViewer>
 
             <!-- Status Bar -->
-            <Border Grid.Row="2"
+            <!-- <Border Grid.Row="2"
                     Background="{DynamicResource BackgroundSecondaryBrush}"
                     CornerRadius="{StaticResource RadiusLarge}"
                     Padding="16,12"
@@ -433,7 +433,7 @@
                                Foreground="{DynamicResource ForegroundSecondaryBrush}"
                                VerticalAlignment="Center"/>
                 </Grid>
-            </Border>
+            </Border> -->
         </Grid>
 
         <!-- Form View (shown when form is open) -->
@@ -497,7 +497,7 @@
                     Padding="20,15">
                 <Grid ColumnDefinitions="*,Auto">
                     <!-- Status Message -->
-                    <Border Background="{DynamicResource BackgroundSecondaryBrush}"
+                    <!-- <Border Background="{DynamicResource BackgroundSecondaryBrush}"
                             CornerRadius="{StaticResource RadiusSmall}"
                             Padding="10,8"
                             IsVisible="{Binding FormViewModel.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
@@ -515,7 +515,7 @@
                                        Foreground="{DynamicResource ForegroundMutedBrush}"
                                        VerticalAlignment="Center"/>
                         </StackPanel>
-                    </Border>
+                    </Border> -->
 
                     <!-- Action Buttons -->
                     <StackPanel Grid.Column="1"

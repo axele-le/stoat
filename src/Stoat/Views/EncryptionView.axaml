@@ -550,7 +550,7 @@
         </Grid>
 
         <!-- Status Bar -->
-        <Border Grid.Row="5"
+        <!-- <Border Grid.Row="5"
                 Background="{DynamicResource CardBrush}"
                 CornerRadius="{StaticResource RadiusLarge}"
                 Padding="15,12"
@@ -582,7 +582,7 @@
                            VerticalAlignment="Center"
                            IsVisible="{Binding OutputFilePath, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
             </Grid>
-        </Border>
+        </Border> -->
     </Grid>
 
     <!-- Save Preset Modal Overlay -->

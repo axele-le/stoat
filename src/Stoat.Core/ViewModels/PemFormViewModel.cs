@@ -9,6 +9,7 @@ public partial class PemFormViewModel : ObservableObject
     private readonly IPemStorageService _pemStorageService;
     private readonly IPemService _pemService;
     private readonly ILocalizationService _localizationService;
+    private readonly IToastService _toastService;
 
     [ObservableProperty]
     private bool _isGenerateMode = true;
@@ -30,12 +31,6 @@ public partial class PemFormViewModel : ObservableObject
     private bool _isGenerating;
 
     [ObservableProperty]
-    private string? _statusMessage;
-
-    [ObservableProperty]
-    private bool _isError;
-
-    [ObservableProperty]
     private string? _selectedFileName;
 
     public int[] AvailableKeySizes { get; } = [2048, 3072, 4096];
@@ -44,11 +39,12 @@ public partial class PemFormViewModel : ObservableObject
     public event Action? GenerationSucceeded;
     public event Action? ImportFileRequested;
 
-    public PemFormViewModel(IPemStorageService pemStorageService, IPemService pemService, ILocalizationService localizationService)
+    public PemFormViewModel(IPemStorageService pemStorageService, IPemService pemService, ILocalizationService localizationService, IToastService toastService)
     {
         _pemStorageService = pemStorageService;
         _pemService = pemService;
         _localizationService = localizationService;
+        _toastService = toastService;
     }
 
     partial void OnSelectedKeySizeChanged(int value)
@@ -61,7 +57,6 @@ public partial class PemFormViewModel : ObservableObject
     {
         IsGenerateMode = true;
         IsImportMode = false;
-        ClearStatus();
     }
 
     [RelayCommand]
@@ -69,7 +64,6 @@ public partial class PemFormViewModel : ObservableObject
     {
         IsGenerateMode = false;
         IsImportMode = true;
-        ClearStatus();
     }
 
     [RelayCommand(CanExecute = nameof(CanGenerateKeyPair))]
@@ -77,25 +71,23 @@ public partial class PemFormViewModel : ObservableObject
     {
         if (string.IsNullOrWhiteSpace(NewKeyName))
         {
-            SetStatus(_localizationService.Format("Pem.Form.Error.NoName"), isError: true);
+            _toastService.Warning(_localizationService.Format("Pem.Form.Error.NoName"));
             return;
         }
 
         IsGenerating = true;
-        IsError = false;
-        StatusMessage = _localizationService.Format("Pem.Form.Status.Generating");
 
         try
         {
             await _pemStorageService.CreateKeyPairAsync(NewKeyName.Trim(), SelectedKeySize);
-            SetStatus(_localizationService.Format("Pem.Form.Success.Generated", SelectedKeySize));
+            _toastService.Success(_localizationService.Format("Pem.Form.Success.Generated", SelectedKeySize));
 
             GenerationSucceeded?.Invoke();
             ClearForm();
         }
         catch (Exception ex)
         {
-            SetStatus(_localizationService.Format("Common.Error.WithMessage", ex.Message), isError: true);
+            _toastService.Error(_localizationService.Format("Common.Error.WithMessage", ex.Message));
         }
         finally
         {
@@ -135,30 +127,30 @@ public partial class PemFormViewModel : ObservableObject
                 var publicKey = _pemService.ExtractPublicKeyFromPrivate(content);
                 if (publicKey == null)
                 {
-                    SetStatus(_localizationService.Format("Pem.Import.Error.CannotExtractPublic"), isError: true);
+                    _toastService.Error(_localizationService.Format("Pem.Import.Error.CannotExtractPublic"));
                     return;
                 }
 
                 await _pemStorageService.ImportKeyPairAsync(name, content, publicKey);
                 SelectedFileName = fileName;
-                SetStatus(_localizationService.Format("Pem.Import.Success.PrivateKey", name));
+                _toastService.Success(_localizationService.Format("Pem.Import.Success.PrivateKey", name));
                 GenerationSucceeded?.Invoke();
             }
             else if (isPublicKey)
             {
                 await _pemStorageService.ImportPublicKeyOnlyAsync(name, content);
                 SelectedFileName = fileName;
-                SetStatus(_localizationService.Format("Pem.Import.Success.PublicKey", name));
+                _toastService.Success(_localizationService.Format("Pem.Import.Success.PublicKey", name));
                 GenerationSucceeded?.Invoke();
             }
             else
             {
-                SetStatus(_localizationService.Format("Pem.Import.Error.InvalidFormat"), isError: true);
+                _toastService.Error(_localizationService.Format("Pem.Import.Error.InvalidFormat"));
             }
         }
         catch (Exception ex)
         {
-            SetStatus(_localizationService.Format("Pem.Import.Error.Failed", ex.Message), isError: true);
+            _toastService.Error(_localizationService.Format("Pem.Import.Error.Failed", ex.Message));
         }
     }
 
@@ -169,15 +161,4 @@ public partial class PemFormViewModel : ObservableObject
         SelectedFileName = null;
     }
 
-    private void SetStatus(string message, bool isError = false)
-    {
-        StatusMessage = message;
-        IsError = isError;
-    }
-
-    private void ClearStatus()
-    {
-        StatusMessage = null;
-        IsError = false;
-    }
 }

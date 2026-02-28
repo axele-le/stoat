@@ -1,0 +1,129 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:heroIcons="clr-namespace:HeroIconsAvalonia.Controls;assembly=HeroIconsAvalonia"
+        xmlns:models="clr-namespace:Stoat.Services.Models;assembly=Stoat.Services"
+        xmlns:local="clr-namespace:Stoat.Controls">
+    <Styles.Resources>
+        <DataTemplate x:Key="ToastItemTemplate" DataType="{x:Type models:ToastItem}">
+            <local:AnimatedToast
+                Background="{DynamicResource CardBrush}"
+                CornerRadius="6"
+                MinWidth="320"
+                MaxWidth="420"
+                MinHeight="64"
+                BoxShadow="0 4 12 0 #1A000000"
+                ClipToBounds="True">
+
+                <local:AnimatedToast.Transitions>
+                    <Transitions>
+                        <DoubleTransition Property="Opacity" Duration="0:0:0.35" Easing="CubicEaseOut"/>
+                        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.35" Easing="CubicEaseOut"/>
+                    </Transitions>
+                </local:AnimatedToast.Transitions>
+
+                <Grid RowDefinitions="*,Auto">
+                    <!-- Content -->
+                    <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="14">
+                        <!-- Type icons (visibility controlled by styles) -->
+                        <Panel Grid.Column="0" Width="22" Height="22" Margin="0,0,12,0" VerticalAlignment="Center">
+                            <heroIcons:HeroIcon Classes="typeIcon successIcon"
+                                                Width="22" Height="22"
+                                                Type="CheckCircle" Kind="Solid"/>
+                            <heroIcons:HeroIcon Classes="typeIcon errorIcon"
+                                                Width="22" Height="22"
+                                                Type="XCircle" Kind="Solid"/>
+                            <heroIcons:HeroIcon Classes="typeIcon warningIcon"
+                                                Width="22" Height="22"
+                                                Type="ExclamationTriangle" Kind="Solid"/>
+                            <heroIcons:HeroIcon Classes="typeIcon infoIcon"
+                                                Width="22" Height="22"
+                                                Type="InformationCircle" Kind="Solid"/>
+                        </Panel>
+
+                        <!-- Message -->
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding Message}"
+                                   Foreground="{DynamicResource ForegroundSecondaryBrush}"
+                                   FontSize="{StaticResource FontSizeBody}"
+                                   TextWrapping="Wrap"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,8,0"/>
+
+                        <!-- Close button -->
+                        <Button Grid.Column="2"
+                                Command="{Binding DismissCommand}"
+                                Background="Transparent"
+                                Padding="4"
+                                Cursor="Hand"
+                                VerticalAlignment="Top">
+                            <heroIcons:HeroIcon Width="14" Height="14"
+                                                Type="XMark" Kind="Outline"
+                                                Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                        </Button>
+                    </Grid>
+
+                    <!-- Progress bar -->
+                    <Panel Grid.Row="1" Height="5">
+                        <!-- Trail (low opacity background) -->
+                        <Border Classes="progressTrail" HorizontalAlignment="Stretch" Opacity="0.2"/>
+                        <!-- Active progress -->
+                        <Border Classes="progressBar" HorizontalAlignment="Stretch"
+                                RenderTransformOrigin="0%,50%">
+                            <Border.RenderTransform>
+                                <ScaleTransform ScaleX="1"/>
+                            </Border.RenderTransform>
+                        </Border>
+                    </Panel>
+                </Grid>
+            </local:AnimatedToast>
+        </DataTemplate>
+    </Styles.Resources>
+
+    <Style Selector="heroIcons|HeroIcon.typeIcon">
+        <Setter Property="IsVisible" Value="False"/>
+    </Style>
+
+    <Style Selector="local|AnimatedToast.success heroIcons|HeroIcon.successIcon">
+        <Setter Property="IsVisible" Value="True"/>
+        <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}"/>
+    </Style>
+    <Style Selector="local|AnimatedToast.success Border.progressTrail">
+        <Setter Property="Background" Value="{DynamicResource SuccessBrush}"/>
+    </Style>
+    <Style Selector="local|AnimatedToast.success Border.progressBar">
+        <Setter Property="Background" Value="{DynamicResource SuccessBrush}"/>
+    </Style>
+
+    <Style Selector="local|AnimatedToast.error heroIcons|HeroIcon.errorIcon">
+        <Setter Property="IsVisible" Value="True"/>
+        <Setter Property="Foreground" Value="{DynamicResource DangerBrush}"/>
+    </Style>
+    <Style Selector="local|AnimatedToast.error Border.progressTrail">
+        <Setter Property="Background" Value="{DynamicResource DangerBrush}"/>
+    </Style>
+    <Style Selector="local|AnimatedToast.error Border.progressBar">
+        <Setter Property="Background" Value="{DynamicResource DangerBrush}"/>
+    </Style>
+
+    <Style Selector="local|AnimatedToast.warning heroIcons|HeroIcon.warningIcon">
+        <Setter Property="IsVisible" Value="True"/>
+        <Setter Property="Foreground" Value="{DynamicResource WarningBrush}"/>
+    </Style>
+    <Style Selector="local|AnimatedToast.warning Border.progressTrail">
+        <Setter Property="Background" Value="{DynamicResource WarningBrush}"/>
+    </Style>
+    <Style Selector="local|AnimatedToast.warning Border.progressBar">
+        <Setter Property="Background" Value="{DynamicResource WarningBrush}"/>
+    </Style>
+
+    <Style Selector="local|AnimatedToast.info heroIcons|HeroIcon.infoIcon">
+        <Setter Property="IsVisible" Value="True"/>
+        <Setter Property="Foreground" Value="{DynamicResource InfoBrush}"/>
+    </Style>
+    <Style Selector="local|AnimatedToast.info Border.progressTrail">
+        <Setter Property="Background" Value="{DynamicResource InfoBrush}"/>
+    </Style>
+    <Style Selector="local|AnimatedToast.info Border.progressBar">
+        <Setter Property="Background" Value="{DynamicResource InfoBrush}"/>
+    </Style>
+</Styles>

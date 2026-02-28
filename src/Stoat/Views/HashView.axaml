@@ -263,7 +263,7 @@
         <Grid Grid.Row="3" ColumnDefinitions="*,Auto" Margin="0,15,0,0">
 
             <!-- Status -->
-            <Border Grid.Column="0"
+            <!-- <Border Grid.Column="0"
                     Background="{DynamicResource CardBrush}"
                     CornerRadius="{StaticResource RadiusLarge}"
                     Padding="15,12"
@@ -286,7 +286,7 @@
                                Foreground="{DynamicResource ForegroundSecondaryBrush}"
                                VerticalAlignment="Center"/>
                 </StackPanel>
-            </Border>
+            </Border> -->
 
             <!-- Hash Button -->
             <Button Grid.Column="1"

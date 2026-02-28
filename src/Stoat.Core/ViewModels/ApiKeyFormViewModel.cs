@@ -12,6 +12,7 @@ public partial class ApiKeyFormViewModel : ObservableObject
 {
     private readonly IApiKeyStorageService _apiKeyStorageService;
     private readonly ILocalizationService _localizationService;
+    private readonly IToastService _toastService;
 
     /// <summary>
     /// Name for the new API key to generate.
@@ -58,18 +59,6 @@ public partial class ApiKeyFormViewModel : ObservableObject
     private bool _isGenerating;
 
     /// <summary>
-    /// Status message to display to the user.
-    /// </summary>
-    [ObservableProperty]
-    private string? _statusMessage;
-
-    /// <summary>
-    /// Whether the status message indicates an error.
-    /// </summary>
-    [ObservableProperty]
-    private bool _isError;
-
-    /// <summary>
     /// Available key types for generation.
     /// </summary>
     public ApiKeyType[] AvailableTypes { get; } = [ApiKeyType.Development, ApiKeyType.Test, ApiKeyType.Production];
@@ -106,10 +95,11 @@ public partial class ApiKeyFormViewModel : ObservableObject
     /// </summary>
     public event Action? GenerationSucceeded;
 
-    public ApiKeyFormViewModel(IApiKeyStorageService apiKeyStorageService, ILocalizationService localizationService)
+    public ApiKeyFormViewModel(IApiKeyStorageService apiKeyStorageService, ILocalizationService localizationService, IToastService toastService)
     {
         _apiKeyStorageService = apiKeyStorageService;
         _localizationService = localizationService;
+        _toastService = toastService;
     }
 
     partial void OnKeyLengthChanged(int value)
@@ -122,13 +112,11 @@ public partial class ApiKeyFormViewModel : ObservableObject
     {
         if (string.IsNullOrWhiteSpace(NewKeyName))
         {
-            SetStatus(_localizationService.Format("ApiKey.Form.Error.NoName"), isError: true);
+            _toastService.Warning(_localizationService.Format("ApiKey.Form.Error.NoName"));
             return;
         }
 
         IsGenerating = true;
-        IsError = false;
-        StatusMessage = _localizationService.Format("ApiKey.Form.Status.Generating");
 
         try
         {
@@ -136,14 +124,14 @@ public partial class ApiKeyFormViewModel : ObservableObject
             await _apiKeyStorageService.CreateKeyAsync(NewKeyName.Trim(), SelectedType, KeyLength, SelectedComplexity, prefix);
             var typeDisplay = SelectedType == ApiKeyType.Production ? "Production" : SelectedType == ApiKeyType.Test ? "Test" : "Development";
             var complexityName = GetComplexityDisplayName(SelectedComplexity);
-            SetStatus(_localizationService.Format("ApiKey.Form.Success.Generated", typeDisplay, KeyLength, complexityName), isError: false);
+            _toastService.Success(_localizationService.Format("ApiKey.Form.Success.Generated", typeDisplay, KeyLength, complexityName));
 
             GenerationSucceeded?.Invoke();
             ClearForm();
         }
         catch (Exception ex)
         {
-            SetStatus(_localizationService.Format("Common.Error.WithMessage", ex.Message), isError: true);
+            _toastService.Error(_localizationService.Format("Common.Error.WithMessage", ex.Message));
         }
         finally
         {
@@ -166,12 +154,6 @@ public partial class ApiKeyFormViewModel : ObservableObject
         SelectedType = ApiKeyType.Production;
         SelectedComplexity = ApiKeyComplexity.AlphanumericSymbols;
         KeyPrefix = string.Empty;
-    }
-
-    private void SetStatus(string message, bool isError)
-    {
-        StatusMessage = message;
-        IsError = isError;
     }
 
     private string GetComplexityDisplayName(ApiKeyComplexity complexity)

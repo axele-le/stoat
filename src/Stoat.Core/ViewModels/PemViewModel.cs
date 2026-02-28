@@ -12,14 +12,9 @@ public partial class PemViewModel : ViewModelBase
     private readonly IPemStorageService _pemStorageService;
     private readonly IConfirmationService _confirmationService;
     private readonly ILocalizationService _localizationService;
+    private readonly IToastService _toastService;
 
     public ObservableCollection<PemKeyGroupViewModel> KeyPairs { get; } = new();
-
-    [ObservableProperty]
-    private string? _statusMessage;
-
-    [ObservableProperty]
-    private bool _isError;
 
     [ObservableProperty]
     private bool _hasKeyPairs;
@@ -34,12 +29,14 @@ public partial class PemViewModel : ViewModelBase
         IPemService pemService,
         IPemStorageService pemStorageService,
         IConfirmationService confirmationService,
-        ILocalizationService localizationService)
+        ILocalizationService localizationService,
+        IToastService toastService)
     {
         _pemService = pemService;
         _pemStorageService = pemStorageService;
         _confirmationService = confirmationService;
         _localizationService = localizationService;
+        _toastService = toastService;
 
         _pemStorageService.KeyPairCreated += OnKeyPairCreated;
         _pemStorageService.KeyPairDeleted += OnKeyPairDeleted;
@@ -67,7 +64,7 @@ public partial class PemViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            SetStatus(_localizationService.Format("Common.Error.LoadingFailed", ex.Message), isError: true);
+            _toastService.Error(_localizationService.Format("Common.Error.LoadingFailed", ex.Message));
         }
     }
 
@@ -104,7 +101,7 @@ public partial class PemViewModel : ViewModelBase
     [RelayCommand]
     private void OpenNewPemForm()
     {
-        FormViewModel = new PemFormViewModel(_pemStorageService, _pemService, _localizationService);
+        FormViewModel = new PemFormViewModel(_pemStorageService, _pemService, _localizationService, _toastService);
         FormViewModel.CloseRequested += () =>
         {
             IsFormOpen = false;
@@ -114,7 +111,7 @@ public partial class PemViewModel : ViewModelBase
         {
             IsFormOpen = false;
             FormViewModel = null;
-            SetStatus(_localizationService.Format("Pem.Success.OperationCompleted"));
+            _toastService.Success(_localizationService.Format("Pem.Success.OperationCompleted"));
         };
 
         IsFormOpen = true;
@@ -136,11 +133,11 @@ public partial class PemViewModel : ViewModelBase
         try
         {
             await _pemStorageService.DeleteKeyPairAsync(id);
-            SetStatus(_localizationService.Format("Pem.Success.Deleted"));
+            _toastService.Success(_localizationService.Format("Pem.Success.Deleted"));
         }
         catch (Exception ex)
         {
-            SetStatus(_localizationService.Format("Common.Error.DeletionFailed", ex.Message), isError: true);
+            _toastService.Error(_localizationService.Format("Common.Error.DeletionFailed", ex.Message));
         }
     }
 
@@ -164,7 +161,7 @@ public partial class PemViewModel : ViewModelBase
                 }
                 catch (Exception ex)
                 {
-                    SetStatus(_localizationService.Format("Common.Error.WithMessage", ex.Message), isError: true);
+                    _toastService.Error(_localizationService.Format("Common.Error.WithMessage", ex.Message));
                     return;
                 }
                 finally
@@ -196,7 +193,7 @@ public partial class PemViewModel : ViewModelBase
                 }
                 catch (Exception ex)
                 {
-                    SetStatus(_localizationService.Format("Common.Error.WithMessage", ex.Message), isError: true);
+                    _toastService.Error(_localizationService.Format("Common.Error.WithMessage", ex.Message));
                     return;
                 }
                 finally
@@ -234,13 +231,13 @@ public partial class PemViewModel : ViewModelBase
             CopyToClipboardRequested?.Invoke(privateKey);
 
             group.IsPrivateKeyCopied = true;
-            SetStatus(_localizationService.Format("Pem.Success.PrivateKeyCopied"));
+            _toastService.Success(_localizationService.Format("Pem.Success.PrivateKeyCopied"));
 
             _ = Task.Delay(2000).ContinueWith(_ => group.IsPrivateKeyCopied = false);
         }
         catch (Exception ex)
         {
-            SetStatus(_localizationService.Format("Common.Error.WithMessage", ex.Message), isError: true);
+            _toastService.Error(_localizationService.Format("Common.Error.WithMessage", ex.Message));
         }
     }
 
@@ -256,7 +253,7 @@ public partial class PemViewModel : ViewModelBase
         CopyToClipboardRequested?.Invoke(group.PublicKey);
 
         group.IsPublicKeyCopied = true;
-        SetStatus(_localizationService.Format("Pem.Success.PublicKeyCopied"));
+        _toastService.Success(_localizationService.Format("Pem.Success.PublicKeyCopied"));
 
         _ = Task.Delay(2000).ContinueWith(_ => group.IsPublicKeyCopied = false);
     }
@@ -283,7 +280,7 @@ public partial class PemViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            SetStatus(_localizationService.Format("Common.Error.WithMessage", ex.Message), isError: true);
+            _toastService.Error(_localizationService.Format("Common.Error.WithMessage", ex.Message));
         }
     }
 
@@ -302,13 +299,11 @@ public partial class PemViewModel : ViewModelBase
 
     public void SetFileSaveResult(bool success, string? message = null)
     {
-        SetStatus(message ?? (success ? _localizationService.Format("Common.Success.FileSaved") : _localizationService.Format("Common.Error.SaveCancelled")), isError: !success);
-    }
-
-    private void SetStatus(string message, bool isError = false)
-    {
-        StatusMessage = message;
-        IsError = isError;
+        var msg = message ?? (success ? _localizationService.Format("Common.Success.FileSaved") : _localizationService.Format("Common.Error.SaveCancelled"));
+        if (success)
+            _toastService.Success(msg);
+        else
+            _toastService.Error(msg);
     }
 
     private static string SanitizeFileName(string name)
